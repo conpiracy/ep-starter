@@ -1,0 +1,164 @@
+ Agents | herdr(function () {
+  try {
+    var KEY = 'herdr-docs-lang';
+    var path = location.pathname;
+    var m = path.match(/^\/(ja|zh-cn)(?=\/|$)/);
+    var current = m ? m[1] : path.indexOf('/docs') === 0 ? 'en' : null;
+    if (!current) return;
+    if (!localStorage.getItem(KEY) && current === 'en') {
+      var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      var target = null;
+      for (var i = 0; i < langs.length && !target; i++) {
+        var l = String(langs[i]).toLowerCase();
+        if (l === 'ja' || l.indexOf('ja-') === 0) target = 'ja';
+        else if (l === 'zh' || l.indexOf('zh-') === 0) target = 'zh-cn';
+        else if (l.indexOf('en') === 0) break;
+      }
+      if (target) {
+        localStorage.setItem(KEY, target);
+        location.replace('/' + target + path + location.search + location.hash);
+        return;
+      }
+    }
+    localStorage.setItem(KEY, current);
+  } catch (e) {}
+})();
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+
+@layer starlight.components{:root{--sl-badge-default-border: var(--sl-color-accent);--sl-badge-default-bg: var(--sl-color-accent-low);--sl-badge-default-text: #fff;--sl-badge-note-border: var(--sl-color-blue);--sl-badge-note-bg: var(--sl-color-blue-low);--sl-badge-note-text: #fff;--sl-badge-danger-border: var(--sl-color-red);--sl-badge-danger-bg: var(--sl-color-red-low);--sl-badge-danger-text: #fff;--sl-badge-success-border: var(--sl-color-green);--sl-badge-success-bg: var(--sl-color-green-low);--sl-badge-success-text: #fff;--sl-badge-caution-border: var(--sl-color-orange);--sl-badge-caution-bg: var(--sl-color-orange-low);--sl-badge-caution-text: #fff;--sl-badge-tip-border: var(--sl-color-purple);--sl-badge-tip-bg: var(--sl-color-purple-low);--sl-badge-tip-text: #fff}[data-theme=light]:root{--sl-badge-default-bg: var(--sl-color-accent-high);--sl-badge-note-bg: var(--sl-color-blue-high);--sl-badge-danger-bg: var(--sl-color-red-high);--sl-badge-success-bg: var(--sl-color-green-high);--sl-badge-caution-bg: var(--sl-color-orange-high);--sl-badge-tip-bg: var(--sl-color-purple-high)}.sl-badge:where(.astro-avdet4wd){display:inline-block;border:1px solid var(--sl-color-border-badge);border-radius:.25rem;font-family:var(--sl-font-system-mono);line-height:normal;color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere}.sidebar-content .sl-badge:where(.astro-avdet4wd){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-avdet4wd){--sl-color-bg-badge: transparent;--sl-color-border-badge: currentColor;color:inherit}.default:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-default-bg);--sl-color-border-badge: var(--sl-badge-default-border);--sl-color-text-badge: var(--sl-badge-default-text)}.note:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-note-bg);--sl-color-border-badge: var(--sl-badge-note-border);--sl-color-text-badge: var(--sl-badge-note-text)}.danger:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-danger-bg);--sl-color-border-badge: var(--sl-badge-danger-border);--sl-color-text-badge: var(--sl-badge-danger-text)}.success:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-success-bg);--sl-color-border-badge: var(--sl-badge-success-border);--sl-color-text-badge: var(--sl-badge-success-text)}.tip:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-tip-bg);--sl-color-border-badge: var(--sl-badge-tip-border);--sl-color-text-badge: var(--sl-badge-tip-text)}.caution:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-caution-bg);--sl-color-border-badge: var(--sl-badge-caution-border);--sl-color-text-badge: var(--sl-badge-caution-text)}.small:where(.astro-avdet4wd){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-avdet4wd){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-avdet4wd){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-avdet4wd){vertical-align:middle}}
+@layer starlight.components{.card:where(.astro-v5tidmuc){--sl-card-border: var(--sl-color-purple);--sl-card-bg: var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);padding:clamp(1rem,calc(.125rem + 3vw),2.5rem);flex-direction:column;gap:clamp(.5rem,calc(.125rem + 1vw),1rem)}.card:where(.astro-v5tidmuc):nth-child(4n+1){--sl-card-border: var(--sl-color-orange);--sl-card-bg: var(--sl-color-orange-low)}.card:where(.astro-v5tidmuc):nth-child(4n+3){--sl-card-border: var(--sl-color-green);--sl-card-bg: var(--sl-color-green-low)}.card:where(.astro-v5tidmuc):nth-child(4n+4){--sl-card-border: var(--sl-color-red);--sl-card-bg: var(--sl-color-red-low)}.card:where(.astro-v5tidmuc):nth-child(4n+5){--sl-card-border: var(--sl-color-blue);--sl-card-bg: var(--sl-color-blue-low)}.title:where(.astro-v5tidmuc){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);gap:1rem;align-items:center}.card:where(.astro-v5tidmuc) .icon:where(.astro-v5tidmuc){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);padding:.2em;border-radius:.25rem;flex-shrink:0}.card:where(.astro-v5tidmuc) .body:where(.astro-v5tidmuc){margin:0;font-size:clamp(var(--sl-text-sm),calc(.5rem + 1vw),var(--sl-text-body))}}
+@layer starlight.components{.card-grid:where(.astro-zntqmydn){display:grid;grid-template-columns:100%;gap:1rem}.card-grid:where(.astro-zntqmydn)>*{margin-top:0!important}@media(min-width:50rem){.card-grid:where(.astro-zntqmydn){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-zntqmydn){--stagger-height: 5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-zntqmydn)>*:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{svg:where(.astro-c6vsoqas){color:var(--sl-icon-color);font-size:var(--sl-icon-size, 1em);width:1em;height:1em}}
+@layer starlight.components{.sl-steps{--bullet-size: calc(var(--sl-line-height) * 1rem);--bullet-margin: .375rem;list-style:none;counter-reset:steps-counter var(--sl-steps-start, 0);padding-inline-start:0}.sl-steps>li{counter-increment:steps-counter;position:relative;padding-inline-start:calc(var(--bullet-size) + 1rem);padding-bottom:1px;min-height:calc(var(--bullet-size) + var(--bullet-margin))}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);position:absolute;top:0;inset-inline-start:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);font-weight:600;text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);border-radius:99rem;box-shadow:inset 0 0 0 1px var(--sl-color-gray-5)}.sl-steps>li:after{--guide-width: 1px;content:"";position:absolute;top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2);width:var(--guide-width);background-color:var(--sl-color-hairline-light)}}@layer starlight.content{.sl-steps>li>:first-child{--lh: calc(1em * var(--sl-line-height));--shift-y: calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh: calc(1em * var(--sl-line-height-headings))}@supports (--prop: 1lh){.sl-steps>li>:first-child{--lh: 1lh}}}
+@layer starlight.components{.sl-link-button:where(.astro-xwgiixxa){align-items:center;border:1px solid transparent;border-radius:999rem;display:inline-flex;font-size:var(--sl-text-sm);gap:.5em;line-height:1.1875;outline-offset:.25rem;padding:.4375rem 1.125rem;text-decoration:none}.sl-link-button:where(.astro-xwgiixxa).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-xwgiixxa).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-xwgiixxa) svg{flex-shrink:0}@media(min-width:50rem){.sl-link-button:where(.astro-xwgiixxa){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa):not(:where(p *)){margin-block:1rem}}
+  Skip to content        herdr   Docs Plugins Blog       Stable Preview      Search  CtrlK       Cancel         
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+     class c extends HTMLElement{connectedCallback(){const n=this.dataset.channel;if(!n)return;const t=()=>{const e=this.querySelector(`.pagefind-ui__filter-checkbox[name="channel"][value="${n}"]`);return e?(e.checked||e.click(),this.observer?.disconnect(),!0):!1};t()||(this.observer=new MutationObserver(t),this.observer.observe(this,{childList:!0,subtree:!0}))}disconnectedCallback(){this.observer?.disconnect()}}customElements.define("channel-search",c);     GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+ const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStoragematchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);  Select language   English日本語简体中文    class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);           class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);      
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	       Start here         Overview     Install     Quick start     Concepts     Keyboard           Using Herdr         How to work with Herdr     Agents     Session state and restore     Persistence and remote access           Configure         Configuration     Config reference     Plugins     Marketplace           Reference         CLI reference     Socket API     Integrations     Agent skill file     Windows beta           Help         Troubleshooting     Preview docs           
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	      GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+   Select language   English日本語简体中文             const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);    On this page   Overview     Supported agents     Status authority     VMs and sandbox wrappers     Blocked state     Detection manifests     State rollups     Direct integrations     Custom agent labels     Custom status labels     Start agents from the CLI     Attach directly to an agent     On this page   Overview     Supported agents     Status authority     VMs and sandbox wrappers     Blocked state     Detection manifests     State rollups     Direct integrations     Custom agent labels     Custom status labels     Start agents from the CLI     Attach directly to an agent                Agents        Herdr is built for running more than one coding agent at a time. Each agent stays in a real terminal pane with its shell, logs, prompts, and running processes intact. Herdr tracks which panes contain agents, rolls their state up to tabs and workspaces, and lets you jump straight to the pane that needs attention instead of polling every terminal by hand.
+Supported agentsSection titled “Supported agents”
+Automatic detection works out of the box for common coding agents. The important difference is not whether Herdr can see an agent. It is which signal is allowed to author idle, working, and blocked.
+
+AgentState authorityIntegration rolePilifecycle hooks when installed; otherwise screen manifeststate and sessionOMPlifecycle hooks when installedstateGitHub Copilot CLIscreen manifestsessionDevin CLIscreen manifestsessionKimi Code CLIlifecycle hooks when installed; otherwise screen manifeststate and sessionHermes Agentlifecycle hooks when installed; otherwise screen manifeststate and sessionQoder CLIscreen manifestsessionDroidscreen manifestsessionOpenCodelifecycle plugin when installed; otherwise screen manifeststate and sessionKilo Code CLIlifecycle plugin when installed; otherwise screen manifeststate and sessionMastraCodelifecycle hooks when installedstate and sessionClaude Codescreen manifestsessionCodexscreen manifestsessionCursor Agent CLIscreen manifestsessionAmpscreen manifestnoneGrok CLIscreen manifestnoneAntigravity CLIscreen manifestnoneKiro CLIscreen manifestnoneMakiscreen manifestnone
+Detected but less thoroughly tested: Gemini CLI and Cline. Unsupported agents still run normally as terminal processes. They just may not get rich state unless you add an integration or report state over the socket API.
+Status authoritySection titled “Status authority”
+Herdr first detects the foreground process in each pane. After that, each pane has one status authority.
+For agents with complete lifecycle hooks, the integration is authoritative when it is installed and actively reporting for the running pane. Herdr uses those hook reports for idle, working, blocked, and session identity. It does not also run screen manifest fallback for that same lifecycle authority. This avoids two competing sources of truth.
+For agents without complete lifecycle hooks, Herdr identifies the foreground process and reads the live bottom-buffer screen snapshot. It evaluates TOML manifests against that snapshot to classify idle, working, and blocked. For agents that emit them, manifests can also match terminal title and progress (OSC) sequences as detection evidence; when that evidence is absent, screen rules carry detection on their own.
+The screen snapshot comes from the recent bottom of the pane buffer, not the scrolled viewport. If you scroll back in Herdr, detection still follows the live agent UI at the bottom.
+Claude Code, Codex, GitHub Copilot CLI, Droid, Qoder CLI, and Cursor Agent CLI integrations are intentionally not lifecycle authorities. They provide native session identity for restore, but their hooks do not cover the whole lifecycle. They can miss permission approval results, escape interrupts, or other transitions. For those agents, Herdr still uses screen manifest detection.
+VMs and sandbox wrappersSection titled “VMs and sandbox wrappers”
+On Linux, wrappers such as VMs, Bubblewrap, or fence can hide the real agent process from host /proc. Set HERDR_AGENT=&#x3C;agent> on the command, for example HERDR_AGENT=claude fence -- claude, to tell Herdr which existing agent screen manifest to use. The hint is scoped to that foreground process; avoid exporting it globally from your shell unless every inherited foreground process should be treated as that agent.
+Blocked stateSection titled “Blocked state”
+Blocked detection is deliberately strict for screen-manifest agents. Herdr only marks blocked when the live bottom-buffer snapshot matches known visible approval, question, or permission UI. If no manifest rule matches for a known agent, Herdr falls back to idle and labels that fallback as default_known_agent_idle_fallback in explain output.
+This means unusual new agent prompts may initially show as idle instead of blocked until Herdr learns that screen shape. Those interactions should not make Herdr send input or take destructive action; they only affect the visible status and waits.
+Detection manifestsSection titled “Detection manifests”
+Bundled manifests live inside Herdr. Herdr also checks herdr.dev for remote manifest updates and applies valid per-agent rule updates automatically without requiring a Herdr restart. Remote manifests are stored in Herdr’s state directory. Set [update] manifest_check = false to disable background remote manifest checks.
+Local overrides can replace a remote or bundled manifest from the platform config directory:
+~/.config/herdr/agent-detection/&#x3C;agent>.toml.toml">
+Local overrides always win. Without a local override, Herdr uses the newer compatible manifest between the cached remote manifest and the bundled manifest in the running binary. On debug builds, the same config helper may use a development directory such as herdr-dev. Invalid override files are ignored with a warning and Herdr falls back to the cached remote or bundled manifest for that agent.
+Remote manifests patch detection rules for agents Herdr already knows how to identify. Adding a completely new agent still requires a Herdr binary update for process detection, labels, and integration behavior.
+The running server loads active manifests into memory on startup. Automatic remote manifest updates reload that in-memory cache after new rules are written. Run herdr server update-agent-manifests to fetch remote manifest updates immediately and reload the running server. After editing a local override manually, restart Herdr or run herdr server reload-agent-manifests to apply the file to the running server.
+Use herdr agent explain when a pane shows the wrong state:
+Terminal windowherdr agent explain &#x3C;target>herdr agent explain --file screen.txt --agent codex --jsonherdr agent explain --file screen.txt --agent codex --json">
+Live explain is evaluated by the running server, so it reflects the active manifest cache. The explain output shows the agent, final state, whether screen detection was skipped by a full lifecycle authority, manifest source and version, cached remote version, local override shadowing, remote update status, matched rule, visible evidence flags, matcher and region evidence for evaluated rules, skipped-update reason for transcript viewers, and the idle fallback reason when no rule matched.
+Herdr can run inside tmux as the outer terminal environment. Agent detection does not inspect tmux sessions launched inside a Herdr pane. If a shell framework auto-enters tmux inside Herdr, Herdr sees tmux as the pane process instead of the agent behind it.
+State rollupsSection titled “State rollups”
+The sidebar rolls state upward.
+A blocked agent makes its pane, tab, and workspace look blocked. A working agent makes the workspace look active. A done agent stays visible until you view it.
+This is the main Herdr workflow: start several agents, let them work in parallel, and use the sidebar to see which project needs a decision, which one is still running, and which one is ready to review.
+Direct integrationsSection titled “Direct integrations”
+Install the integration for each agent you use; it gives Herdr hook or plugin reports instead of screen detection alone:
+Terminal windowherdr integration install claudeherdr integration status
+Each supported agent has its own integration name and behavior. See Integrations for the per-agent details and the full install list.
+Custom agent labelsSection titled “Custom agent labels”
+You can rename an agent target for display:
+Terminal windowherdr agent rename w1:p1 reviewerherdr agent rename reviewer --clear
+Targets accept terminal IDs, unique agent names, detected or reported agent labels, and legacy pane IDs.
+Custom status labelsSection titled “Custom status labels”
+Integrations report lifecycle state as semantic state only. Add display customization separately with pane metadata tokens.
+Terminal windowherdr pane report-agent w1:p1 \  --source custom:indexer \  --agent docs-bot \  --state working
+herdr pane report-metadata w1:p1 \  --source custom:indexer-display \  --token summary=indexing
+state controls waits, notifications, and rollups. The summary token is display-only and can be used as $summary in an Agent sidebar row.
+Agent sidebar rows can also opt into terminal_title or terminal_title_stripped; neither appears in the default rows. The first shows the latest safety-normalized OSC 0/2 terminal title. The second removes one recognized leading activity or spinner glyph and following whitespace. Herdr owns these values on the server; they are ephemeral across a cold restart and remain independent of metadata titles and semantic agent state. Spinner animation can therefore update the raw title without producing a pane update when the stripped text stays the same.
+Start agents from the CLISection titled “Start agents from the CLI”
+Use herdr agent ... commands when you want a terminal to be treated as an agent target. Agent targets show up in agent list, can be read or sent input by agent name, can be waited on by agent state, and can be directly attached.
+Spawn an agent into Herdr from a script:
+Terminal windowherdr agent start reviewer --cwd ~/project --split right -- pi
+You can place that agent in a specific workspace or tab:
+Terminal windowherdr agent start docs --workspace w1 --tab w1:t1 -- claude
+Use herdr pane ... commands for ordinary terminals, servers, tests, shells, and low-level terminal input. For example, use pane split and pane run for cargo test, not agent start, unless that terminal is intentionally being treated as an agent target.
+Attach directly to an agentSection titled “Attach directly to an agent”
+Attach your current terminal to one agent terminal instead of the full Herdr UI:
+Terminal windowherdr agent attach reviewer
+Detach with ctrl+b q. Send a literal ctrl+b with ctrl+b ctrl+b.
+Scroll with the mouse wheel or plain page up/page down. Normal input jumps back to the bottom.
+Use --takeover if another direct attach client already owns input:
+Terminal windowherdr agent attach reviewer --takeover
+Use herdr terminal attach &#x3C;terminal_id> when you want the same direct attach behavior for a non-agent terminal.    Edit page Last updated: Jul 15, 2026      Previous  How to work with Herdr      Next  Session state and restore                   

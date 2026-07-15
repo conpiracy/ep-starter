@@ -1,0 +1,21 @@
+{
+  "name": "harness-dark",
+  "type": "dark",
+  "description": "Dark theme optimized for the harness factory workflow",
+  "colors": {
+    "background": "#0d1117",
+    "foreground": "#c9d1d9",
+    "primary": "#58a6ff",
+    "secondary": "#3fb950",
+    "accent": "#bc8cff",
+    "error": "#f85149",
+    "warning": "#d29922",
+    "success": "#3fb950",
+    "border": "#30363d",
+    "selection": "#264f78",
+    "comment": "#8b949e",
+    "lineNumber": "#6e7681",
+    "cursor": "#c9d1d9",
+    "activeLine": "#161b22"
+  }
+}

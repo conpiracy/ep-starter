@@ -1,0 +1,200 @@
+Custom Models · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageTable of ContentsMinimal ExampleFull ExampleGoogle AI Studio ExampleSupported APIsProvider ConfigurationValue ResolutionCustom HeadersModel ConfigurationThinking Level MapOverriding Built-in ProvidersPer-model OverridesAnthropic Messages CompatibilityOpenAI CompatibilityDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageTable of ContentsMinimal ExampleFull ExampleGoogle AI Studio ExampleSupported APIsProvider ConfigurationValue ResolutionCustom HeadersModel ConfigurationThinking Level MapOverriding Built-in ProvidersPer-model OverridesAnthropic Messages CompatibilityOpenAI CompatibilityOn this pageTable of ContentsMinimal ExampleFull ExampleGoogle AI Studio ExampleSupported APIsProvider ConfigurationValue ResolutionCustom HeadersModel ConfigurationThinking Level MapOverriding Built-in ProvidersPer-model OverridesAnthropic Messages CompatibilityOpenAI CompatibilityCustom ModelsLatest··Add custom providers and models (Ollama, vLLM, LM Studio, proxies) via ~/.pi/agent/models.json.
+
+        
+          Table of Contents
+        
+        
+          
+          
+          Copied
+        
+        
+
+Minimal Example
+Full Example
+Supported APIs
+Provider Configuration
+Model Configuration
+Overriding Built-in Providers
+Per-model Overrides
+Anthropic Messages Compatibility
+OpenAI Compatibility
+
+        
+          Minimal Example
+        
+        
+          
+          
+          Copied
+        
+        
+For local models (Ollama, LM Studio, vLLM), only id is required per model:
+{
+  &quot;providers&quot;: {
+    &quot;ollama&quot;: {
+      &quot;baseUrl&quot;: &quot;http://localhost:11434/v1&quot;,
+      &quot;api&quot;: &quot;openai-completions&quot;,
+      &quot;apiKey&quot;: &quot;ollama&quot;,
+      &quot;models&quot;: [
+        { &quot;id&quot;: &quot;llama3.1:8b&quot; },
+        { &quot;id&quot;: &quot;qwen2.5-coder:7b&quot; }
+      ]
+    }
+  }
+}
+
+The apiKey value is a placeholder because Ollama ignores it. pi still treats models as requiring auth before they appear in /model, so keyless local servers should keep a dummy value, save a key for that provider with /login, or pass --api-key when selecting the model.
+Some OpenAI-compatible servers do not understand the developer role used for reasoning-capable models. For those providers, set compat.supportsDeveloperRole to false so pi sends the system prompt as a system message instead. If the server also does not support reasoning_effort, set compat.supportsReasoningEffort to false too.
+You can set compat at the provider level to apply to all models, or at the model level to override a specific model. This commonly applies to Ollama, vLLM, SGLang, and similar OpenAI-compatible servers.
+{
+  &quot;providers&quot;: {
+    &quot;ollama&quot;: {
+      &quot;baseUrl&quot;: &quot;http://localhost:11434/v1&quot;,
+      &quot;api&quot;: &quot;openai-completions&quot;,
+      &quot;apiKey&quot;: &quot;ollama&quot;,
+      &quot;compat&quot;: {
+        &quot;supportsDeveloperRole&quot;: false,
+        &quot;supportsReasoningEffort&quot;: false
+      },
+      &quot;models&quot;: [
+        {
+          &quot;id&quot;: &quot;gpt-oss:20b&quot;,
+          &quot;reasoning&quot;: true
+        }
+      ]
+    }
+  }
+}
+
+        
+          Full Example
+        
+        
+          
+          
+          Copied
+        
+        
+Override defaults when you need specific values:
+{
+  &quot;providers&quot;: {
+    &quot;ollama&quot;: {
+      &quot;baseUrl&quot;: &quot;http://localhost:11434/v1&quot;,
+      &quot;api&quot;: &quot;openai-completions&quot;,
+      &quot;apiKey&quot;: &quot;ollama&quot;,
+      &quot;models&quot;: [
+        {
+          &quot;id&quot;: &quot;llama3.1:8b&quot;,
+          &quot;name&quot;: &quot;Llama 3.1 8B (Local)&quot;,
+          &quot;reasoning&quot;: false,
+          &quot;input&quot;: [&quot;text&quot;],
+          &quot;contextWindow&quot;: 128000,
+          &quot;maxTokens&quot;: 32000,
+          &quot;cost&quot;: { &quot;input&quot;: 0, &quot;output&quot;: 0, &quot;cacheRead&quot;: 0, &quot;cacheWrite&quot;: 0 }
+        }
+      ]
+    }
+  }
+}
+
+The file reloads each time you open /model. Edit during session; no restart needed.
+
+        
+          Google AI Studio Example
+        
+        
+          
+          
+          Copied
+        
+        
+Use google-generative-ai with a baseUrl to add models from Google AI Studio, including custom Gemma 4 entries:
+{
+  &quot;providers&quot;: {
+    &quot;my-google&quot;: {
+      &quot;baseUrl&quot;: &quot;https://generativelanguage.googleapis.com/v1beta&quot;,
+      &quot;api&quot;: &quot;google-generative-ai&quot;,
+      &quot;apiKey&quot;: &quot;$GEMINI_API_KEY&quot;,
+      &quot;models&quot;: [
+        {
+          &quot;id&quot;: &quot;gemma-4-31b-it&quot;,
+          &quot;name&quot;: &quot;Gemma 4 31B&quot;,
+          &quot;input&quot;: [&quot;text&quot;, &quot;image&quot;],
+          &quot;contextWindow&quot;: 262144,
+          &quot;reasoning&quot;: true
+        }
+      ]
+    }
+  }
+}
+
+The baseUrl is required when adding custom models to the google-generative-ai API type.
+
+        
+          Supported APIs
+        
+        
+          
+          
+          Copied
+        
+        
+
+API
+Description
+
+openai-completions
+OpenAI Chat Completions (most compatible)
+
+openai-responses
+OpenAI Responses API
+
+anthropic-messages
+Anthropic Messages API
+
+google-generative-ai
+Google Generative AI
+
+Set api at provider level (default for all models) or model level (override per model).
+
+        
+          Provider Configuration
+        
+        
+          
+          
+          Copied
+        
+        
+
+Field
+Description
+
+baseUrl
+API endpoint URL

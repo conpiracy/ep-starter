@@ -1,0 +1,300 @@
+TUI Components · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageComponent InterfaceFocusable Interface (IME Support)Container Components with Embedded InputsUsing ComponentsOverlaysOverlay FocusOverlay LifecycleBuilt-in ComponentsTextBoxContainerSpacerMarkdownImageKeyboard InputLine WidthCreating Custom ComponentsThemingDebug loggingPerformanceInvalidation and Theme ChangesThe ProblemThe SolutionPattern: Rebuild on InvalidateWhen This MattersCommon PatternsPattern 1: Selection Dialog (SelectList)Pattern 2: Async Operation with Cancel (BorderedLoader)Pattern 3: Settings/Toggles (SettingsList)Pattern 4: Persistent Status IndicatorPattern 4b: Working Indicator CustomizationPattern 5: Widgets Above/Below EditorPattern 6: Custom FooterPattern 7: Custom Editor (vim mode, etc.)Key RulesExamplesDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageComponent InterfaceFocusable Interface (IME Support)Container Components with Embedded InputsUsing ComponentsOverlaysOverlay FocusOverlay LifecycleBuilt-in ComponentsTextBoxContainerSpacerMarkdownImageKeyboard InputLine WidthCreating Custom ComponentsThemingDebug loggingPerformanceInvalidation and Theme ChangesThe ProblemThe SolutionPattern: Rebuild on InvalidateWhen This MattersCommon PatternsPattern 1: Selection Dialog (SelectList)Pattern 2: Async Operation with Cancel (BorderedLoader)Pattern 3: Settings/Toggles (SettingsList)Pattern 4: Persistent Status IndicatorPattern 4b: Working Indicator CustomizationPattern 5: Widgets Above/Below EditorPattern 6: Custom FooterPattern 7: Custom Editor (vim mode, etc.)Key RulesExamplesOn this pageComponent InterfaceFocusable Interface (IME Support)Container Components with Embedded InputsUsing ComponentsOverlaysOverlay FocusOverlay LifecycleBuilt-in ComponentsTextBoxContainerSpacerMarkdownImageKeyboard InputLine WidthCreating Custom ComponentsThemingDebug loggingPerformanceInvalidation and Theme ChangesThe ProblemThe SolutionPattern: Rebuild on InvalidateWhen This MattersCommon PatternsPattern 1: Selection Dialog (SelectList)Pattern 2: Async Operation with Cancel (BorderedLoader)Pattern 3: Settings/Toggles (SettingsList)Pattern 4: Persistent Status IndicatorPattern 4b: Working Indicator CustomizationPattern 5: Widgets Above/Below EditorPattern 6: Custom FooterPattern 7: Custom Editor (vim mode, etc.)Key RulesExamplesTUI ComponentsLatest··
+pi can create TUI components. Ask it to build one for your use case.
+
+Extensions and custom tools can render custom TUI components for interactive user interfaces. This page covers the component system and available building blocks.
+Source: @earendil-works/pi-tui
+
+        
+          Component Interface
+        
+        
+          
+          
+          Copied
+        
+        
+All components implement:
+interface Component {
+  render(width: number): string[];
+  handleInput?(data: string): void;
+  wantsKeyRelease?: boolean;
+  invalidate(): void;
+}
+
+Method
+Description
+
+render(width)
+Return array of strings (one per line). Each line must not exceed width.
+
+handleInput?(data)
+Receive keyboard input when component has focus.
+
+wantsKeyRelease?
+If true, component receives key release events (Kitty protocol). Default: false.
+
+invalidate()
+Clear cached render state. Called on theme changes.
+
+The TUI appends a full SGR reset and OSC 8 reset at the end of each rendered line. Styles do not carry across lines. If you emit multi-line text with styling, reapply styles per line or use wrapTextWithAnsi() so styles are preserved for each wrapped line.
+
+        
+          Focusable Interface (IME Support)
+        
+        
+          
+          
+          Copied
+        
+        
+Components that display a text cursor and need IME (Input Method Editor) support should implement the Focusable interface:
+import { CURSOR_MARKER, type Component, type Focusable } from &quot;@earendil-works/pi-tui&quot;;
+
+class MyInput implements Component, Focusable {
+  focused: boolean = false;  // Set by TUI when focus changes
+  
+  render(width: number): string[] {
+    const marker = this.focused ? CURSOR_MARKER : &quot;&quot;;
+    // Emit marker right before the fake cursor
+    return [`&gt; ${beforeCursor}${marker}\x1b[7m${atCursor}\x1b[27m${afterCursor}`];
+  }
+}
+
+When a Focusable component has focus, TUI:
+
+Sets focused = true on the component
+Scans rendered output for CURSOR_MARKER (a zero-width APC escape sequence)
+Positions the hardware terminal cursor at that location
+Shows the hardware cursor only when showHardwareCursor is enabled
+
+The cursor remains hidden by default. This keeps the fake cursor rendering, while still positioning the hardware cursor for terminals that track IME candidate windows with hidden cursors. Some terminals require a visible hardware cursor for IME positioning; enable it with showHardwareCursor, setShowHardwareCursor(true), or PI_HARDWARE_CURSOR=1. The Editor and Input built-in components already implement this interface.
+
+        
+          Container Components with Embedded Inputs
+        
+        
+          
+          
+          Copied
+        
+        
+When a container component (dialog, selector, etc.) contains an Input or Editor child, the container must implement Focusable and propagate the focus state to the child. Otherwise, the hardware cursor won&#39;t be positioned correctly for IME input.
+import { Container, type Focusable, Input } from &quot;@earendil-works/pi-tui&quot;;
+
+class SearchDialog extends Container implements Focusable {
+  private searchInput: Input;
+
+  // Focusable implementation - propagate to child input for IME cursor positioning
+  private _focused = false;
+  get focused(): boolean {
+    return this._focused;
+  }
+  set focused(value: boolean) {
+    this._focused = value;
+    this.searchInput.focused = value;
+  }
+
+  constructor() {
+    super();
+    this.searchInput = new Input();
+    this.addChild(this.searchInput);
+  }
+}
+
+Without this propagation, typing with an IME (Chinese, Japanese, Korean, etc.) will show the candidate window in the wrong position on screen.
+
+        
+          Using Components
+        
+        
+          
+          
+          Copied
+        
+        
+In extensions via ctx.ui.custom():
+pi.on(&quot;session_start&quot;, async (_event, ctx) =&gt; {
+  const handle = ctx.ui.custom(myComponent);
+  // handle.requestRender() - trigger re-render
+  // handle.close() - restore normal UI
+});
+
+In custom tools via pi.ui.custom():
+async execute(toolCallId, params, onUpdate, ctx, signal) {
+  const handle = pi.ui.custom(myComponent);
+  // ...
+  handle.close();
+}
+
+        
+          Overlays
+        
+        
+          
+          
+          Copied
+        
+        
+Overlays render components on top of existing content without clearing the screen. Pass { overlay: true } to ctx.ui.custom():
+const result = await ctx.ui.custom&lt;string | null&gt;(
+  (tui, theme, keybindings, done) =&gt; new MyDialog({ onClose: done }),
+  { overlay: true }
+);
+
+For positioning and sizing, use overlayOptions:
+const result = await ctx.ui.custom&lt;string | null&gt;(
+  (tui, theme, keybindings, done) =&gt; new SidePanel({ onClose: done }),
+  {
+    overlay: true,
+    overlayOptions: {
+      // Size: number or percentage string
+      width: &quot;50%&quot;,          // 50% of terminal width
+      minWidth: 40,          // minimum 40 columns
+      maxHeight: &quot;80%&quot;,      // max 80% of terminal height
+
+      // Position: anchor-based (default: &quot;center&quot;)
+      anchor: &quot;right-center&quot;, // 9 positions: center, top-left, top-center, etc.
+      offsetX: -2,            // offset from anchor
+      offsetY: 0,
+
+      // Or percentage/absolute positioning
+      row: &quot;25%&quot;,            // 25% from top
+      col: 10,               // column 10
+
+      // Margins
+      margin: 2,             // all sides, or { top, right, bottom, left }
+
+      // Responsive: hide on narrow terminals
+      visible: (termWidth, termHeight) =&gt; termWidth &gt;= 80,
+    },
+    // Get handle for programmatic focus and visibility control
+    onHandle: (handle) =&gt; {
+      // handle.focus() - focus this overlay and bring it to the visual front
+      // handle.unfocus() - release input to normal fallback
+      // handle.unfocus({ target }) - release input to a specific component or null
+      // handle.setHidden(true/false) - toggle visibility
+      // handle.hide() - permanently remove
+    },
+  }
+);
+
+        
+          Overlay Focus
+        
+        
+          
+          
+          Copied
+        
+        
+A focused visible overlay keeps input ownership across temporary non-overlay UI. If an overlay opens another ctx.ui.custom() component without { overlay: true }, that replacement UI receives input while it is active; when it closes, the focused overlay can reclaim input.
+Use handle.unfocus() when a visible overlay should stop owning input and let TUI fall back to another visible capturing overlay or the previous focus target. Use handle.unfocus({ target }) when a specific component should receive input while the overlay stays visible. Passing { target: null } intentionally leaves no focused component until focus is set again.
+
+        
+          Overlay Lifecycle
+        
+        
+          
+          
+          Copied
+        
+        
+Overlay components are disposed when closed. Don&#39;t reuse references - create fresh instances:
+// Wrong - stale reference
+let menu: MenuComponent;
+await ctx.ui.custom((_, __, ___, done) =&gt; {
+  menu = new MenuComponent(done);
+  return menu;
+}, { overlay: true });
+setActiveComponent(menu);  // Disposed
+
+// Correct - re-call to re-show
+const showMenu = () =&gt; ctx.ui.custom((_, __, ___, done) =&gt; 
+  new MenuComponent(done), { overlay: true });
+
+await showMenu();  // First show
+await showMenu();  // &quot;Back&quot; = just call again
+
+See overlay-qa-tests.ts for comprehensive examples covering anchors, margins, stacking, responsive visibility, and animation.
+
+        
+          Built-in Components
+        
+        
+          
+          
+          Copied
+        
+        
+Import from @earendil-works/pi-tui:
+import { Text, Box, Container, Spacer, Markdown } from &quot;@earendil-works/pi-tui&quot;;
+
+        
+          Text
+        
+        
+          
+          
+          Copied
+        
+        
+Multi-line text with word wrapping.
+const text = new Text(
+  &quot;Hello World&quot;,    // content
+  1,                // paddingX (default: 1)
+  1,                // paddingY (default: 1)
+  (s) =&gt; bgGray(s)  // optional background function
+);
+text.setText(&quot;Updated&quot;);
+
+        
+          Box
+        
+        
+          
+          
+          Copied
+        
+        
+Container with padding and background color.
+const box = new Box(
+  1,                // paddingX
+  1,                // paddingY
+  (s) =&gt; bgGray(s)  // background function
+);
+box.addChild(new Text(&quot;Content&quot;, 0, 0));
+box.setBgFn((s) =&gt; bgBlue(s));
+
+        
+          Container
+        
+        
+          
+          
+          Copied
+        

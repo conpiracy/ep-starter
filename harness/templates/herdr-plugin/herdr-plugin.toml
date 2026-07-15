@@ -1,0 +1,71 @@
+# ──────────────────────────────────────────────────────────
+# Herdr Plugin Manifest
+# ──────────────────────────────────────────────────────────
+# Create a new Herdr plugin by copying this template:
+#   cp -r harness/templates/herdr-plugin/ my-plugin/
+#   cd my-plugin
+#   # Edit herdr-plugin.toml and create your scripts
+#   herdr plugin link .
+#
+# Docs: https://herdr.dev/docs/plugins/
+# ──────────────────────────────────────────────────────────
+
+id = "your-name.plugin-name"       # Required: dot-separated, globally unique
+name = "Plugin Name"                # Required: human-readable
+version = "0.1.0"                   # Required: semver
+min_herdr_version = "0.7.0"        # Required: oldest compatible Herdr version
+description = "What this plugin does"  # Recommended
+platforms = ["linux", "macos", "windows"]  # Optional
+
+# ── Build Commands ───────────────────────────────────────
+# Run during `herdr plugin install` from GitHub (not on `plugin link`)
+# [[build]]
+# command = ["npm", "ci"]
+#
+# [[build]]
+# command = ["npm", "run", "build"]
+# platforms = ["linux", "macos"]
+
+# ── Actions (menu-invokable) ─────────────────────────────
+[[actions]]
+id = "my-action"
+title = "My Action 👋"
+contexts = ["workspace", "tab"]
+command = ["bash", "scripts/my-action.sh"]
+
+# [[actions]]
+# id = "another-action"
+# title = "Another Action"
+# contexts = ["global"]
+# command = ["node", "index.js"]
+
+# ── Panes (terminal overlays/popups) ─────────────────────
+# [[panes]]
+# id = "dashboard"
+# title = "Dashboard"
+# placement = "overlay"    # overlay, popup, split, tab, zoomed
+# command = ["bash", "scripts/dashboard.sh"]
+#
+# [[panes]]
+# id = "picker"
+# title = "File Picker"
+# placement = "popup"
+# width = "80%"
+# height = 20
+# command = ["bash", "scripts/picker.sh"]
+
+# ── Event Hooks (react to Herdr events) ──────────────────
+# [[events]]
+# on = "worktree.created"
+# command = ["bash", "scripts/on-worktree.sh"]
+#
+# [[events]]
+# on = "agent.status_changed"
+# command = ["bash", "scripts/on-agent-change.sh"]
+
+# ── Link Handlers (route URL clicks) ─────────────────────
+# [[link_handlers]]
+# id = "github-issue"
+# title = "Open GitHub Issue"
+# pattern = "^https://github\\.com/[^/]+/[^/]+/issues/[0-9]+$"
+# action = "my-action"

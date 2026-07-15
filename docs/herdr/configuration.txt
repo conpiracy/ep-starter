@@ -1,0 +1,265 @@
+ Configuration | herdr(function () {
+  try {
+    var KEY = 'herdr-docs-lang';
+    var path = location.pathname;
+    var m = path.match(/^\/(ja|zh-cn)(?=\/|$)/);
+    var current = m ? m[1] : path.indexOf('/docs') === 0 ? 'en' : null;
+    if (!current) return;
+    if (!localStorage.getItem(KEY) && current === 'en') {
+      var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      var target = null;
+      for (var i = 0; i < langs.length && !target; i++) {
+        var l = String(langs[i]).toLowerCase();
+        if (l === 'ja' || l.indexOf('ja-') === 0) target = 'ja';
+        else if (l === 'zh' || l.indexOf('zh-') === 0) target = 'zh-cn';
+        else if (l.indexOf('en') === 0) break;
+      }
+      if (target) {
+        localStorage.setItem(KEY, target);
+        location.replace('/' + target + path + location.search + location.hash);
+        return;
+      }
+    }
+    localStorage.setItem(KEY, current);
+  } catch (e) {}
+})();
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+
+@layer starlight.components{:root{--sl-badge-default-border: var(--sl-color-accent);--sl-badge-default-bg: var(--sl-color-accent-low);--sl-badge-default-text: #fff;--sl-badge-note-border: var(--sl-color-blue);--sl-badge-note-bg: var(--sl-color-blue-low);--sl-badge-note-text: #fff;--sl-badge-danger-border: var(--sl-color-red);--sl-badge-danger-bg: var(--sl-color-red-low);--sl-badge-danger-text: #fff;--sl-badge-success-border: var(--sl-color-green);--sl-badge-success-bg: var(--sl-color-green-low);--sl-badge-success-text: #fff;--sl-badge-caution-border: var(--sl-color-orange);--sl-badge-caution-bg: var(--sl-color-orange-low);--sl-badge-caution-text: #fff;--sl-badge-tip-border: var(--sl-color-purple);--sl-badge-tip-bg: var(--sl-color-purple-low);--sl-badge-tip-text: #fff}[data-theme=light]:root{--sl-badge-default-bg: var(--sl-color-accent-high);--sl-badge-note-bg: var(--sl-color-blue-high);--sl-badge-danger-bg: var(--sl-color-red-high);--sl-badge-success-bg: var(--sl-color-green-high);--sl-badge-caution-bg: var(--sl-color-orange-high);--sl-badge-tip-bg: var(--sl-color-purple-high)}.sl-badge:where(.astro-avdet4wd){display:inline-block;border:1px solid var(--sl-color-border-badge);border-radius:.25rem;font-family:var(--sl-font-system-mono);line-height:normal;color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere}.sidebar-content .sl-badge:where(.astro-avdet4wd){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-avdet4wd){--sl-color-bg-badge: transparent;--sl-color-border-badge: currentColor;color:inherit}.default:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-default-bg);--sl-color-border-badge: var(--sl-badge-default-border);--sl-color-text-badge: var(--sl-badge-default-text)}.note:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-note-bg);--sl-color-border-badge: var(--sl-badge-note-border);--sl-color-text-badge: var(--sl-badge-note-text)}.danger:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-danger-bg);--sl-color-border-badge: var(--sl-badge-danger-border);--sl-color-text-badge: var(--sl-badge-danger-text)}.success:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-success-bg);--sl-color-border-badge: var(--sl-badge-success-border);--sl-color-text-badge: var(--sl-badge-success-text)}.tip:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-tip-bg);--sl-color-border-badge: var(--sl-badge-tip-border);--sl-color-text-badge: var(--sl-badge-tip-text)}.caution:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-caution-bg);--sl-color-border-badge: var(--sl-badge-caution-border);--sl-color-text-badge: var(--sl-badge-caution-text)}.small:where(.astro-avdet4wd){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-avdet4wd){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-avdet4wd){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-avdet4wd){vertical-align:middle}}
+@layer starlight.components{.card:where(.astro-v5tidmuc){--sl-card-border: var(--sl-color-purple);--sl-card-bg: var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);padding:clamp(1rem,calc(.125rem + 3vw),2.5rem);flex-direction:column;gap:clamp(.5rem,calc(.125rem + 1vw),1rem)}.card:where(.astro-v5tidmuc):nth-child(4n+1){--sl-card-border: var(--sl-color-orange);--sl-card-bg: var(--sl-color-orange-low)}.card:where(.astro-v5tidmuc):nth-child(4n+3){--sl-card-border: var(--sl-color-green);--sl-card-bg: var(--sl-color-green-low)}.card:where(.astro-v5tidmuc):nth-child(4n+4){--sl-card-border: var(--sl-color-red);--sl-card-bg: var(--sl-color-red-low)}.card:where(.astro-v5tidmuc):nth-child(4n+5){--sl-card-border: var(--sl-color-blue);--sl-card-bg: var(--sl-color-blue-low)}.title:where(.astro-v5tidmuc){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);gap:1rem;align-items:center}.card:where(.astro-v5tidmuc) .icon:where(.astro-v5tidmuc){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);padding:.2em;border-radius:.25rem;flex-shrink:0}.card:where(.astro-v5tidmuc) .body:where(.astro-v5tidmuc){margin:0;font-size:clamp(var(--sl-text-sm),calc(.5rem + 1vw),var(--sl-text-body))}}
+@layer starlight.components{.card-grid:where(.astro-zntqmydn){display:grid;grid-template-columns:100%;gap:1rem}.card-grid:where(.astro-zntqmydn)>*{margin-top:0!important}@media(min-width:50rem){.card-grid:where(.astro-zntqmydn){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-zntqmydn){--stagger-height: 5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-zntqmydn)>*:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{svg:where(.astro-c6vsoqas){color:var(--sl-icon-color);font-size:var(--sl-icon-size, 1em);width:1em;height:1em}}
+@layer starlight.components{.sl-steps{--bullet-size: calc(var(--sl-line-height) * 1rem);--bullet-margin: .375rem;list-style:none;counter-reset:steps-counter var(--sl-steps-start, 0);padding-inline-start:0}.sl-steps>li{counter-increment:steps-counter;position:relative;padding-inline-start:calc(var(--bullet-size) + 1rem);padding-bottom:1px;min-height:calc(var(--bullet-size) + var(--bullet-margin))}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);position:absolute;top:0;inset-inline-start:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);font-weight:600;text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);border-radius:99rem;box-shadow:inset 0 0 0 1px var(--sl-color-gray-5)}.sl-steps>li:after{--guide-width: 1px;content:"";position:absolute;top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2);width:var(--guide-width);background-color:var(--sl-color-hairline-light)}}@layer starlight.content{.sl-steps>li>:first-child{--lh: calc(1em * var(--sl-line-height));--shift-y: calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh: calc(1em * var(--sl-line-height-headings))}@supports (--prop: 1lh){.sl-steps>li>:first-child{--lh: 1lh}}}
+@layer starlight.components{.sl-link-button:where(.astro-xwgiixxa){align-items:center;border:1px solid transparent;border-radius:999rem;display:inline-flex;font-size:var(--sl-text-sm);gap:.5em;line-height:1.1875;outline-offset:.25rem;padding:.4375rem 1.125rem;text-decoration:none}.sl-link-button:where(.astro-xwgiixxa).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-xwgiixxa).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-xwgiixxa) svg{flex-shrink:0}@media(min-width:50rem){.sl-link-button:where(.astro-xwgiixxa){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa):not(:where(p *)){margin-block:1rem}}
+  Skip to content        herdr   Docs Plugins Blog       Stable Preview      Search  CtrlK       Cancel         
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+     class c extends HTMLElement{connectedCallback(){const n=this.dataset.channel;if(!n)return;const t=()=>{const e=this.querySelector(`.pagefind-ui__filter-checkbox[name="channel"][value="${n}"]`);return e?(e.checked||e.click(),this.observer?.disconnect(),!0):!1};t()||(this.observer=new MutationObserver(t),this.observer.observe(this,{childList:!0,subtree:!0}))}disconnectedCallback(){this.observer?.disconnect()}}customElements.define("channel-search",c);     GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+ const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStoragematchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);  Select language   English日本語简体中文    class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);           class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);      
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	       Start here         Overview     Install     Quick start     Concepts     Keyboard           Using Herdr         How to work with Herdr     Agents     Session state and restore     Persistence and remote access           Configure         Configuration     Config reference     Plugins     Marketplace           Reference         CLI reference     Socket API     Integrations     Agent skill file     Windows beta           Help         Troubleshooting     Preview docs           
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	      GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+   Select language   English日本語简体中文             const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);    On this page   Overview     Config file     Reload config     Terminal defaults     Worktrees     Remote attach     Keybindings     Indexed jumps     Custom command keybindings     Theme     UI and sidebar     Sidebar row layouts        Notifications     Sound     Advanced configuration     Kitty graphics     Agent session restore     IME cursor tracking     Prefix input source switching     Environment variables     Logs     On this page   Overview     Config file     Reload config     Terminal defaults     Worktrees     Remote attach     Keybindings     Indexed jumps     Custom command keybindings     Theme     UI and sidebar     Sidebar row layouts        Notifications     Sound     Advanced configuration     Kitty graphics     Agent session restore     IME cursor tracking     Prefix input source switching     Environment variables     Logs                Configuration        Herdr works without a config file. Add one when you want custom keys, themes, sidebar layouts, notifications, or advanced behavior.
+Looking for any setting or keybinding? Search the Config reference for every key, type, default, and allowed value. This page focuses on setup, common recipes, and configuration structures that need more explanation than a reference row.
+Config fileSection titled “Config file”
+Herdr reads config from:
+Linux and macOS: ~/.config/herdr/config.tomlWindows:          %APPDATA%\herdr\config.toml
+Run herdr --help to see the resolved config path for your system.
+Print the full default config:
+Terminal windowherdr --default-config
+Save it as your config if you want a complete starting point:
+Terminal windowherdr --default-config > ~/.config/herdr/config.toml ~/.config/herdr/config.toml">
+If a config value is invalid, Herdr falls back to a safe default and shows a startup warning.
+Herdr shows first-run setup when onboarding is missing or true. Continuing from onboarding writes onboarding = false and opens settings on the integrations tab. Set it when you want to skip that flow after setup.
+onboarding = false
+Reload configSection titled “Reload config”
+Reload a running server after editing config.toml:
+Terminal windowherdr server reload-config
+You can also open the global menu in Herdr and choose reload config.
+Reload applies most UI settings without restarting panes. Startup-only settings still need a restart.
+Terminal defaultsSection titled “Terminal defaults”
+Set the executable Herdr uses for newly created interactive panes:
+[terminal]default_shell = "nu"
+When unset or empty, Herdr uses $SHELL, then /bin/sh on Unix and PowerShell on Windows. This is an executable name or path, not a shell command line. Existing panes keep their current shell until they are recreated. Custom command keybinding strings run through /bin/sh -c for pane commands and /bin/sh -lc for detached commands on Unix; on Windows they run through cmd.exe /d /c.
+Set how Herdr starts newly created interactive pane shells:
+[terminal]shell_mode = "auto"
+shell_mode = "auto" starts login shells on macOS so login-only PATH setup such as /usr/libexec/path_helper and Homebrew shell initialization runs in new panes. On other platforms, it keeps the existing non-login shell behavior. Use "login" to force login-shell startup, or "non_login" to opt out. Command panes, detached custom command keybindings, and explicit argv launches keep their existing command execution paths.
+Set the working directory policy for new panes, tabs, and workspaces:
+[terminal]new_cwd = "follow"
+new_cwd = "follow" keeps the default behavior and inherits the source pane or workspace. When there is no source workspace, Herdr starts in $HOME. Use "home" to always start in $HOME, "current" to use Herdr’s process directory, or a fixed path such as "~/Projects". Explicit --cwd values from the CLI or socket API still take precedence.
+WorktreesSection titled “Worktrees”
+Set the root directory Herdr uses for Git worktree checkouts created from the sidebar:
+[worktrees]directory = "~/.herdr/worktrees"
+Herdr creates checkouts under &#x3C;directory>/&#x3C;repo>/&#x3C;branch-slug>. For sibling-style checkouts, set this to a directory such as ~/Projects/herdr-worktrees. Relative values are resolved to an absolute path when the app applies the config.
+Worktree actions are available from Git workspace rows. New worktree creates a checkout, checks out an existing local branch when the entered branch already exists, otherwise creates the branch, opens it as a new Herdr workspace, and groups it under the source workspace. Open worktree... lists existing Git worktree checkouts for that repo; choosing an already-open checkout focuses it, and choosing a closed checkout opens it in the same group.
+Grouped worktrees still behave like normal Herdr workspaces: they can be focused, renamed, closed, and contain their own tabs and panes. The parent row is the original workspace. Closing the parent row closes the whole Herdr group, but it does not delete checkout folders or branches.
+Deleting a worktree checkout is explicit. Use Delete worktree checkout... on a grouped child workspace to run git worktree remove. Herdr first asks Git to remove safely. If Git refuses because the checkout has modified or untracked files, Herdr asks again before running the forced remove. Branches are not deleted.
+Remote attachSection titled “Remote attach”
+Remote attach manages its SSH connection with a temporary keepalive and connection-reuse fallback by default.
+[remote]manage_ssh_config = true
+When enabled, herdr --remote writes a private temporary SSH config that includes your ~/.ssh/config and /etc/ssh/ssh_config first, then adds fallback ServerAliveInterval and ServerAliveCountMax values. Your own keepalive settings win. Herdr also uses a private per-attach OpenSSH control socket to reuse the first authenticated connection. Set manage_ssh_config = false to run remote attach through plain ssh without Herdr’s generated config or control socket.
+KeybindingsSection titled “Keybindings”
+For a guided introduction to the prefix and a vetted prefix-free setup, see Keyboard.
+Herdr has a prefix mode similar to tmux. The default prefix is ctrl+b. Keybinding strings are explicit: prefix+n means press the configured prefix and then n; ctrl+alt+n is a direct terminal-mode shortcut.
+A small keybinding override looks like this:
+[keys]prefix = "ctrl+b"goto = "prefix+g"new_tab = "prefix+c"next_tab = "prefix+n"previous_tab = "prefix+p"focus_pane_left = "prefix+h"navigate_workspace_down = "j"navigate_pane_down = "ctrl+j"split_horizontal = "prefix+minus"
+The default keymap is prefix-first so Herdr does not steal input from shells, editors, tmux, or terminal apps. Search keys. in the Config reference to see every action and default binding. The in-app help panel at prefix+? shows the active bindings.
+A binding may also be an array when one action needs multiple shortcuts:
+[keys]next_tab = ["prefix+n", "ctrl+alt+]"]
+Optional actions are unset by default. Bind them with prefix+ for prefix-mode behavior, or use an explicit modified chord when you intentionally want a direct shortcut.
+Key strings accept plain keys, modifier combinations such as ctrl+a, shift+n, alt+1, cmd+k, and special keys such as enter, tab, esc, left, right, up, and down. Named punctuation such as minus, comma, ampersand, plus, and backtick is also accepted. Plain direct printable keys such as n are unsafe because they intercept typing; use prefix+n unless you intentionally want a direct binding. The navigate_workspace_* and navigate_pane_* fields are navigate-mode-only and may use plain keys such as j or k; they must not use prefix+, esc, enter, tab, shift+tab, left, right, or unmodified 1 through 9. Left and right arrows are permanent aliases for pane-left and pane-right navigation. These navigate-mode shortcuts are independent from general action bindings such as focus_pane_down = "prefix+j"; when both use the same key, the navigate-mode shortcut wins while navigate mode is open. Alt, Cmd/Super, and punctuation with modifiers depend on your terminal and tmux settings.
+If you have old custom keybindings and want the new defaults, run herdr config reset-keys. Herdr backs up config.toml, removes [keys] and [[keys.command]], and uses built-in v2 defaults after restart or herdr server reload-config.
+Indexed jumpsSection titled “Indexed jumps”
+Indexed keybindings use 1..9 in normal keybinding fields:
+[keys]switch_tab = "prefix+1..9"switch_workspace = "prefix+shift+1..9"focus_agent = "prefix+alt+1..9"
+The legacy [keys.indexed] table is still parsed for compatibility, but new configs should prefer the explicit action fields.
+Custom command keybindingsSection titled “Custom command keybindings”
+Custom commands use the same keybinding syntax.
+[[keys.command]]key = "prefix+alt+g"type = "popup"command = "lazygit"description = "run lazygit"width = "80%"height = "80%"
+type = "popup" opens a session-modal popup without changing the tab layout.
+The popup receives all terminal input, including Escape, until its command
+exits. width and height are optional; omit them for the default half-size
+popup, use numbers for terminal cells, or use strings like "80%" for a
+percentage of the terminal area. Dimensions include the popup border, and
+values smaller than the popup minimum are clamped. Popup commands do not receive
+HERDR_PANE_ID; use HERDR_ACTIVE_PANE_ID for the underlying tiled pane.
+On Unix and macOS, a popup command can also provide an ad-hoc terminal without
+adding a split or tab:
+[[keys.command]]key = "prefix+t"type = "popup"command = "exec \"${SHELL:-sh}\""description = "open scratch terminal"width = "80%"height = "80%"
+On Windows, use a shell command such as command = "powershell.exe -NoLogo"
+instead. Exit the shell to close the popup and restore the tiled terminal view.
+type = "pane" opens a temporary zoomed pane and closes it when the command exits.
+type = "shell" runs detached in the background.
+type = "plugin_action" invokes an installed plugin action id. Use the
+qualified id when action ids are not globally unique:
+[[keys.command]]key = "prefix+l"type = "plugin_action"command = "example.layout.apply"description = "apply layout"
+An optional description can be provided. When specified, this description is displayed in the keybind help panel (opened with prefix+?) in place of the default 'custom command' label.
+Custom commands receive HERDR_SOCKET_PATH, HERDR_BIN_PATH, HERDR_ACTIVE_WORKSPACE_ID, HERDR_ACTIVE_TAB_ID, HERDR_ACTIVE_PANE_ID, and HERDR_ACTIVE_PANE_CWD when those values are available. Shell commands run from the focused pane’s working directory when Herdr can detect it.
+On Windows, custom command strings use cmd.exe /d /c, so environment variables use %HERDR_BIN_PATH% syntax. To run PowerShell syntax, invoke it explicitly, for example powershell.exe -NoProfile -Command "...".
+ThemeSection titled “Theme”
+Choose a built-in theme:
+[theme]name = "catppuccin"
+Search theme.name in the Config reference for every built-in theme. Use terminal when you want Herdr UI colors to follow your host terminal’s ANSI palette.
+To let Herdr switch its own UI theme when the host terminal reports a light/dark appearance change, enable theme auto-switching:
+[theme]name = "catppuccin"auto_switch = truelight_name = "catppuccin-latte"dark_name = "catppuccin"
+auto_switch defaults to false, so existing theme configs keep manual behavior. If light_name or dark_name is omitted, Herdr uses the matching built-in sibling for the configured name when one exists, such as tokyo-night/tokyo-night-day or gruvbox/gruvbox-light. Manual theme selection in Settings disables auto_switch.
+You can override individual colors:
+[theme.custom]panel_bg = "reset"accent = "#a6e3a1"green = "#a6e3a1"blue = "#89b4fa"red = "#f38ba8"yellow = "#f9e2af"
+Color values accept hex, named colors, rgb(r,g,b), or reset aliases like reset, default, none, and transparent.
+UI and sidebarSection titled “UI and sidebar”
+The sidebar is the main Herdr dashboard. Search ui. in the Config reference for sizing, collapsed mode, Agent panel ordering, mouse behavior, pane borders, and other presentation settings.
+Sidebar row layoutsSection titled “Sidebar row layouts”
+The expanded desktop sidebar renders each inner array in rows as one line. These are the complete default layouts:
+[ui.sidebar.agents]row_gap = 0rows = [  ["state_icon", "workspace", "tab"],  ["agent"],]
+[ui.sidebar.spaces]row_gap = 0rows = [  ["state_icon", "workspace"],  ["branch", "git_status"],]
+Agent rows accept these built-in tokens:
+
+state_icon — colored icon for the agent’s semantic state.
+state_text — idle, working, blocked, done, or unknown, including a reported display label when present.
+workspace — workspace name.
+tab — tab name when available.
+pane — pane name when available.
+agent — detected or reported agent display name.
+terminal_title — latest OSC 0/2 terminal title after safety normalization.
+terminal_title_stripped — the terminal title with one recognized leading activity or spinner glyph and its following whitespace removed.
+$name — custom pane metadata named name.
+
+Space rows accept these built-in tokens:
+
+state_icon — colored icon for the space’s rolled-up agent state.
+state_text — text for the rolled-up agent state.
+workspace — workspace name.
+branch — Git branch when available.
+git_status — Git ahead and behind counts when nonzero.
+$name — custom workspace metadata named name.
+
+Tokens render in their configured order. Herdr normally separates adjacent values with · and uses a single space after state_icon. Missing values and their separators disappear; a row disappears when none of its tokens have a value. Each layout may contain at most 16 rows, with at most 16 tokens in each row.
+row_gap controls the blank terminal rows between entries, independently for the Agent and Space panels. It defaults to 0, which packs entries together; set it to 1 to restore the previous spacing. It does not add spacing between the content lines declared in rows. Consecutive indented worktree children remain packed as one Space group.
+Override the complete Agent layout for a known agent under rows_by_agent:
+[ui.sidebar.agents]rows = [  ["state_icon", "agent", "state_text"],  ["workspace", "tab"],]
+[ui.sidebar.agents.rows_by_agent]claude = [  ["state_icon", "agent", "state_text"],  ["terminal_title_stripped"],  ["workspace", "tab"],]
+An override replaces rows; it does not extend it. Override keys are case-sensitive canonical agent IDs such as claude, codex, and pi. Detection aliases such as claude-code are not accepted. Agents without an override, including custom reported agents, use rows.
+Custom $name tokens are dynamic values, not literal text. Add the token to a layout, then report its value from a script or plugin:
+[ui.sidebar.agents]rows = [  ["state_icon", "agent", "$model"],  ["$summary"],  ["workspace", "tab"],]
+Terminal windowherdr pane report-metadata &#x3C;pane_id> \  --source my-agent-hook \  --token model=opus \  --token summary="reviewing authentication" \  --source my-agent-hook \  --token model=opus \  --token summary=&#x22;reviewing authentication&#x22;">
+Use herdr workspace report-metadata in the same way for custom Space tokens. Unreported custom tokens simply disappear. Metadata reporters provide values only; they cannot choose rows or styling. See CLI reference: report metadata for clearing, sequencing, and expiring values.
+Sidebar row settings affect only the expanded desktop sidebar. Collapsed and mobile views keep their compact layouts.
+NotificationsSection titled “Notifications”
+Herdr can notify you when a background agent finishes or needs input:
+[ui.toast]delivery = "herdr"delay_seconds = 1
+[ui.toast.herdr]position = "bottom-right"
+Choose herdr for an in-app toast, terminal for an outer-terminal notification that works well over SSH, system for the local OS notification service, or off to disable popups. Herdr suppresses popups for the active tab. Search ui.toast in the Config reference for positions, delay behavior, and clipboard feedback settings.
+SoundSection titled “Sound”
+Sound notifications play through the local Herdr client. Custom sounds must be mp3 files; relative paths are resolved from the config file’s directory.
+[ui.sound]path = "sounds/notification.mp3"done_path = "sounds/done.mp3"request_path = "sounds/request.mp3"
+path sets one sound for all sound notifications. done_path and request_path override only the finished and needs-input sounds.
+Per-agent sound overrides accept default, on, or off. Use detected agent labels such as claude, codex, devin, or droid as keys. Droid is muted by default.
+[ui.sound.agents]droid = "off"claude = "on"
+Advanced configurationSection titled “Advanced configuration”
+Search the Config reference for scrollback limits, nested launches, and other advanced or experimental settings. See Session state and restore before enabling pane screen history; that guide explains the security trade-off of saving pane contents.
+Kitty graphicsSection titled “Kitty graphics”
+Kitty graphics rendering for attached local clients is experimental and disabled by default:
+[experimental]kitty_graphics = true
+Enable it only when testing terminal image behavior.
+Agent session restoreSection titled “Agent session restore”
+Herdr resumes supported Agent conversations after a server restart by default:
+[session]resume_agents_on_restore = true
+Only panes with a valid native session reference from an official integration can resume; other panes restore as normal shells. See Session state and restore for supported Agents and persistence behavior.
+IME cursor trackingSection titled “IME cursor tracking”
+On macOS, AI Agent TUIs that hide the hardware cursor can prevent native input-method candidate windows from following the focused pane. Reveal a cursor anchor for those panes with:
+[experimental]reveal_hidden_cursor_for_cjk_ime = truecjk_ime_agents = ["claude", "pi", "codex"]
+Restricting cjk_ime_agents avoids showing an extra hardware cursor in unrelated applications. Search these keys in the Config reference for accepted Agent names and cursor shapes.
+Prefix input source switchingSection titled “Prefix input source switching”
+On macOS, Herdr can temporarily switch to the system ASCII-capable input source while prefix commands and prefix-launched modes are active:
+[experimental]switch_ascii_input_source_in_prefix = true
+Herdr restores the previous input source when returning to terminal input or entering a text field. This setting has no effect on other platforms.
+Environment variablesSection titled “Environment variables”
+
+VariablePurposeHERDR_CONFIG_PATHOverride the config file path.HERDR_SESSIONSelect a named session for CLI commands.HERDR_SOCKET_PATHLow-level socket path override.HERDR_LOGSet log filtering, for example HERDR_LOG=herdr=debug.HERDR_DISABLE_SOUNDDisable sound playback even when [ui.sound] enabled = true.
+LogsSection titled “Logs”
+Logs are useful when diagnosing startup warnings, integration state, or socket API behavior.
+Common log files:
+~/.config/herdr/herdr.log~/.config/herdr/herdr-client.log~/.config/herdr/herdr-server.log
+Logs rotate automatically. Include the current log and rotated siblings when reporting issues.    Edit page Last updated: Jul 15, 2026      Previous  Persistence and remote access      Next  Config reference                   

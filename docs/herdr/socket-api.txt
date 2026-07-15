@@ -1,0 +1,300 @@
+ Socket API | herdr(function () {
+  try {
+    var KEY = 'herdr-docs-lang';
+    var path = location.pathname;
+    var m = path.match(/^\/(ja|zh-cn)(?=\/|$)/);
+    var current = m ? m[1] : path.indexOf('/docs') === 0 ? 'en' : null;
+    if (!current) return;
+    if (!localStorage.getItem(KEY) && current === 'en') {
+      var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      var target = null;
+      for (var i = 0; i < langs.length && !target; i++) {
+        var l = String(langs[i]).toLowerCase();
+        if (l === 'ja' || l.indexOf('ja-') === 0) target = 'ja';
+        else if (l === 'zh' || l.indexOf('zh-') === 0) target = 'zh-cn';
+        else if (l.indexOf('en') === 0) break;
+      }
+      if (target) {
+        localStorage.setItem(KEY, target);
+        location.replace('/' + target + path + location.search + location.hash);
+        return;
+      }
+    }
+    localStorage.setItem(KEY, current);
+  } catch (e) {}
+})();
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+
+@layer starlight.components{:root{--sl-badge-default-border: var(--sl-color-accent);--sl-badge-default-bg: var(--sl-color-accent-low);--sl-badge-default-text: #fff;--sl-badge-note-border: var(--sl-color-blue);--sl-badge-note-bg: var(--sl-color-blue-low);--sl-badge-note-text: #fff;--sl-badge-danger-border: var(--sl-color-red);--sl-badge-danger-bg: var(--sl-color-red-low);--sl-badge-danger-text: #fff;--sl-badge-success-border: var(--sl-color-green);--sl-badge-success-bg: var(--sl-color-green-low);--sl-badge-success-text: #fff;--sl-badge-caution-border: var(--sl-color-orange);--sl-badge-caution-bg: var(--sl-color-orange-low);--sl-badge-caution-text: #fff;--sl-badge-tip-border: var(--sl-color-purple);--sl-badge-tip-bg: var(--sl-color-purple-low);--sl-badge-tip-text: #fff}[data-theme=light]:root{--sl-badge-default-bg: var(--sl-color-accent-high);--sl-badge-note-bg: var(--sl-color-blue-high);--sl-badge-danger-bg: var(--sl-color-red-high);--sl-badge-success-bg: var(--sl-color-green-high);--sl-badge-caution-bg: var(--sl-color-orange-high);--sl-badge-tip-bg: var(--sl-color-purple-high)}.sl-badge:where(.astro-avdet4wd){display:inline-block;border:1px solid var(--sl-color-border-badge);border-radius:.25rem;font-family:var(--sl-font-system-mono);line-height:normal;color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere}.sidebar-content .sl-badge:where(.astro-avdet4wd){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-avdet4wd){--sl-color-bg-badge: transparent;--sl-color-border-badge: currentColor;color:inherit}.default:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-default-bg);--sl-color-border-badge: var(--sl-badge-default-border);--sl-color-text-badge: var(--sl-badge-default-text)}.note:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-note-bg);--sl-color-border-badge: var(--sl-badge-note-border);--sl-color-text-badge: var(--sl-badge-note-text)}.danger:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-danger-bg);--sl-color-border-badge: var(--sl-badge-danger-border);--sl-color-text-badge: var(--sl-badge-danger-text)}.success:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-success-bg);--sl-color-border-badge: var(--sl-badge-success-border);--sl-color-text-badge: var(--sl-badge-success-text)}.tip:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-tip-bg);--sl-color-border-badge: var(--sl-badge-tip-border);--sl-color-text-badge: var(--sl-badge-tip-text)}.caution:where(.astro-avdet4wd){--sl-color-bg-badge: var(--sl-badge-caution-bg);--sl-color-border-badge: var(--sl-badge-caution-border);--sl-color-text-badge: var(--sl-badge-caution-text)}.small:where(.astro-avdet4wd){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-avdet4wd){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-avdet4wd){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-avdet4wd){vertical-align:middle}}
+@layer starlight.components{.card:where(.astro-v5tidmuc){--sl-card-border: var(--sl-color-purple);--sl-card-bg: var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);padding:clamp(1rem,calc(.125rem + 3vw),2.5rem);flex-direction:column;gap:clamp(.5rem,calc(.125rem + 1vw),1rem)}.card:where(.astro-v5tidmuc):nth-child(4n+1){--sl-card-border: var(--sl-color-orange);--sl-card-bg: var(--sl-color-orange-low)}.card:where(.astro-v5tidmuc):nth-child(4n+3){--sl-card-border: var(--sl-color-green);--sl-card-bg: var(--sl-color-green-low)}.card:where(.astro-v5tidmuc):nth-child(4n+4){--sl-card-border: var(--sl-color-red);--sl-card-bg: var(--sl-color-red-low)}.card:where(.astro-v5tidmuc):nth-child(4n+5){--sl-card-border: var(--sl-color-blue);--sl-card-bg: var(--sl-color-blue-low)}.title:where(.astro-v5tidmuc){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);gap:1rem;align-items:center}.card:where(.astro-v5tidmuc) .icon:where(.astro-v5tidmuc){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);padding:.2em;border-radius:.25rem;flex-shrink:0}.card:where(.astro-v5tidmuc) .body:where(.astro-v5tidmuc){margin:0;font-size:clamp(var(--sl-text-sm),calc(.5rem + 1vw),var(--sl-text-body))}}
+@layer starlight.components{.card-grid:where(.astro-zntqmydn){display:grid;grid-template-columns:100%;gap:1rem}.card-grid:where(.astro-zntqmydn)>*{margin-top:0!important}@media(min-width:50rem){.card-grid:where(.astro-zntqmydn){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-zntqmydn){--stagger-height: 5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-zntqmydn)>*:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{svg:where(.astro-c6vsoqas){color:var(--sl-icon-color);font-size:var(--sl-icon-size, 1em);width:1em;height:1em}}
+@layer starlight.components{.sl-steps{--bullet-size: calc(var(--sl-line-height) * 1rem);--bullet-margin: .375rem;list-style:none;counter-reset:steps-counter var(--sl-steps-start, 0);padding-inline-start:0}.sl-steps>li{counter-increment:steps-counter;position:relative;padding-inline-start:calc(var(--bullet-size) + 1rem);padding-bottom:1px;min-height:calc(var(--bullet-size) + var(--bullet-margin))}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);position:absolute;top:0;inset-inline-start:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);font-weight:600;text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);border-radius:99rem;box-shadow:inset 0 0 0 1px var(--sl-color-gray-5)}.sl-steps>li:after{--guide-width: 1px;content:"";position:absolute;top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2);width:var(--guide-width);background-color:var(--sl-color-hairline-light)}}@layer starlight.content{.sl-steps>li>:first-child{--lh: calc(1em * var(--sl-line-height));--shift-y: calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh: calc(1em * var(--sl-line-height-headings))}@supports (--prop: 1lh){.sl-steps>li>:first-child{--lh: 1lh}}}
+@layer starlight.components{.sl-link-button:where(.astro-xwgiixxa){align-items:center;border:1px solid transparent;border-radius:999rem;display:inline-flex;font-size:var(--sl-text-sm);gap:.5em;line-height:1.1875;outline-offset:.25rem;padding:.4375rem 1.125rem;text-decoration:none}.sl-link-button:where(.astro-xwgiixxa).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-xwgiixxa).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-xwgiixxa).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-xwgiixxa) svg{flex-shrink:0}@media(min-width:50rem){.sl-link-button:where(.astro-xwgiixxa){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-xwgiixxa):not(:where(p *)){margin-block:1rem}}
+  Skip to content        herdr   Docs Plugins Blog       Stable Preview      Search  CtrlK       Cancel         
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+     class c extends HTMLElement{connectedCallback(){const n=this.dataset.channel;if(!n)return;const t=()=>{const e=this.querySelector(`.pagefind-ui__filter-checkbox[name="channel"][value="${n}"]`);return e?(e.checked||e.click(),this.observer?.disconnect(),!0):!1};t()||(this.observer=new MutationObserver(t),this.observer.observe(this,{childList:!0,subtree:!0}))}disconnectedCallback(){this.observer?.disconnect()}}customElements.define("channel-search",c);     GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+ const r="starlight-theme",o=e=>e==="auto"||e==="dark"||e==="light"?e:"auto",c=()=>o(typeof localStoragematchMedia("(prefers-color-scheme: light)").matches?"light":"dark";function t(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e==="auto"?l():e,n(e)}matchMedia("(prefers-color-scheme: light)").addEventListener("change",()=>{c()==="auto"&&t("auto")});class s extends HTMLElement{constructor(){super(),t(c()),this.querySelector("select")?.addEventListener("change",a=>{a.currentTarget instanceof HTMLSelectElement&&t(o(a.currentTarget.value))})}}customElements.define("starlight-theme-select",s);  Select language   English日本語简体中文    class s extends HTMLElement{constructor(){super();const e=this.querySelector("select");e&&(e.addEventListener("change",t=>{t.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=t.currentTarget.value)}),window.addEventListener("pageshow",t=>{if(!t.persisted)return;const n=e.querySelector("option[selected]")?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}}customElements.define("starlight-lang-select",s);           class s extends HTMLElement{constructor(){super(),this.btn=this.querySelector("button"),this.btn.addEventListener("click",()=>this.toggleExpanded());const t=this.closest("nav");t&&t.addEventListener("keyup",e=>this.closeOnEscape(e))}setExpanded(t){this.setAttribute("aria-expanded",String(t)),document.body.toggleAttribute("data-mobile-menu-expanded",t)}toggleExpanded(){this.setExpanded(this.getAttribute("aria-expanded")!=="true")}closeOnEscape(t){t.code==="Escape"&&(this.setExpanded(!1),this.btn.focus())}}customElements.define("starlight-menu-button",s);      
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	       Start here         Overview     Install     Quick start     Concepts     Keyboard           Using Herdr         How to work with Herdr     Agents     Session state and restore     Persistence and remote access           Configure         Configuration     Config reference     Plugins     Marketplace           Reference         CLI reference     Socket API     Integrations     Agent skill file     Windows beta           Help         Troubleshooting     Preview docs           
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	      GitHub     Select theme   DarkLightAuto       
+	StarlightThemeProvider.updatePickers();
+   Select language   English日本語简体中文             const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);    On this page   Overview     Choose an integration layer     Schema     What you can control     CLI examples     Raw methods     Experimental pane graphics        Plugin APIs     Socket transport     Socket paths     Agent state reporting     Event subscriptions     Reading panes     Waiting for state     Response shapes     Protocol stability     On this page   Overview     Choose an integration layer     Schema     What you can control     CLI examples     Raw methods     Experimental pane graphics        Plugin APIs     Socket transport     Socket paths     Agent state reporting     Event subscriptions     Reading panes     Waiting for state     Response shapes     Protocol stability                Socket API        Herdr exposes a local socket API for scripts and agents that need to inspect or control a running session.
+Most automation should start with the CLI wrappers. Use the raw socket API only when you need direct request/response control or long-lived event subscriptions.
+Choose an integration layerSection titled “Choose an integration layer”
+
+LayerUse it forAgent skillTeaching a coding agent how to use Herdr from inside a pane.CLI wrappersShell scripts, simple orchestration, and human debugging.Raw socket APICustom tools, protocol clients, and event subscribers.
+The layers share the same control surface.
+SchemaSection titled “Schema”
+The installed CLI can print the socket protocol schema bundled with that Herdr
+binary:
+Terminal windowherdr api schemaherdr api schema --jsonherdr api schema --output herdr-api.schema.json
+Plain herdr api schema prints a short summary. --json prints the full JSON
+Schema document for tools, and --output PATH writes that document to a file.
+The schema covers raw requests, success responses, error responses, emitted
+events, and subscription events.
+What you can controlSection titled “What you can control”
+The socket API can:
+
+create, list, focus, rename, and close workspaces
+create, list, focus, rename, and close tabs
+list, inspect, split, swap, focus, resize, rename, read, close, and send input to panes
+list, inspect, read, send to, rename, focus, start, and attach agents through CLI helpers
+report custom agent state from hooks and plugins
+subscribe to events and wait for output or state changes
+install and uninstall built-in integrations
+stop the server and reload config
+
+CLI examplesSection titled “CLI examples”
+Create a workspace:
+Terminal windowherdr workspace create --cwd ~/project --label api
+Create a tab:
+Terminal windowherdr tab create --label logs
+Split a pane and run a command:
+Terminal windowherdr pane split w1:p1 --direction rightherdr pane run w1:p2 "npm test"
+Inspect and rearrange panes:
+Terminal windowherdr pane layout --currentherdr pane neighbor --direction right --currentherdr pane resize --direction right --amount 0.1 --currentherdr pane swap --direction right --currentherdr pane zoom --on --currentherdr pane split w1:p1 --direction right --ratio 0.333
+Wait for an agent:
+Terminal windowherdr wait agent-status w1:p1 --status done
+Read pane output:
+Terminal windowherdr pane read w1:p2 --source recent --lines 50
+Raw methodsSection titled “Raw methods”
+Raw socket method names use dot notation:
+
+AreaMethodsServerping, server.stop, server.reload_config, server.agent_manifests, server.reload_agent_manifestsNotificationnotification.showClientclient.window_title.set, client.window_title.clearSessionsession.snapshotWorkspaceworkspace.create, workspace.list, workspace.get, workspace.focus, workspace.rename, workspace.move, workspace.report_metadata, workspace.closeWorktreeworktree.list, worktree.create, worktree.open, worktree.removeTabtab.create, tab.list, tab.get, tab.focus, tab.rename, tab.move, tab.closePanepane.split, pane.swap, pane.move, pane.zoom, pane.layout, pane.process_info, pane.neighbor, pane.edges, pane.focus_direction, pane.resize, pane.list, pane.current, pane.get, pane.rename, pane.send_text, pane.send_keys, pane.send_input, pane.read, pane.graphics.info, pane.graphics.set, pane.graphics.clear, pane.graphics.stream, pane.report_agent, pane.report_agent_session, pane.report_metadata, pane.clear_agent_authority, pane.release_agent, pane.close, pane.wait_for_outputPopuppopup.closeLayoutlayout.export, layout.apply, layout.set_split_ratioAgentagent.list, agent.get, agent.read, agent.explain, agent.send, agent.rename, agent.focus, agent.startEventsevents.subscribe, events.waitIntegrationsintegration.install, integration.uninstallPluginsplugin.link, plugin.list, plugin.unlink, plugin.enable, plugin.disable, plugin.action.list, plugin.action.invoke, plugin.log.list, plugin.pane.open, plugin.pane.focus, plugin.pane.close
+Some CLI commands are conveniences around these methods. For example, herdr agent wait resolves an agent target and then subscribes to pane agent state events.
+session.snapshot returns a one-time bootstrap snapshot for clients that keep
+their own local runtime cache. The response includes version/protocol metadata,
+focused workspace/tab/pane ids, workspace records, tab records, pane records,
+tab layout snapshots, and agent records. It is not a subscription; after reading
+it, subscribe to resource events and update the local cache from those events.
+Call session.snapshot again after reconnecting or when the local cache may be
+stale. Attached worktree provenance is included on workspace records. Full repo
+worktree discovery remains worktree.list.
+From the CLI, herdr api snapshot prints the live session.snapshot response
+as JSON for clients and agents that want a simple bootstrap command.
+Pane control methods use public pane ids such as w1:p1. Methods whose
+schema makes pane_id optional use the server’s active focused pane when it is
+omitted. pane.move always requires the source pane_id.
+pane.send_keys and pane.send_input.keys accept Herdr key-combo strings:
+plain printable keys, special keys like enter and esc, modifier chords
+like ctrl+h, control+j, alt+x, and shift+tab, function keys like
+f1, and named punctuation like minus and plus. They do not accept
+prefix+ binding strings.
+{"id":"req_current","method":"pane.current","params":{"caller_pane_id":"w1:p1"}}{"id":"req_layout","method":"pane.layout","params":{"pane_id":"w1:p1"}}{"id":"req_neighbor","method":"pane.neighbor","params":{"pane_id":"w1:p1","direction":"right"}}{"id":"req_edges","method":"pane.edges","params":{"pane_id":"w1:p1"}}{"id":"req_focus","method":"pane.focus_direction","params":{"direction":"right"}}{"id":"req_resize","method":"pane.resize","params":{"pane_id":"w1:p1","direction":"right","amount":0.1}}{"id":"req_zoom","method":"pane.zoom","params":{"pane_id":"w1:p1","mode":"toggle"}}{"id":"req_split","method":"pane.split","params":{"direction":"right","ratio":0.333,"env":{"HERDR_ROLE":"tests"}}}{"id":"req_process","method":"pane.process_info","params":{"pane_id":"w1:p1"}}
+pane.current returns a single PaneInfo. When caller_pane_id is present,
+Herdr returns that pane. When it is omitted, Herdr returns the active focused
+pane.
+PaneInfo includes scroll when terminal scroll metrics are available:
+{  "offset_from_bottom": 12,  "max_offset_from_bottom": 240,  "viewport_rows": 30}
+Clients can treat offset_from_bottom == 0 as at-bottom state.
+Experimental pane graphicsSection titled “Experimental pane graphics”
+Pane graphics let a plugin place image data over a pane. They are available
+only when [experimental].kitty_graphics = true; otherwise every pane graphics
+method returns feature_disabled. Calling pane.graphics.info returns the
+attached client’s cell width and height in pixels without creating a graphics
+layer. pane.graphics.set accepts png, rgb, or rgba data in data_base64,
+and pane.graphics.clear removes the layer.
+{"id":"graphics_info","method":"pane.graphics.info","params":{"pane_id":"w1:p1"}}{"id":"graphics_set","method":"pane.graphics.set","params":{"pane_id":"w1:p1","format":"png","image_width":800,"image_height":600,"data_base64":"...","placement":{"viewport_col":0,"viewport_row":0,"grid_cols":80,"grid_rows":30}}}{"id":"graphics_clear","method":"pane.graphics.clear","params":{"pane_id":"w1:p1"}}
+For repeated frames, open a dedicated socket with pane.graphics.stream. After
+Herdr replies with ok, send one JSON header and then exactly data_length raw
+bytes per frame. A stream owns that pane’s graphics layer until the socket
+closes; concurrent set, clear, or stream requests return stream_conflict.
+{"id":"graphics_stream","method":"pane.graphics.stream","params":{"pane_id":"w1:p1"}}{"format":"png","image_width":800,"image_height":600,"data_length":12345,"placement":{"viewport_col":0,"viewport_row":0,"grid_cols":80,"grid_rows":30}}
+pane.layout returns the tab layout snapshot with workspace_id, tab_id,
+zoomed, outer area, focused_pane_id, pane rects, and split rects/ratios.
+pane.neighbor and pane.edges include that same layout snapshot so clients
+can make the next decision without private layout state.
+pane.process_info returns the pane’s shell pid, foreground process group id
+when available, and foreground processes with pid, name, argv/cmdline, and cwd
+when the platform exposes them.
+layout.export returns a portable tab layout tree. Omit tab_id and pane_id
+to export the active tab, pass tab_id to export that tab, or pass pane_id to
+export the tab containing that pane.
+{"id":"req_export","method":"layout.export","params":{"tab_id":"w1:t1"}}
+The response includes workspace_id, tab_id, zoomed, focused_pane_id, and
+root. root is a BSP tree of pane and split nodes. Pane nodes can include
+pane_id, label, cwd, and argv command. Split nodes use
+direction (right or down), ratio, first, and second.
+layout.apply creates a fresh tab from a declarative tree. If tab_id is
+provided, Herdr creates the replacement tab first and then closes the old tab.
+This restores structure, labels, cwd, env, and optional argv commands; it does
+not preserve live PTYs, scrollback, or running processes.
+{  "id": "req_apply",  "method": "layout.apply",  "params": {    "workspace_id": "wabc",    "tab_label": "dev",    "focus": true,    "root": {      "type": "split",      "direction": "right",      "ratio": 0.65,      "first": {        "type": "pane",        "label": "editor",        "cwd": "/repo"      },      "second": {        "type": "pane",        "label": "tests",        "cwd": "/repo",        "command": ["sh", "-c", "just test"],        "env": { "HERDR_ROLE": "tests" }      }    }  }}
+layout.set_split_ratio updates an existing split in a tab layout. The response
+is type: "layout_split_ratio_set" with the updated portable layout.
+{"id":"req_ratio","method":"layout.set_split_ratio","params":{"tab_id":"w1:t1","path":[],"ratio":0.6}}
+Process-launching methods accept an env object. Herdr applies those key/value
+pairs to the newly launched process only. Herdr also injects HERDR_SOCKET_PATH,
+HERDR_ENV=1, HERDR_WORKSPACE_ID, HERDR_TAB_ID, and HERDR_PANE_ID into
+managed pane processes. Herdr-managed variables are authoritative when they
+conflict with caller-provided env.
+pane.swap supports directional and explicit forms:
+{"id":"req_swap_dir","method":"pane.swap","params":{"pane_id":"w1:p1","direction":"right"}}{"id":"req_swap_explicit","method":"pane.swap","params":{"source_pane_id":"w1:p1","target_pane_id":"w1:p2"}}
+Swap is same-tab only. It preserves split shape, split ratios, pane ids, and
+running processes. The response is type: "pane_swap" with changed, optional
+reason, source_pane_id, optional target_pane_id, focused_pane_id, and
+layout. Reason values are no_neighbor, same_pane, not_found, and
+cross_tab. When a tab is zoomed, swap keeps zoom active and mutates the hidden
+full-tab layout.
+pane.move moves a running pane to a different tab, a new tab, or a new
+workspace:
+{"id":"req_move_tab","method":"pane.move","params":{"pane_id":"w1:p2","destination":{"type":"tab","tab_id":"w1:t2","target_pane_id":"w1:p3","split":"right","ratio":0.5},"focus":true}}{"id":"req_move_new_tab","method":"pane.move","params":{"pane_id":"w1:p2","destination":{"type":"new_tab","workspace_id":"w1","label":"logs"},"focus":true}}{"id":"req_move_new_workspace","method":"pane.move","params":{"pane_id":"w1:p2","destination":{"type":"new_workspace","label":"logs","tab_label":"main"},"focus":true}}
+Existing-tab moves require split: "right" | "down". target_pane_id is
+optional and defaults to the target tab’s focused pane. Same-tab layout changes
+remain pane.swap; moving to the source tab returns changed: false with
+reason: "same_tab". Moves involving a zoomed source or target tab return
+changed: false with reason: "zoomed_tab".
+The response is type: "pane_move" with changed, optional reason,
+previous_pane_id, previous_workspace_id, previous_tab_id, the moved
+pane, optional source_layout, target_layout, optional created workspace or
+tab records, optional closed workspace or tab ids, and focused_pane_id.
+Cross-workspace moves keep the internal pane and terminal alive but assign a new
+public pane id in the destination workspace. Subscribers can listen for
+pane.moved; Herdr does not emit fake pane close/create events for the moved
+terminal process.
+pane.zoom toggles, enables, or disables zoom for the target pane’s tab:
+{"id":"req_zoom_toggle","method":"pane.zoom","params":{"pane_id":"w1:p1"}}{"id":"req_zoom_on","method":"pane.zoom","params":{"pane_id":"w1:p1","mode":"on"}}{"id":"req_zoom_off","method":"pane.zoom","params":{"pane_id":"w1:p1","mode":"off"}}
+Omitting pane_id targets the server’s active focused pane. The response is
+type: "pane_zoom" with changed, zoom_changed, focus_changed, optional
+reason, pane_id, focused_pane_id, zoomed, and layout. changed is
+true when either zoom state or focus changed. Reason values are single_pane,
+already_zoomed, and already_unzoomed.
+The CLI wrapper for notification.show is:
+Terminal windowherdr notification show "build failed" --body "api workspace" --position top-left --sound request
+Show a user notification through the configured toast delivery:
+{"id":"req_notify","method":"notification.show","params":{"title":"build failed","body":"api workspace","position":"top-left","sound":"request"}}
+title is required and must contain visible text after control characters and repeated whitespace are removed. body is optional. Herdr collapses newlines, tabs, carriage returns, and repeated whitespace into spaces, then trims notification text to 80 characters for title and 240 characters for body. An empty sanitized title returns invalid_params. position is optional and applies only when ui.toast.delivery = "herdr"; desktop positions are relative to the full Herdr frame, and omitted positions use ui.toast.herdr.position. Terminal, system, and off delivery ignore position. sound is optional and can be none, done, or request; it defaults to none and plays only when the notification is shown.
+The response reports whether anything was shown:
+{"id":"req_notify","result":{"type":"notification_show","shown":true,"reason":"shown"}}
+Possible reasons are shown, disabled, rate_limited, no_foreground_client, and busy. disabled means ui.toast.delivery = "off". busy means an existing in-app toast was not replaced. Terminal and system delivery are best-effort through the current foreground attached Herdr client.
+Set or clear the foreground client’s outer terminal window title:
+{"id":"req_title","method":"client.window_title.set","params":{"title":"herdr api"}}{"id":"req_title_clear","method":"client.window_title.clear","params":{}}
+client.window_title.clear restores Herdr’s default title. The response is
+type: "client_window_title" with changed and reason set, cleared, or
+no_foreground_client.
+Worktree methods manage Git checkouts as Herdr workspaces. worktree.create creates a checkout and returns the new workspace, tab, root_pane, and worktree records. If the requested branch already exists locally, it checks out that branch; otherwise it creates the branch from the requested base or HEAD. worktree.open opens an existing checkout or returns the already-open workspace. worktree.remove runs git worktree remove against a linked child workspace and never deletes the branch.
+Create a worktree from a source workspace:
+{"id":"req_1","method":"worktree.create","params":{"workspace_id":"w1","branch":"worktree/api","focus":false}}
+Open an existing checkout:
+{"id":"req_2","method":"worktree.open","params":{"workspace_id":"w1","branch":"worktree/api","focus":true}}
+Remove a linked checkout:
+{"id":"req_3","method":"worktree.remove","params":{"workspace_id":"2","force":false}}
+Use at most one of workspace_id or cwd for worktree.list, worktree.create, and worktree.open; omit both to use the active workspace. Use exactly one of path or branch for worktree.open. Raw socket cwd and path values must be absolute; the CLI expands relative --cwd and --path values before sending requests. Workspace responses include optional worktree provenance when a workspace belongs to a Herdr worktree group. Worktree commands can emit workspace.updated when an existing workspace gains or changes worktree provenance.
+Worktree commands also emit lifecycle events. worktree.create emits workspace.created, tab.created, pane.created, and worktree.created. worktree.open emits worktree.opened, and it also emits workspace/tab/pane creation events when it opens a new Herdr workspace. worktree.remove emits worktree.removed; if the linked workspace is still open, it also emits workspace.closed.
+Plugin APIsSection titled “Plugin APIs”
+The plugin API is an early host surface for executable workflow tools. A plugin
+is a package with a herdr-plugin.toml manifest. The manifest declares
+shareable actions, event hooks, terminal pane entrypoints, and link handlers.
+Actions and panes are manifest-only; runtime action registration and runtime
+argv pane creation are not part of v1.
+Installed and linked plugins persist across restarts. Herdr writes a
+plugins.json registry file alongside session.json on plugin.link,
+plugin.unlink, plugin.enable, and plugin.disable. The
+herdr plugin install CLI also writes the same registry when Herdr is not
+running, then startup loads it automatically. On startup, Herdr re-reads each
+manifest from its original path; if the file is missing or unparseable the entry
+is kept with a warnings field so plugin.list surfaces it.
+Event hook on values are validated against the known Herdr event names at link time. An unrecognised name is not an error — the link still succeeds — but the returned plugin info includes a warning (e.g. "unknown event 'worktree.craeted'"). Check the warnings field in the plugin.link and plugin.list responses.
+Link a local plugin manifest:
+{"id":"req_plugin_link","method":"plugin.link","params":{"path":"/path/to/plugin","enabled":true}}
+plugin.link also accepts optional source metadata. The CLI uses this when it installs from GitHub so plugin.list can show origin, requested ref, resolved commit, and managed checkout path:
+{"id":"req_plugin_link","method":"plugin.link","params":{"path":"/managed/plugin/herdr-plugin.toml","enabled":true,"source":{"kind":"github","owner":"ogulcancelik","repo":"herdr-plugin-examples","subdir":"worktree-bootstrap","requested_ref":"main","resolved_commit":"abc123","managed_path":"/data/plugins/github/&#x3C;managed-checkout>","installed_unix_ms":1780000000000}}}&#x22;,&#x22;installed_unix_ms&#x22;:1780000000000}}}">
+The path can be a plugin directory containing herdr-plugin.toml or a direct
+manifest path. The manifest shape is:
+id = "example.worktree-bootstrap"name = "Worktree Bootstrap"version = "0.1.0"min_herdr_version = "0.7.0"description = "Prepare new worktrees"platforms = ["linux", "macos", "windows"]
+[[build]]command = ["bun", "install"]
+[[actions]]id = "bootstrap"title = "Bootstrap worktree"contexts = ["workspace"]command = ["bun", "run", "bootstrap.ts"]
+[[events]]on = "worktree.created"command = ["bun", "run", "bootstrap.ts"]
+[[panes]]id = "board"title = "Worktree board"placement = "overlay"command = ["bun", "run", "board.ts"]
+[[link_handlers]]id = "github-issue"title = "Open GitHub issue"pattern = "^https://github\\.com/[^/]+/[^/]+/(issues|pull)/[0-9]+$"action = "bootstrap"
+min_herdr_version is required. The server refuses to link a plugin when the
+field is missing, invalid, or newer than the running Herdr binary.
+Declare platforms at the top level with the OS identifiers (linux, macos,
+windows) your plugin supports. Omitting platforms is allowed for local
+development — plugin.link succeeds but the response includes a warning.
+Individual build commands, actions, event hooks, panes, and link handlers can
+declare their own platforms to override the plugin-level list; if omitted they
+inherit from the plugin. Invoking an action or opening a pane whose effective

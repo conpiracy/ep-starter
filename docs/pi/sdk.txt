@@ -1,0 +1,300 @@
+SDK · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageQuick StartInstallationCore ConceptscreateAgentSession()AgentSessioncreateAgentSessionRuntime() and AgentSessionRuntimePrompting and Message QueueingAgent and AgentStateEventsOptions ReferenceDirectoriesModelAPI Keys and OAuthSystem PromptToolsCustom ToolsExtensionsSkillsContext FilesSlash CommandsSession ManagementSettings ManagementResourceLoaderReturn ValueComplete ExampleRun ModesInteractiveModerunPrintModerunRpcModeRPC Mode AlternativeExportsDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageQuick StartInstallationCore ConceptscreateAgentSession()AgentSessioncreateAgentSessionRuntime() and AgentSessionRuntimePrompting and Message QueueingAgent and AgentStateEventsOptions ReferenceDirectoriesModelAPI Keys and OAuthSystem PromptToolsCustom ToolsExtensionsSkillsContext FilesSlash CommandsSession ManagementSettings ManagementResourceLoaderReturn ValueComplete ExampleRun ModesInteractiveModerunPrintModerunRpcModeRPC Mode AlternativeExportsOn this pageQuick StartInstallationCore ConceptscreateAgentSession()AgentSessioncreateAgentSessionRuntime() and AgentSessionRuntimePrompting and Message QueueingAgent and AgentStateEventsOptions ReferenceDirectoriesModelAPI Keys and OAuthSystem PromptToolsCustom ToolsExtensionsSkillsContext FilesSlash CommandsSession ManagementSettings ManagementResourceLoaderReturn ValueComplete ExampleRun ModesInteractiveModerunPrintModerunRpcModeRPC Mode AlternativeExportsSDKLatest··
+pi can help you use the SDK. Ask it to build an integration for your use case.
+
+The SDK provides programmatic access to pi&#39;s agent capabilities. Use it to embed pi in other applications, build custom interfaces, or integrate with automated workflows.
+Example use cases:
+
+Build a custom UI (web, desktop, mobile)
+Integrate agent capabilities into existing applications
+Create automated pipelines with agent reasoning
+Build custom tools that spawn sub-agents
+Test agent behavior programmatically
+
+See examples/sdk/ for working examples from minimal to full control.
+
+        
+          Quick Start
+        
+        
+          
+          
+          Copied
+        
+        
+import { createAgentSession, ModelRuntime, SessionManager } from &quot;@earendil-works/pi-coding-agent&quot;;
+
+const modelRuntime = await ModelRuntime.create();
+const { session } = await createAgentSession({
+  sessionManager: SessionManager.inMemory(),
+  modelRuntime,
+});
+
+session.subscribe((event) =&gt; {
+  if (event.type === &quot;message_update&quot; &amp;&amp; event.assistantMessageEvent.type === &quot;text_delta&quot;) {
+    process.stdout.write(event.assistantMessageEvent.delta);
+  }
+});
+
+await session.prompt(&quot;What files are in the current directory?&quot;);
+
+        
+          Installation
+        
+        
+          
+          
+          Copied
+        
+        
+npm install @earendil-works/pi-coding-agent
+
+The SDK is included in the main package. No separate installation needed.
+
+        
+          Core Concepts
+        
+        
+          
+          
+          Copied
+        
+        
+
+        
+          createAgentSession()
+        
+        
+          
+          
+          Copied
+        
+        
+The main factory function for a single AgentSession.
+createAgentSession() uses a ResourceLoader to supply extensions, skills, prompt templates, themes, and context files. If you do not provide one, it uses DefaultResourceLoader with standard discovery.
+import { createAgentSession, SessionManager } from &quot;@earendil-works/pi-coding-agent&quot;;
+
+// Minimal: defaults with DefaultResourceLoader
+const { session } = await createAgentSession();
+
+// Custom: override specific options
+const { session } = await createAgentSession({
+  model: myModel,
+  tools: [&quot;read&quot;, &quot;bash&quot;],
+  sessionManager: SessionManager.inMemory(),
+});
+
+        
+          AgentSession
+        
+        
+          
+          
+          Copied
+        
+        
+The session manages agent lifecycle, message history, model state, compaction, and event streaming.
+interface AgentSession {
+  // Send a prompt and wait for completion
+  prompt(text: string, options?: PromptOptions): Promise&lt;void&gt;;
+
+  // Queue messages during streaming
+  steer(text: string): Promise&lt;void&gt;;
+  followUp(text: string): Promise&lt;void&gt;;
+
+  // Subscribe to events (returns unsubscribe function)
+  subscribe(listener: (event: AgentSessionEvent) =&gt; void): () =&gt; void;
+
+  // Session info
+  sessionFile: string | undefined;
+  sessionId: string;
+
+  // Model control
+  setModel(model: Model): Promise&lt;void&gt;;
+  setThinkingLevel(level: ThinkingLevel): void;
+  cycleModel(): Promise&lt;ModelCycleResult | undefined&gt;;
+  cycleThinkingLevel(): ThinkingLevel | undefined;
+
+  // State access
+  agent: Agent;
+  model: Model | undefined;
+  thinkingLevel: ThinkingLevel;
+  messages: AgentMessage[];
+  isStreaming: boolean;
+
+  // In-place tree navigation within the current session file
+  navigateTree(targetId: string, options?: { summarize?: boolean; customInstructions?: string; replaceInstructions?: boolean; label?: string }): Promise&lt;{ editorText?: string; cancelled: boolean }&gt;;
+
+  // Compaction
+  compact(customInstructions?: string): Promise&lt;CompactionResult&gt;;
+  abortCompaction(): void;
+
+  // Abort current operation
+  abort(): Promise&lt;void&gt;;
+
+  // Cleanup
+  dispose(): void;
+}
+
+Session replacement APIs such as new-session, resume, fork, and import live on AgentSessionRuntime, not on AgentSession.
+
+        
+          createAgentSessionRuntime() and AgentSessionRuntime
+        
+        
+          
+          
+          Copied
+        
+        
+Use the runtime API when you need to replace the active session and rebuild cwd-bound runtime state.
+This is the same layer used by the built-in interactive, print, and RPC modes.
+createAgentSessionRuntime() takes a runtime factory plus the initial cwd/session target. The factory closes over process-global fixed inputs, recreates cwd-bound services for the effective cwd, resolves session options against those services, and returns a full runtime result.
+import {
+  type CreateAgentSessionRuntimeFactory,
+  createAgentSessionFromServices,
+  createAgentSessionRuntime,
+  createAgentSessionServices,
+  getAgentDir,
+  SessionManager,
+} from &quot;@earendil-works/pi-coding-agent&quot;;
+
+const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) =&gt; {
+  const services = await createAgentSessionServices({ cwd });
+  return {
+    ...(await createAgentSessionFromServices({
+      services,
+      sessionManager,
+      sessionStartEvent,
+    })),
+    services,
+    diagnostics: services.diagnostics,
+  };
+};
+
+const runtime = await createAgentSessionRuntime(createRuntime, {
+  cwd: process.cwd(),
+  agentDir: getAgentDir(),
+  sessionManager: SessionManager.create(process.cwd()),
+});
+
+AgentSessionRuntime owns replacement of the active runtime across:
+
+newSession()
+switchSession()
+fork()
+clone flows via fork(entryId, { position: &quot;at&quot; })
+importFromJsonl()
+
+Important behavior:
+
+runtime.session changes after those operations
+event subscriptions are attached to a specific AgentSession, so re-subscribe after replacement
+if you use extensions, call runtime.session.bindExtensions(...) again for the new session
+creation returns diagnostics on runtime.diagnostics
+if runtime creation or replacement fails, the method throws and the caller decides how to handle it
+
+let session = runtime.session;
+let unsubscribe = session.subscribe(() =&gt; {});
+
+await runtime.newSession();
+
+unsubscribe();
+session = runtime.session;
+unsubscribe = session.subscribe(() =&gt; {});
+
+        
+          Prompting and Message Queueing
+        
+        
+          
+          
+          Copied
+        
+        
+PromptOptions controls prompt expansion, queueing behavior while streaming, and prompt preflight notifications:
+interface PromptOptions {
+  expandPromptTemplates?: boolean;
+  images?: ImageContent[];
+  streamingBehavior?: &quot;steer&quot; | &quot;followUp&quot;;
+  source?: InputSource;
+  preflightResult?: (success: boolean) =&gt; void;
+}
+
+preflightResult is called once per prompt() invocation:
+
+true when the prompt was accepted, queued, or handled immediately
+false when prompt preflight rejected before acceptance
+
+It fires before prompt() resolves. prompt() still resolves only after the full accepted run finishes, including retries. Failures after acceptance are reported through the normal event and message stream, not through preflightResult(false).
+The prompt() method handles prompt templates, extension commands, and message sending:
+// Basic prompt (when not streaming)
+await session.prompt(&quot;What files are here?&quot;);
+
+// With images
+await session.prompt(&quot;What&#39;s in this image?&quot;, {
+  images: [{ type: &quot;image&quot;, source: { type: &quot;base64&quot;, mediaType: &quot;image/png&quot;, data: &quot;...&quot; } }]
+});
+
+// During streaming: must specify how to queue the message
+await session.prompt(&quot;Stop and do this instead&quot;, { streamingBehavior: &quot;steer&quot; });
+await session.prompt(&quot;After you&#39;re done, also check X&quot;, { streamingBehavior: &quot;followUp&quot; });
+
+Behavior:
+
+Extension commands (e.g., /mycommand): Execute immediately, even during streaming. They manage their own LLM interaction via pi.sendMessage().
+File-based prompt templates (from .md files): Expanded to their content before sending or queueing.
+During streaming without streamingBehavior: Throws an error. Use steer() or followUp() directly, or specify the option.
+preflightResult(true): Means the prompt was accepted, queued, or handled immediately.
+preflightResult(false): Means preflight rejected before acceptance.
+
+For explicit queueing during streaming:
+// Queue a steering message for delivery after the current assistant turn finishes its tool calls
+await session.steer(&quot;New instruction&quot;);
+
+// Wait for agent to finish (delivered only when agent stops)
+await session.followUp(&quot;After you&#39;re done, also do this&quot;);
+
+Both steer() and followUp() expand file-based prompt templates but error on extension commands (extension commands cannot be queued).
+
+        
+          Agent and AgentState
+        
+        
+          
+          
+          Copied
+        
+        
+The Agent class (from @earendil-works/pi-agent-core) handles the core LLM interaction. Access it via session.agent.
+// Access current state
+const state = session.agent.state;
+
+// state.messages: AgentMessage[] - conversation history
+// state.model: Model - current model
+// state.thinkingLevel: ThinkingLevel - current thinking level
+// state.systemPrompt: string - system prompt

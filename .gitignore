@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+
+# Ignore the packages' node_modules but not the source
+packages/*/node_modules/

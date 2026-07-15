@@ -1,0 +1,254 @@
+Quickstart · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageInstallUninstallAuthenticateOption 1: subscription loginOption 2: API keyFirst sessionGive pi project instructionsCommon things to tryReference filesRun shell commandsSwitch modelsContinue laterNon-interactive modeNext stepsDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageInstallUninstallAuthenticateOption 1: subscription loginOption 2: API keyFirst sessionGive pi project instructionsCommon things to tryReference filesRun shell commandsSwitch modelsContinue laterNon-interactive modeNext stepsOn this pageInstallUninstallAuthenticateOption 1: subscription loginOption 2: API keyFirst sessionGive pi project instructionsCommon things to tryReference filesRun shell commandsSwitch modelsContinue laterNon-interactive modeNext stepsQuickstartLatest··This page gets you from install to a useful first pi session.
+
+        
+          Install
+        
+        
+          
+          
+          Copied
+        
+        
+Pi is distributed as an npm package:
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+
+--ignore-scripts disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
+
+        
+          Uninstall
+        
+        
+          
+          
+          Copied
+        
+        
+Use the package manager that installed pi. The curl installer uses npm globally, so curl and npm installs are removed with npm:
+# curl installer or npm install -g
+npm uninstall -g @earendil-works/pi-coding-agent
+
+# pnpm
+pnpm remove -g @earendil-works/pi-coding-agent
+
+# Yarn
+yarn global remove @earendil-works/pi-coding-agent
+
+# Bun
+bun uninstall -g @earendil-works/pi-coding-agent
+
+Uninstalling pi leaves settings, credentials, sessions, and installed pi packages in ~/.pi/agent/.
+Then start pi in the project directory you want it to work on:
+cd /path/to/project
+pi
+
+        
+          Authenticate
+        
+        
+          
+          
+          Copied
+        
+        
+Pi can use subscription providers through /login, or API-key providers through environment variables or the auth file.
+
+        
+          Option 1: subscription login
+        
+        
+          
+          
+          Copied
+        
+        
+Start pi and run:
+/login
+
+Then select a provider. Built-in subscription logins include Claude Pro/Max, ChatGPT Plus/Pro (Codex), and GitHub Copilot.
+
+        
+          Option 2: API key
+        
+        
+          
+          
+          Copied
+        
+        
+Set an API key before launching pi:
+export ANTHROPIC_API_KEY=sk-ant-...
+pi
+
+You can also run /login and select an API-key provider to store the key in ~/.pi/agent/auth.json.
+See Providers for all supported providers, environment variables, and cloud-provider setup.
+
+        
+          First session
+        
+        
+          
+          
+          Copied
+        
+        
+Once pi starts, type a request and press Enter:
+Summarize this repository and tell me how to run its checks.
+
+By default, pi gives the model four tools:
+
+read - read files
+write - create or overwrite files
+edit - patch files
+bash - run shell commands
+
+Additional built-in read-only tools (grep, find, ls) are available through tool options. Pi runs in your current working directory and can modify files there. Use git or another checkpointing workflow if you want easy rollback.
+
+        
+          Give pi project instructions
+        
+        
+          
+          
+          Copied
+        
+        
+Pi loads context files at startup. Add an AGENTS.md file to tell it how to work in a project:
+# Project Instructions
+
+- Run `npm run check` after code changes.
+- Do not run production migrations locally.
+- Keep responses concise.
+
+Pi loads:
+
+~/.pi/agent/AGENTS.md for global instructions
+AGENTS.md or CLAUDE.md from parent directories and the current directory
+
+Restart pi, or run /reload, after changing context files.
+
+        
+          Common things to try
+        
+        
+          
+          
+          Copied
+        
+        
+
+        
+          Reference files
+        
+        
+          
+          
+          Copied
+        
+        
+Type @ in the editor to fuzzy-search files, or pass files on the command line:
+pi @README.md &quot;Summarize this&quot;
+pi @src/app.ts @src/app.test.ts &quot;Review these together&quot;
+
+Images or text can be pasted with Ctrl+V (Alt+V on Windows); images can also be dragged into supported terminals.
+
+        
+          Run shell commands
+        
+        
+          
+          
+          Copied
+        
+        
+In interactive mode:
+!npm run lint
+
+The command output is sent to the model. Use !!command to run a command without adding its output to the model context.
+
+        
+          Switch models
+        
+        
+          
+          
+          Copied
+        
+        
+Use /model or Ctrl+L to choose a model. Use Shift+Tab to cycle thinking level. Use Ctrl+P / Shift+Ctrl+P to cycle through scoped models.
+
+        
+          Continue later
+        
+        
+          
+          
+          Copied
+        
+        
+Sessions are saved automatically:
+pi -c                  # Continue most recent session
+pi -r                  # Browse previous sessions
+pi --name &quot;my task&quot;    # Set session display name at startup
+pi --session &lt;path|id&gt; # Open a specific session
+
+Inside pi, use /resume, /new, /tree, /fork, and /clone to manage sessions.
+
+        
+          Non-interactive mode
+        
+        
+          
+          
+          Copied
+        
+        
+For one-shot prompts:
+pi -p &quot;Summarize this codebase&quot;
+cat README.md | pi -p &quot;Summarize this text&quot;
+pi -p @screenshot.png &quot;What&#39;s in this image?&quot;
+
+Use --mode json for JSON event output or --mode rpc for process integration.
+
+        
+          Next steps
+        
+        
+          
+          
+          Copied
+        
+        
+
+Using Pi - interactive mode, slash commands, sessions, context files, and CLI reference.
+Providers - authentication and model setup.
+Settings - global and project configuration.
+Keybindings - shortcuts and customization.
+Pi Packages - install shared extensions, skills, prompts, and themes.
+
+Platform notes: Windows, Termux, tmux, Terminal setup, Shell aliases.
+Earendil Inc. &amp; ContributorsPress KitMIT LicenseAutoLightDarkpi.dev domain graciously donated by exe.dev

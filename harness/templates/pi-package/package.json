@@ -1,0 +1,21 @@
+{
+  "name": "@lzy/my-harness",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "extension.ts",
+  "keywords": ["pi-package"],
+  "pi": {
+    "name": "my-harness",
+    "description": "My custom Pi harness — extensions, skills, prompts, and themes",
+    "extensions": ["./extension.ts", "./extensions"],
+    "skills": ["./skills"],
+    "prompts": ["./prompts"],
+    "themes": ["./themes"],
+    "video": "https://example.com/demo.mp4",
+    "image": "https://example.com/screenshot.png"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.0",
+    "typebox": "^0.32.0"
+  }
+}

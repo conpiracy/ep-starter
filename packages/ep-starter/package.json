@@ -1,0 +1,36 @@
+{
+  "name": "ep-starter",
+  "version": "0.1.0",
+  "description": "🏭 ep-starter — Harness factory for extending Pi with custom tools, skills, and multi-agent orchestration. Start here, build anything.",
+  "type": "module",
+  "main": "extension.ts",
+  "keywords": ["pi-package", "ep-starter", "harness", "obsidian", "herdr"],
+  "homepage": "https://github.com/lzy/ep-starter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lzy/ep-starter.git"
+  },
+  "pi": {
+    "name": "ep-starter",
+    "description": "🏭 Harness factory: guided setup, custom extensions, Obsidian integration scaffold, multi-agent orchestration",
+    "extensions": ["./extension.ts", "./extensions"],
+    "skills": ["./skills"],
+    "prompts": ["./prompts"],
+    "themes": ["./themes"],
+    "image": "https://raw.githubusercontent.com/lzy/ep-starter/main/assets/harness-banner.png"
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.0",
+    "typebox": "^0.32.0"
+  },
+  "files": [
+    "extension.ts",
+    "extensions/",
+    "skills/",
+    "prompts/",
+    "themes/",
+    "scaffold/",
+    "README.md",
+    "GUIDE.md"
+  ]
+}

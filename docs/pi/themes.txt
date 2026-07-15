@@ -1,0 +1,200 @@
+Themes · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageTable of ContentsLocationsSelecting a ThemeCreating a Custom ThemeTheme FormatColor TokensCore UI (11 colors)Backgrounds &amp; Content (11 colors)Markdown (10 colors)Tool Diffs (3 colors)Syntax Highlighting (9 colors)Thinking Level Borders (6 required, 1 optional)Bash Mode (1 color)HTML Export (optional)Color Values256-Color PaletteTerminal CompatibilityTipsExamplesDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageTable of ContentsLocationsSelecting a ThemeCreating a Custom ThemeTheme FormatColor TokensCore UI (11 colors)Backgrounds &amp; Content (11 colors)Markdown (10 colors)Tool Diffs (3 colors)Syntax Highlighting (9 colors)Thinking Level Borders (6 required, 1 optional)Bash Mode (1 color)HTML Export (optional)Color Values256-Color PaletteTerminal CompatibilityTipsExamplesOn this pageTable of ContentsLocationsSelecting a ThemeCreating a Custom ThemeTheme FormatColor TokensCore UI (11 colors)Backgrounds &amp; Content (11 colors)Markdown (10 colors)Tool Diffs (3 colors)Syntax Highlighting (9 colors)Thinking Level Borders (6 required, 1 optional)Bash Mode (1 color)HTML Export (optional)Color Values256-Color PaletteTerminal CompatibilityTipsExamplesThemesLatest··
+pi can create themes. Ask it to build one for your setup.
+
+Themes are JSON files that define colors for the TUI.
+
+        
+          Table of Contents
+        
+        
+          
+          
+          Copied
+        
+        
+
+Locations
+Selecting a Theme
+Creating a Custom Theme
+Theme Format
+Color Tokens
+Color Values
+Tips
+
+        
+          Locations
+        
+        
+          
+          
+          Copied
+        
+        
+Pi loads themes from:
+
+Built-in: dark, light
+Global: ~/.pi/agent/themes/*.json
+Project: .pi/themes/*.json (only after the project is trusted)
+Packages: themes/ directories or pi.themes entries in package.json
+Settings: themes array with files or directories
+CLI: --theme &lt;path&gt; (repeatable)
+
+Disable discovery with --no-themes.
+
+        
+          Selecting a Theme
+        
+        
+          
+          
+          Copied
+        
+        
+Select a theme via /settings or in settings.json:
+{
+  &quot;theme&quot;: &quot;my-theme&quot;
+}
+
+On first run, pi detects your terminal background and defaults to dark or light.
+
+        
+          Creating a Custom Theme
+        
+        
+          
+          
+          Copied
+        
+        
+
+Create a theme file:
+
+mkdir -p ~/.pi/agent/themes
+vim ~/.pi/agent/themes/my-theme.json
+
+Define the theme with all required colors (see Color Tokens):
+
+{
+  &quot;$schema&quot;: &quot;https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json&quot;,
+  &quot;name&quot;: &quot;my-theme&quot;,
+  &quot;vars&quot;: {
+    &quot;primary&quot;: &quot;#00aaff&quot;,
+    &quot;secondary&quot;: 242
+  },
+  &quot;colors&quot;: {
+    &quot;accent&quot;: &quot;primary&quot;,
+    &quot;border&quot;: &quot;primary&quot;,
+    &quot;borderAccent&quot;: &quot;#00ffff&quot;,
+    &quot;borderMuted&quot;: &quot;secondary&quot;,
+    &quot;success&quot;: &quot;#00ff00&quot;,
+    &quot;error&quot;: &quot;#ff0000&quot;,
+    &quot;warning&quot;: &quot;#ffff00&quot;,
+    &quot;muted&quot;: &quot;secondary&quot;,
+    &quot;dim&quot;: 240,
+    &quot;text&quot;: &quot;&quot;,
+    &quot;thinkingText&quot;: &quot;secondary&quot;,
+    &quot;selectedBg&quot;: &quot;#2d2d30&quot;,
+    &quot;userMessageBg&quot;: &quot;#2d2d30&quot;,
+    &quot;userMessageText&quot;: &quot;&quot;,
+    &quot;customMessageBg&quot;: &quot;#2d2d30&quot;,
+    &quot;customMessageText&quot;: &quot;&quot;,
+    &quot;customMessageLabel&quot;: &quot;primary&quot;,
+    &quot;toolPendingBg&quot;: &quot;#1e1e2e&quot;,
+    &quot;toolSuccessBg&quot;: &quot;#1e2e1e&quot;,
+    &quot;toolErrorBg&quot;: &quot;#2e1e1e&quot;,
+    &quot;toolTitle&quot;: &quot;primary&quot;,
+    &quot;toolOutput&quot;: &quot;&quot;,
+    &quot;mdHeading&quot;: &quot;#ffaa00&quot;,
+    &quot;mdLink&quot;: &quot;primary&quot;,
+    &quot;mdLinkUrl&quot;: &quot;secondary&quot;,
+    &quot;mdCode&quot;: &quot;#00ffff&quot;,
+    &quot;mdCodeBlock&quot;: &quot;&quot;,
+    &quot;mdCodeBlockBorder&quot;: &quot;secondary&quot;,
+    &quot;mdQuote&quot;: &quot;secondary&quot;,
+    &quot;mdQuoteBorder&quot;: &quot;secondary&quot;,
+    &quot;mdHr&quot;: &quot;secondary&quot;,
+    &quot;mdListBullet&quot;: &quot;#00ffff&quot;,
+    &quot;toolDiffAdded&quot;: &quot;#00ff00&quot;,
+    &quot;toolDiffRemoved&quot;: &quot;#ff0000&quot;,
+    &quot;toolDiffContext&quot;: &quot;secondary&quot;,
+    &quot;syntaxComment&quot;: &quot;secondary&quot;,
+    &quot;syntaxKeyword&quot;: &quot;primary&quot;,
+    &quot;syntaxFunction&quot;: &quot;#00aaff&quot;,
+    &quot;syntaxVariable&quot;: &quot;#ffaa00&quot;,
+    &quot;syntaxString&quot;: &quot;#00ff00&quot;,
+    &quot;syntaxNumber&quot;: &quot;#ff00ff&quot;,
+    &quot;syntaxType&quot;: &quot;#00aaff&quot;,
+    &quot;syntaxOperator&quot;: &quot;primary&quot;,
+    &quot;syntaxPunctuation&quot;: &quot;secondary&quot;,
+    &quot;thinkingOff&quot;: &quot;secondary&quot;,
+    &quot;thinkingMinimal&quot;: &quot;primary&quot;,
+    &quot;thinkingLow&quot;: &quot;#00aaff&quot;,
+    &quot;thinkingMedium&quot;: &quot;#00ffff&quot;,
+    &quot;thinkingHigh&quot;: &quot;#ff00ff&quot;,
+    &quot;thinkingXhigh&quot;: &quot;#ff0000&quot;,
+    &quot;thinkingMax&quot;: &quot;#ff0088&quot;,
+    &quot;bashMode&quot;: &quot;#ffaa00&quot;
+  }
+}
+
+Select the theme via /settings.
+
+Hot reload: When you edit the currently active custom theme file, pi reloads it automatically for immediate visual feedback.
+
+        
+          Theme Format
+        
+        
+          
+          
+          Copied
+        
+        
+{
+  &quot;$schema&quot;: &quot;https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json&quot;,
+  &quot;name&quot;: &quot;my-theme&quot;,
+  &quot;vars&quot;: {
+    &quot;blue&quot;: &quot;#0066cc&quot;,
+    &quot;gray&quot;: 242
+  },
+  &quot;colors&quot;: {
+    &quot;accent&quot;: &quot;blue&quot;,
+    &quot;muted&quot;: &quot;gray&quot;,
+    &quot;text&quot;: &quot;&quot;,
+    ...
+  }
+}
+
+name is required, must be unique, and must not contain /.
+vars is optional. Define reusable colors here, then reference them in colors.
+colors must define all 51 required tokens. thinkingMax is optional and falls back to thinkingXhigh.
+
+The $schema field enables editor auto-completion and validation.
+
+        
+          Color Tokens

@@ -1,0 +1,300 @@
+Skills · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageTable of ContentsLocationsUsing Skills from Other HarnessesHow Skills WorkSkill CommandsSkill StructureSKILL.md FormatFrontmatterName RulesDescription Best PracticesValidationExampleSkill RepositoriesDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageTable of ContentsLocationsUsing Skills from Other HarnessesHow Skills WorkSkill CommandsSkill StructureSKILL.md FormatFrontmatterName RulesDescription Best PracticesValidationExampleSkill RepositoriesOn this pageTable of ContentsLocationsUsing Skills from Other HarnessesHow Skills WorkSkill CommandsSkill StructureSKILL.md FormatFrontmatterName RulesDescription Best PracticesValidationExampleSkill RepositoriesSkillsLatest··
+pi can create skills. Ask it to build one for your use case.
+
+Skills are self-contained capability packages that the agent loads on-demand. A skill provides specialized workflows, setup instructions, helper scripts, and reference documentation for specific tasks.
+Pi implements the Agent Skills standard, warning about most violations but remaining lenient. Pi allows skill names to differ from their parent directory even though the standard disallows it; that rule is suboptimal for shared skill directories used across multiple agent harnesses.
+
+        
+          Table of Contents
+        
+        
+          
+          
+          Copied
+        
+        
+
+Locations
+How Skills Work
+Skill Commands
+Skill Structure
+Frontmatter
+Validation
+Example
+Skill Repositories
+
+        
+          Locations
+        
+        
+          
+          
+          Copied
+        
+        
+
+Security: Skills can instruct the model to perform any action and may include executable code the model invokes. Review skill content before use.
+
+Pi loads skills from:
+
+Global:
+~/.pi/agent/skills/
+~/.agents/skills/
+
+Project (only after the project is trusted):
+.pi/skills/
+.agents/skills/ in cwd and ancestor directories (up to git repo root, or filesystem root when not in a repo)
+
+Packages: skills/ directories or pi.skills entries in package.json
+Settings: skills array with files or directories
+CLI: --skill &lt;path&gt; (repeatable, additive even with --no-skills)
+
+Discovery rules:
+
+In ~/.pi/agent/skills/ and .pi/skills/, direct root .md files are discovered as individual skills
+In all skill locations, directories containing SKILL.md are discovered recursively
+In ~/.agents/skills/ and project .agents/skills/, root .md files are ignored
+
+Disable discovery with --no-skills (explicit --skill paths still load).
+
+        
+          Using Skills from Other Harnesses
+        
+        
+          
+          
+          Copied
+        
+        
+To use skills from Claude Code or OpenAI Codex, add their directories to settings:
+{
+  &quot;skills&quot;: [
+    &quot;~/.claude/skills&quot;,
+    &quot;~/.codex/skills&quot;
+  ]
+}
+
+For project-level Claude Code skills, add to .pi/settings.json:
+{
+  &quot;skills&quot;: [&quot;../.claude/skills&quot;]
+}
+
+        
+          How Skills Work
+        
+        
+          
+          
+          Copied
+        
+        
+
+At startup, pi scans skill locations and extracts names and descriptions
+The system prompt includes available skills in XML format per the specification
+When a task matches, the agent uses read to load the full SKILL.md (models don&#39;t always do this; use prompting or /skill:name to force it)
+The agent follows the instructions, using relative paths to reference scripts and assets
+
+This is progressive disclosure: only descriptions are always in context, full instructions load on-demand.
+
+        
+          Skill Commands
+        
+        
+          
+          
+          Copied
+        
+        
+Skills register as /skill:name commands:
+/skill:brave-search           # Load and execute the skill
+/skill:pdf-tools extract      # Load skill with arguments
+
+Arguments after the command are appended to the skill content as User: &lt;args&gt;.
+Toggle skill commands via /settings in interactive mode or in settings.json:
+{
+  &quot;enableSkillCommands&quot;: true
+}
+
+        
+          Skill Structure
+        
+        
+          
+          
+          Copied
+        
+        
+A skill is a directory with a SKILL.md file. Everything else is freeform.
+my-skill/
+├── SKILL.md              # Required: frontmatter + instructions
+├── scripts/              # Helper scripts
+│   └── process.sh
+├── references/           # Detailed docs loaded on-demand
+│   └── api-reference.md
+└── assets/
+    └── template.json
+
+        
+          SKILL.md Format
+        
+        
+          
+          
+          Copied
+        
+        
+---
+name: my-skill
+description: What this skill does and when to use it. Be specific.
+---
+
+# My Skill
+
+## Setup
+
+Run once before first use:
+```bash
+cd /path/to/skill &amp;&amp; npm install
+```
+
+## Usage
+
+```bash
+./scripts/process.sh &lt;input&gt;
+```
+
+Use relative paths from the skill directory:
+See [the reference guide](references/REFERENCE.md) for details.
+
+        
+          Frontmatter
+        
+        
+          
+          
+          Copied
+        
+        
+Per the Agent Skills specification:
+
+Field
+Required
+Description
+
+name
+Yes
+Max 64 chars. Lowercase a-z, 0-9, hyphens. Unlike the standard, Pi does not require this to match the parent directory because that standard requirement is suboptimal for shared skill directories.
+
+description
+Yes
+Max 1024 chars. What the skill does and when to use it.
+
+license
+No
+License name or reference to bundled file.
+
+compatibility
+No
+Max 500 chars. Environment requirements.
+
+metadata
+No
+Arbitrary key-value mapping.
+
+allowed-tools
+No
+Space-delimited list of pre-approved tools (experimental).
+
+disable-model-invocation
+No
+When true, skill is hidden from system prompt. Users must use /skill:name.
+
+        
+          Name Rules
+        
+        
+          
+          
+          Copied
+        
+        
+
+1-64 characters
+Lowercase letters, numbers, hyphens only
+No leading/trailing hyphens
+No consecutive hyphens
+Pi does not require the name to match the parent directory. The Agent Skills standard does, but that requirement is suboptimal for shared skill directories used by multiple tools.
+
+Valid: pdf-processing, data-analysis, code-review
+Invalid: PDF-Processing, -pdf, pdf--processing
+
+        
+          Description Best Practices
+        
+        
+          
+          
+          Copied
+        
+        
+The description determines when the agent loads the skill. Be specific.
+Good:
+description: Extracts text and tables from PDF files, fills PDF forms, and merges multiple PDFs. Use when working with PDF documents.
+
+Poor:
+description: Helps with PDFs.
+
+        
+          Validation
+        
+        
+          
+          
+          Copied
+        
+        
+Pi validates skills against the Agent Skills standard. Most issues produce warnings but still load the skill:
+
+Name exceeds 64 characters or contains invalid characters
+Name starts/ends with hyphen or has consecutive hyphens
+Description exceeds 1024 characters
+
+Unknown frontmatter fields are ignored.
+Exception: Skills with missing description are not loaded.
+Name collisions (same name from different locations) warn and keep the first skill found.
+
+        
+          Example
+        
+        
+          
+          
+          Copied
+        
+        
+brave-search/

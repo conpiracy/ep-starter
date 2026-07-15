@@ -1,0 +1,200 @@
+Keybindings · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageKey FormatAll ActionsTUI Editor Cursor MovementTUI Editor DeletionTUI InputTUI Kill RingTUI Clipboard and SelectionApplicationSessionsModels and ThinkingDisplay and Message QueueTree NavigationScoped Models SelectorCustom ConfigurationEmacs ExampleVim ExampleDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageKey FormatAll ActionsTUI Editor Cursor MovementTUI Editor DeletionTUI InputTUI Kill RingTUI Clipboard and SelectionApplicationSessionsModels and ThinkingDisplay and Message QueueTree NavigationScoped Models SelectorCustom ConfigurationEmacs ExampleVim ExampleOn this pageKey FormatAll ActionsTUI Editor Cursor MovementTUI Editor DeletionTUI InputTUI Kill RingTUI Clipboard and SelectionApplicationSessionsModels and ThinkingDisplay and Message QueueTree NavigationScoped Models SelectorCustom ConfigurationEmacs ExampleVim ExampleKeybindingsLatest··All keyboard shortcuts can be customized via ~/.pi/agent/keybindings.json. Each action can be bound to one or more keys.
+The config file uses the same namespaced keybinding ids that pi uses internally and that extension authors use in keyHint() and injected keybindings managers.
+Older configs using pre-namespaced ids such as cursorUp or expandTools are migrated automatically to the namespaced ids on startup.
+After editing keybindings.json, run /reload in pi to apply the changes without restarting the session.
+
+        
+          Key Format
+        
+        
+          
+          
+          Copied
+        
+        
+modifier+key where modifiers are ctrl, shift, alt (combinable) and keys are:
+
+Letters: a-z
+Digits: 0-9
+Special: escape, esc, enter, return, tab, space, backspace, delete, insert, clear, home, end, pageUp, pageDown, up, down, left, right
+Function: f1-f12
+Symbols: `, -, =, [, ], \, ;, &#39;, ,, ., /, !, @, #, $, %, ^, &amp;, *, (, ), _, +, |, ~, {, }, :, &lt;, &gt;, ?
+
+Modifier combinations: ctrl+shift+x, alt+ctrl+x, ctrl+shift+alt+x, ctrl+1, etc.
+
+        
+          All Actions
+        
+        
+          
+          
+          Copied
+        
+        
+
+        
+          TUI Editor Cursor Movement
+        
+        
+          
+          
+          Copied
+        
+        
+
+Keybinding id
+Default
+Description
+
+tui.editor.cursorUp
+up
+Move cursor up
+
+tui.editor.cursorDown
+down
+Move cursor down
+
+tui.editor.cursorLeft
+left, ctrl+b
+Move cursor left
+
+tui.editor.cursorRight
+right, ctrl+f
+Move cursor right
+
+tui.editor.cursorWordLeft
+alt+left, ctrl+left, alt+b
+Move cursor word left
+
+tui.editor.cursorWordRight
+alt+right, ctrl+right, alt+f
+Move cursor word right
+
+tui.editor.cursorLineStart
+home, ctrl+a
+Move to line start
+
+tui.editor.cursorLineEnd
+end, ctrl+e
+Move to line end
+
+tui.editor.jumpForward
+ctrl+]
+Jump forward to character
+
+tui.editor.jumpBackward
+ctrl+alt+]
+Jump backward to character
+
+tui.editor.pageUp
+pageUp
+Scroll up by page
+
+tui.editor.pageDown
+pageDown
+Scroll down by page
+
+        
+          TUI Editor Deletion
+        
+        
+          
+          
+          Copied
+        
+        
+
+Keybinding id
+Default
+Description
+
+tui.editor.deleteCharBackward
+backspace
+Delete character backward
+
+tui.editor.deleteCharForward
+delete, ctrl+d
+Delete character forward
+
+tui.editor.deleteWordBackward
+ctrl+w, alt+backspace
+Delete word backward
+
+tui.editor.deleteWordForward
+alt+d, alt+delete
+Delete word forward
+
+tui.editor.deleteToLineStart
+ctrl+u
+Delete to line start
+
+tui.editor.deleteToLineEnd
+ctrl+k
+Delete to line end
+
+        
+          TUI Input
+        
+        
+          
+          
+          Copied
+        
+        
+
+Keybinding id
+Default
+Description
+
+tui.input.newLine
+shift+enter, ctrl+j
+Insert new line
+
+tui.input.submit
+enter
+Submit input
+
+tui.input.tab
+tab
+Tab / autocomplete
+
+        
+          TUI Kill Ring
+        
+        
+          
+          
+          Copied
+        
+        
+
+Keybinding id
+Default
+Description
+
+tui.editor.yank

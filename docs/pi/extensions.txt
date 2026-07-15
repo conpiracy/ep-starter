@@ -1,0 +1,400 @@
+Extensions · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageTable of ContentsQuick StartExtension LocationsAvailable ImportsWriting an ExtensionAsync factory functionsLong-lived resources and shutdownExtension StylesEventsLifecycle OverviewStartup EventsResource EventsSession EventsAgent EventsModel EventsTool EventsUser Bash EventsInput EventsExtensionContextctx.uictx.modectx.hasUIctx.cwdctx.isProjectTrusted()ctx.sessionManagerctx.modelRegistry / ctx.modelctx.signalctx.isIdle() / ctx.abort() / ctx.hasPendingMessages()ctx.shutdown()ctx.getContextUsage()ctx.compact()ctx.getSystemPrompt()ExtensionCommandContextctx.getSystemPromptOptions()ctx.waitForIdle()ctx.newSession(options?)ctx.fork(entryId, options?)ctx.navigateTree(targetId, options?)ctx.switchSession(sessionPath, options?)Session replacement lifecycle and footgunsctx.reload()ExtensionAPI Methodspi.on(event, handler)pi.registerTool(definition)pi.sendMessage(message, options?)pi.sendUserMessage(content, options?)pi.appendEntry(customType, data?)pi.setSessionName(name)pi.getSessionName()pi.setLabel(entryId, label)pi.registerCommand(name, options)pi.getCommands()pi.registerMessageRenderer(customType, renderer)pi.registerEntryRenderer(customType, renderer)pi.registerShortcut(shortcut, options)pi.registerFlag(name, options)pi.exec(command, args, options?)pi.getActiveTools() / pi.getAllTools() / pi.setActiveTools(names)pi.setModel(model)pi.getThinkingLevel() / pi.setThinkingLevel(level)pi.eventspi.registerProvider(name, config)pi.unregisterProvider(name)State ManagementCustom ToolsTool DefinitionOverriding Built-in ToolsRemote ExecutionOutput TruncationMultiple ToolsCustom RenderingDynamic Tool LoadingCustom UIDialogsWidgets, Status, and FooterAutocomplete ProvidersCustom ComponentsCustom EditorMessage and Entry RenderingTheme ColorsError HandlingMode BehaviorExamples ReferenceDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageTable of ContentsQuick StartExtension LocationsAvailable ImportsWriting an ExtensionAsync factory functionsLong-lived resources and shutdownExtension StylesEventsLifecycle OverviewStartup EventsResource EventsSession EventsAgent EventsModel EventsTool EventsUser Bash EventsInput EventsExtensionContextctx.uictx.modectx.hasUIctx.cwdctx.isProjectTrusted()ctx.sessionManagerctx.modelRegistry / ctx.modelctx.signalctx.isIdle() / ctx.abort() / ctx.hasPendingMessages()ctx.shutdown()ctx.getContextUsage()ctx.compact()ctx.getSystemPrompt()ExtensionCommandContextctx.getSystemPromptOptions()ctx.waitForIdle()ctx.newSession(options?)ctx.fork(entryId, options?)ctx.navigateTree(targetId, options?)ctx.switchSession(sessionPath, options?)Session replacement lifecycle and footgunsctx.reload()ExtensionAPI Methodspi.on(event, handler)pi.registerTool(definition)pi.sendMessage(message, options?)pi.sendUserMessage(content, options?)pi.appendEntry(customType, data?)pi.setSessionName(name)pi.getSessionName()pi.setLabel(entryId, label)pi.registerCommand(name, options)pi.getCommands()pi.registerMessageRenderer(customType, renderer)pi.registerEntryRenderer(customType, renderer)pi.registerShortcut(shortcut, options)pi.registerFlag(name, options)pi.exec(command, args, options?)pi.getActiveTools() / pi.getAllTools() / pi.setActiveTools(names)pi.setModel(model)pi.getThinkingLevel() / pi.setThinkingLevel(level)pi.eventspi.registerProvider(name, config)pi.unregisterProvider(name)State ManagementCustom ToolsTool DefinitionOverriding Built-in ToolsRemote ExecutionOutput TruncationMultiple ToolsCustom RenderingDynamic Tool LoadingCustom UIDialogsWidgets, Status, and FooterAutocomplete ProvidersCustom ComponentsCustom EditorMessage and Entry RenderingTheme ColorsError HandlingMode BehaviorExamples ReferenceOn this pageTable of ContentsQuick StartExtension LocationsAvailable ImportsWriting an ExtensionAsync factory functionsLong-lived resources and shutdownExtension StylesEventsLifecycle OverviewStartup EventsResource EventsSession EventsAgent EventsModel EventsTool EventsUser Bash EventsInput EventsExtensionContextctx.uictx.modectx.hasUIctx.cwdctx.isProjectTrusted()ctx.sessionManagerctx.modelRegistry / ctx.modelctx.signalctx.isIdle() / ctx.abort() / ctx.hasPendingMessages()ctx.shutdown()ctx.getContextUsage()ctx.compact()ctx.getSystemPrompt()ExtensionCommandContextctx.getSystemPromptOptions()ctx.waitForIdle()ctx.newSession(options?)ctx.fork(entryId, options?)ctx.navigateTree(targetId, options?)ctx.switchSession(sessionPath, options?)Session replacement lifecycle and footgunsctx.reload()ExtensionAPI Methodspi.on(event, handler)pi.registerTool(definition)pi.sendMessage(message, options?)pi.sendUserMessage(content, options?)pi.appendEntry(customType, data?)pi.setSessionName(name)pi.getSessionName()pi.setLabel(entryId, label)pi.registerCommand(name, options)pi.getCommands()pi.registerMessageRenderer(customType, renderer)pi.registerEntryRenderer(customType, renderer)pi.registerShortcut(shortcut, options)pi.registerFlag(name, options)pi.exec(command, args, options?)pi.getActiveTools() / pi.getAllTools() / pi.setActiveTools(names)pi.setModel(model)pi.getThinkingLevel() / pi.setThinkingLevel(level)pi.eventspi.registerProvider(name, config)pi.unregisterProvider(name)State ManagementCustom ToolsTool DefinitionOverriding Built-in ToolsRemote ExecutionOutput TruncationMultiple ToolsCustom RenderingDynamic Tool LoadingCustom UIDialogsWidgets, Status, and FooterAutocomplete ProvidersCustom ComponentsCustom EditorMessage and Entry RenderingTheme ColorsError HandlingMode BehaviorExamples ReferenceExtensionsLatest··
+pi can create extensions. Ask it to build one for your use case.
+
+Extensions are TypeScript modules that extend pi&#39;s behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.
+
+Placement for /reload: Put extensions in ~/.pi/agent/extensions/ (global) or .pi/extensions/ (project-local) for auto-discovery. Use pi -e ./path.ts only for quick tests. Extensions in auto-discovered locations can be hot-reloaded with /reload.
+
+Key capabilities:
+
+Custom tools - Register tools the LLM can call via pi.registerTool()
+Event interception - Block or modify tool calls, inject context, customize compaction
+User interaction - Prompt users via ctx.ui (select, confirm, input, notify)
+Custom UI components - Full TUI components with keyboard input via ctx.ui.custom() for complex interactions
+Custom commands - Register commands like /mycommand via pi.registerCommand()
+Session persistence - Store state that survives restarts via pi.appendEntry()
+Custom rendering - Control how tool calls/results and messages appear in TUI
+
+Example use cases:
+
+Permission gates (confirm before rm -rf, sudo, etc.)
+Git checkpointing (stash at each turn, restore on branch)
+Path protection (block writes to .env, node_modules/)
+Custom compaction (summarize conversation your way)
+Conversation summaries (see summarize.ts example)
+Interactive tools (questions, wizards, custom dialogs)
+Stateful tools (todo lists, connection pools)
+External integrations (file watchers, webhooks, CI triggers)
+Games while you wait (see snake.ts example)
+
+See examples/extensions/ for working implementations.
+
+        
+          Table of Contents
+        
+        
+          
+          
+          Copied
+        
+        
+
+Quick Start
+Extension Locations
+Available Imports
+Writing an Extension
+Extension Styles
+
+Events
+Lifecycle Overview
+Resource Events
+Session Events
+Agent Events
+Model Events
+Tool Events
+
+ExtensionContext
+ExtensionCommandContext
+ExtensionAPI Methods
+State Management
+Custom Tools
+Dynamic Tool Loading
+
+Custom UI
+Error Handling
+Mode Behavior
+Examples Reference
+
+        
+          Quick Start
+        
+        
+          
+          
+          Copied
+        
+        
+Create ~/.pi/agent/extensions/my-extension.ts:
+import type { ExtensionAPI } from &quot;@earendil-works/pi-coding-agent&quot;;
+import { Type } from &quot;typebox&quot;;
+
+export default function (pi: ExtensionAPI) {
+  // React to events
+  pi.on(&quot;session_start&quot;, async (_event, ctx) =&gt; {
+    ctx.ui.notify(&quot;Extension loaded!&quot;, &quot;info&quot;);
+  });
+
+  pi.on(&quot;tool_call&quot;, async (event, ctx) =&gt; {
+    if (event.toolName === &quot;bash&quot; &amp;&amp; event.input.command?.includes(&quot;rm -rf&quot;)) {
+      const ok = await ctx.ui.confirm(&quot;Dangerous!&quot;, &quot;Allow rm -rf?&quot;);
+      if (!ok) return { block: true, reason: &quot;Blocked by user&quot; };
+    }
+  });
+
+  // Register a custom tool
+  pi.registerTool({
+    name: &quot;greet&quot;,
+    label: &quot;Greet&quot;,
+    description: &quot;Greet someone by name&quot;,
+    parameters: Type.Object({
+      name: Type.String({ description: &quot;Name to greet&quot; }),
+    }),
+    async execute(toolCallId, params, signal, onUpdate, ctx) {
+      return {
+        content: [{ type: &quot;text&quot;, text: `Hello, ${params.name}!` }],
+        details: {},
+      };
+    },
+  });
+
+  // Register a command
+  pi.registerCommand(&quot;hello&quot;, {
+    description: &quot;Say hello&quot;,
+    handler: async (args, ctx) =&gt; {
+      ctx.ui.notify(`Hello ${args || &quot;world&quot;}!`, &quot;info&quot;);
+    },
+  });
+}
+
+Test with --extension (or -e) flag:
+pi -e ./my-extension.ts
+
+        
+          Extension Locations
+        
+        
+          
+          
+          Copied
+        
+        
+
+Security: Extensions run with your full system permissions and can execute arbitrary code. Only install from sources you trust.
+
+Extensions are auto-discovered from trusted locations. Project-local .pi/extensions entries load only after the project is trusted.
+
+Location
+Scope
+
+~/.pi/agent/extensions/*.ts
+Global (all projects)
+
+~/.pi/agent/extensions/*/index.ts
+Global (subdirectory)
+
+.pi/extensions/*.ts
+Project-local
+
+.pi/extensions/*/index.ts
+Project-local (subdirectory)
+
+Additional paths via settings.json:
+{
+  &quot;packages&quot;: [
+    &quot;npm:@foo/bar@1.0.0&quot;,
+    &quot;git:github.com/user/repo@v1&quot;
+  ],
+  &quot;extensions&quot;: [
+    &quot;/path/to/local/extension.ts&quot;,
+    &quot;/path/to/local/extension/dir&quot;
+  ]
+}
+
+To share extensions via npm or git as pi packages, see packages.md.
+
+        
+          Available Imports
+        
+        
+          
+          
+          Copied
+        
+        
+
+Package
+Purpose
+
+@earendil-works/pi-coding-agent
+Extension types (ExtensionAPI, ExtensionContext, events)
+
+typebox
+Schema definitions for tool parameters
+
+@earendil-works/pi-ai
+AI utilities (StringEnum for Google-compatible enums)
+
+@earendil-works/pi-tui
+TUI components for custom rendering
+
+npm dependencies work too. Add a package.json next to your extension (or in a parent directory), run npm install, and imports from node_modules/ are resolved automatically.
+For distributed pi packages installed with pi install (npm or git), runtime deps must be in dependencies. Package installation uses production installs (npm install --omit=dev) by default, so devDependencies are not available at runtime; when npmCommand is configured, git packages use plain install for compatibility with wrappers.
+Node.js built-ins (node:fs, node:path, etc.) are also available.
+
+        
+          Writing an Extension
+        
+        
+          
+          
+          Copied
+        
+        
+An extension exports a default factory function that receives ExtensionAPI. The factory can be synchronous or asynchronous:
+import type { ExtensionAPI } from &quot;@earendil-works/pi-coding-agent&quot;;
+
+export default function (pi: ExtensionAPI) {
+  // Subscribe to events
+  pi.on(&quot;event_name&quot;, async (event, ctx) =&gt; {
+    // ctx.ui for user interaction
+    const ok = await ctx.ui.confirm(&quot;Title&quot;, &quot;Are you sure?&quot;);
+    ctx.ui.notify(&quot;Done!&quot;, &quot;info&quot;);
+    ctx.ui.setStatus(&quot;my-ext&quot;, &quot;Processing...&quot;);  // Footer status
+    ctx.ui.setWidget(&quot;my-ext&quot;, [&quot;Line 1&quot;, &quot;Line 2&quot;]);  // Widget above editor (default)
+  });
+
+  // Register tools, commands, shortcuts, flags
+  pi.registerTool({ ... });
+  pi.registerCommand(&quot;name&quot;, { ... });
+  pi.registerShortcut(&quot;ctrl+x&quot;, { ... });
+  pi.registerFlag(&quot;my-flag&quot;, { ... });
+}
+
+Extensions are loaded via jiti, so TypeScript works without compilation.
+If the factory returns a Promise, pi awaits it before continuing startup. That means async initialization completes before session_start, before resources_discover, and before provider registrations queued via pi.registerProvider() are flushed.
+
+        
+          Async factory functions
+        
+        
+          
+          
+          Copied
+        
+        
+Use an async factory for one-time startup work such as fetching remote configuration or dynamically discovering available models.
+import type { ExtensionAPI } from &quot;@earendil-works/pi-coding-agent&quot;;
+
+export default async function (pi: ExtensionAPI) {
+  const response = await fetch(&quot;http://localhost:1234/v1/models&quot;);
+  const payload = (await response.json()) as {
+    data: Array&lt;{
+      id: string;
+      name?: string;
+      context_window?: number;
+      max_tokens?: number;
+    }&gt;;
+  };
+
+  pi.registerProvider(&quot;local-openai&quot;, {
+    baseUrl: &quot;http://localhost:1234/v1&quot;,
+    apiKey: &quot;$LOCAL_OPENAI_API_KEY&quot;,
+    api: &quot;openai-completions&quot;,
+    models: payload.data.map((model) =&gt; ({
+      id: model.id,
+      name: model.name ?? model.id,
+      reasoning: false,
+      input: [&quot;text&quot;],
+      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      contextWindow: model.context_window ?? 128000,
+      maxTokens: model.max_tokens ?? 4096,
+    })),
+  });
+}
+
+This pattern makes the fetched models available during normal startup and to pi --list-models.
+
+        
+          Long-lived resources and shutdown
+        
+        
+          
+          
+          Copied
+        
+        
+Extension factories may run in invocations that never start a session. Do not start background resources such as processes, sockets, file watchers, or timers from the factory.
+Defer background resource startup until session_start or the command/tool/event that needs the resource. Register an idempotent session_shutdown handler to close any session-scoped resources you start.
+
+        
+          Extension Styles
+        
+        
+          
+          
+          Copied
+        
+        
+Single file - simplest, for small extensions:
+~/.pi/agent/extensions/
+└── my-extension.ts
+
+Directory with index.ts - for multi-file extensions:
+~/.pi/agent/extensions/
+└── my-extension/
+    ├── index.ts        # Entry point (exports default function)
+    ├── tools.ts        # Helper module
+    └── utils.ts        # Helper module
+
+Package with dependencies - for extensions that need npm packages:
+~/.pi/agent/extensions/
+└── my-extension/
+    ├── package.json    # Declares dependencies and entry points
+    ├── package-lock.json
+    ├── node_modules/   # After npm install
+    └── src/
+        └── index.ts
+
+// package.json
+{
+  &quot;name&quot;: &quot;my-extension&quot;,
+  &quot;dependencies&quot;: {
+    &quot;zod&quot;: &quot;^3.0.0&quot;,
+    &quot;chalk&quot;: &quot;^5.0.0&quot;
+  },
+  &quot;pi&quot;: {
+    &quot;extensions&quot;: [&quot;./src/index.ts&quot;]
+  }
+}
+
+Run npm install in the extension directory, then imports from node_modules/ work automatically.
+
+        
+          Events
+        
+        
+          
+          
+          Copied
+        
+        
+
+        
+          Lifecycle Overview
+        
+        
+          
+          
+          Copied
+        
+        
+pi starts
+  │
+  ├─► project_trust (user/global and CLI extensions only, before project resources load)
+  ├─► session_start { reason: &quot;startup&quot; }
+  └─► resources_discover { reason: &quot;startup&quot; }
+      │
+      ▼
+user sends prompt ─────────────────────────────────────────┐
+  │                                                        │
+  ├─► (extension commands checked first, bypass if found)  │
+  ├─► input (can intercept, transform, or handle)          │
+  ├─► (skill/template expansion if not handled)            │
+  ├─► before_agent_start (can inject message, modify system prompt)
+  ├─► agent_start                                          │
+  ├─► message_start / message_update / message_end         │
+  │                                                        │
+  │   ┌─── turn (repeats while LLM calls tools) ───┐       │
+  │   │                                            │       │
+  │   ├─► turn_start                               │       │
+  │   ├─► context (can modify messages)            │       │
+  │   ├─► before_provider_headers (can mutate headers)     |
+  │   ├─► before_provider_request (can inspect or replace payload)
+  │   ├─► after_provider_response (status + headers, before stream consume)
+  │   │                                            │       │
+  │   │   LLM responds, may call tools:            │       │
+  │   │     ├─► tool_execution_start               │       │
+  │   │     ├─► tool_call (can block)              │       │
+  │   │     ├─► tool_execution_update              │       │
+  │   │     ├─► tool_result (can modify)           │       │
+  │   │     └─► tool_execution_end                 │       │
+  │   │                                            │       │
+  │   └─► turn_end                                 │       │
+  │                                                        │
+  ├─► agent_end                                            │
+  └─► agent_settled (no retry/compaction/follow-up left)   │

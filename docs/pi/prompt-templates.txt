@@ -1,0 +1,147 @@
+Prompt Templates · Documentation · Pi(() => {
+  const root = document.documentElement;
+  const storageKey = "pi:theme";
+  const colorSchemeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const storedMode = localStorage.getItem(storageKey);
+  const mode = storedMode === "light" || storedMode === "dark" ? storedMode : "system";
+  const theme = mode === "system" ? (colorSchemeMediaQuery.matches ? "dark" : "light") : mode;
+
+  root.dataset.theme = theme;
+  root.dataset.themeMode = mode;
+  root.style.colorScheme = theme;
+})();window.__sa=window.__sa||function(){(__sa._=__sa._||[]).push(arguments)}
+            [data-theme-toggle] {
+              display: none;
+            }
+            @media (max-width: 1023px) {
+              #stickyNav #sticky-nav-inner-js,
+              #stickyNav .nav-sheet-backdrop,
+              #stickyNav .nav-sheet {
+                display: none;
+              }
+              #stickyNav .sticky-nav-noscript-shell {
+                display: flex;
+              }
+            }
+          Copy SVGDownload SVGPress KitHomeDocumentationNewsPackagesModelsMenuHome→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.Home→Documentation→News→Packages→Models→GitHubnpmDiscordXEarendil Inc.DocumentationGuides and references for configuring and extending Pi.NavigationOn this pageLocationsFormatArgument HintsUsageArgumentsLoading RulesDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentSearch documentation⌘ KDocumentationStart hereOverviewQuickstartUsing PiProvidersSecurityContainerizationSettingsKeybindingsSessionsCompactionCustomizationExtensionsSkillsPrompt TemplatesThemesPi PackagesCustom ModelsCustom ProvidersReferenceSession FormatProgrammatic UsageSDKRPC ModeJSON Event Stream ModeTUI ComponentsPlatform SetupWindowsTermux on AndroidtmuxTerminal SetupShell AliasesDevelopmentDevelopmentOn this pageLocationsFormatArgument HintsUsageArgumentsLoading RulesOn this pageLocationsFormatArgument HintsUsageArgumentsLoading RulesPrompt TemplatesLatest··
+pi can create prompt templates. Ask it to build one for your workflow.
+
+Prompt templates are Markdown snippets that expand into full prompts. Type /name in the editor to invoke a template, where name is the filename without .md.
+
+        
+          Locations
+        
+        
+          
+          
+          Copied
+        
+        
+Pi loads prompt templates from:
+
+Global: ~/.pi/agent/prompts/*.md
+Project: .pi/prompts/*.md (only after the project is trusted)
+Packages: prompts/ directories or pi.prompts entries in package.json
+Settings: prompts array with files or directories
+CLI: --prompt-template &lt;path&gt; (repeatable)
+
+Disable discovery with --no-prompt-templates.
+
+        
+          Format
+        
+        
+          
+          
+          Copied
+        
+        
+---
+description: Review staged git changes
+---
+Review the staged changes (`git diff --cached`). Focus on:
+- Bugs and logic errors
+- Security issues
+- Error handling gaps
+
+The filename becomes the command name. review.md becomes /review.
+description is optional. If missing, the first non-empty line is used.
+argument-hint is optional. When set, the hint is displayed before the description in the autocomplete dropdown.
+
+        
+          Argument Hints
+        
+        
+          
+          
+          Copied
+        
+        
+Use argument-hint in frontmatter to show expected arguments in autocomplete. Use &lt;angle brackets&gt; for required arguments and [square brackets] for optional ones:
+---
+description: Review PRs from URLs with structured issue and code analysis
+argument-hint: &quot;&lt;PR-URL&gt;&quot;
+---
+
+This renders in the autocomplete dropdown as:
+→ pr   &lt;PR-URL&gt;       — Review PRs from URLs with structured issue and code analysis
+  is   &lt;issue&gt;        — Analyze GitHub issues (bugs or feature requests)
+  wr   [instructions] — Finish the current task end-to-end
+  cl   — Audit changelog entries before release
+
+        
+          Usage
+        
+        
+          
+          
+          Copied
+        
+        
+Type / followed by the template name in the editor. Autocomplete shows available templates with descriptions.
+/review                           # Expands review.md
+/component Button                 # Expands with argument
+/component Button &quot;click handler&quot; # Multiple arguments
+
+        
+          Arguments
+        
+        
+          
+          
+          Copied
+        
+        
+Templates support positional arguments, defaults, and simple slicing:
+
+$1, $2, ... positional args
+$@ or $ARGUMENTS for all args joined
+${1:-default} uses arg 1 when present/non-empty, otherwise default
+${@:N} for args from the Nth position (1-indexed)
+${@:N:L} for L args starting at N
+
+Example:
+---
+description: Create a component
+---
+Create a React component named $1 with features: $@
+
+Default values are useful for optional arguments:
+Summarize the current state in ${1:-7} bullet points.
+
+Usage: /component Button &quot;onClick handler&quot; &quot;disabled support&quot;
+
+        
+          Loading Rules
+        
+        
+          
+          
+          Copied
+        
+        
+
+Template discovery in prompts/ is non-recursive.
+If you want templates in subdirectories, add them explicitly via prompts settings or a package manifest.
+
+Earendil Inc. &amp; ContributorsPress KitMIT LicenseAutoLightDarkpi.dev domain graciously donated by exe.dev
