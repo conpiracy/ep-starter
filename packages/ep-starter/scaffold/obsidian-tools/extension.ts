@@ -44,6 +44,48 @@ function findMarkdownFiles(dir: string, base: string = ""): string[] {
   return results;
 }
 
+// Working default search — case-insensitive fixed-string match across .md
+// notes. Prefers ripgrep (fast, skips hidden + .obsidian/), falls back to
+// grep. Swap for an FTS index when the vault grows large.
+function searchVault(
+  dir: string,
+  query: string,
+  max: number
+): Array<{ path: string; snippet: string }> {
+  const esc = (s: string) => s.replace(/'/g, "'\\''");
+  const q = esc(query);
+  let lines: string[] = [];
+  try {
+    lines = (execSync(
+      `rg -F -i -n --no-heading --color=never -g '*.md' -- '${q}' "${dir}"`,
+      { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"], timeout: 15000 }
+    ) || "").split(/\r?\n/).filter(Boolean);
+  } catch {
+    try {
+      lines = (execSync(
+        `grep -rIn --include='*.md' --exclude-dir=.obsidian --color=never -F -i -- '${q}' "${dir}"`,
+        { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"], timeout: 20000 }
+      ) || "").split(/\r?\n/).filter(Boolean);
+    } catch {
+      lines = [];
+    }
+  }
+  const hits: Array<{ path: string; snippet: string }> = [];
+  const seen = new Set<string>();
+  for (const line of lines) {
+    const m = line.match(/^(.*?):(\d+):(.*)$/);
+    if (!m) continue;
+    let rel = m[1];
+    if (rel.startsWith(dir)) rel = rel.slice(dir.length).replace(/^[\/\\]+/, "");
+    rel = rel.replace(/^\.\//, "");
+    if (seen.has(rel)) continue;
+    seen.add(rel);
+    hits.push({ path: rel, snippet: m[3].trim().slice(0, 160) });
+    if (hits.length >= max) break;
+  }
+  return hits;
+}
+
 export default function (pi: ExtensionAPI) {
   if (!existsSync(VAULT_PATH)) {
     pi.on("session_start", async (_event, ctx) => {
@@ -52,21 +94,36 @@ export default function (pi: ExtensionAPI) {
     return;
   }
 
-  // TODO: full-text search (grep, ripgrep, or FTS index)
   pi.registerTool({
     name: "obsidian_search",
     label: "Search Obsidian Vault",
-    description: "Search the Obsidian vault for notes matching a query.",
+    description:
+      "Search the Obsidian vault for notes matching a query (case-insensitive, " +
+      "fixed-string). Returns matching note paths with snippet previews. " +
+      "Prefers ripgrep, falls back to grep. Tailor for an FTS index if needed.",
     parameters: Type.Object({
-      query: Type.String(),
+      query: Type.String({ description: "Search query (plain text; matched as a fixed string)" }),
       max_results: Type.Optional(Type.Number({ default: 10 })),
+      folder: Type.Optional(Type.String({ description: "Limit search to a subfolder" })),
     }),
     required: ["query"],
     async execute(_toolCallId, params) {
-      const { query, max_results = 10 } = params;
+      const { query, max_results = 10, folder = "" } = params;
+      const searchDir = folder ? join(VAULT_PATH, folder) : VAULT_PATH;
+      if (!existsSync(searchDir)) {
+        return { content: [{ type: "text", text: `Search dir not found: ${searchDir}` }] };
+      }
+      const hits = searchVault(searchDir, query, max_results);
+      if (hits.length === 0) {
+        return {
+          content: [{ type: "text", text: `No notes matched "${query}".` }],
+          details: { query, folder, max_results },
+        };
+      }
+      const out = hits.map((h) => `- ${h.path}\n    ${h.snippet}`).join("\n");
       return {
-        content: [{ type: "text", text: `TODO: search vault for "${query}" (max ${max_results})` }],
-        details: { query, max_results },
+        content: [{ type: "text", text: `Matches for "${query}"\n\n${out}` }],
+        details: { query, folder, max_results, hits },
       };
     },
   });
@@ -107,7 +164,7 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  // TODO: handle confirmation prompts from `ob sync`
+  // TODO: stream sync progress; handle confirmation prompts from `ob sync`
   pi.registerTool({
     name: "obsidian_sync",
     label: "Sync Obsidian Vault",
@@ -126,8 +183,8 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     const count = findMarkdownFiles(VAULT_PATH).length;
     ctx.ui.notify(
-      `Obsidian vault: ${count} notes\nTools are stubs — implement them, then /reload.`,
-      "info"
+      `Obsidian vault ready: ${count} notes\nTools online: search · read · list · sync.`,
+      "success"
     );
   });
 }

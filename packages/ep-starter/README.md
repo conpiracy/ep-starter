@@ -1,45 +1,33 @@
-# ep-starter
+# ep-starter (Pi package)
 
-Pi package that orients you on the **Herdr + Pi** stack and walks you through building real capabilities on it.
+On-ramp package for using [Pi](https://pi.dev) with [Herdr](https://herdr.dev).
 
-The value is not “Obsidian support” or “a list of integrations.”  
-The value is that **Herdr and Pi make serious agent work tractable** — durable multi-agent sessions, tools you own, skills and packages, control via CLI — so giving an agent systematic access to work data and peer agents stops being a research project.
+## Stack (read this first)
 
-ep-starter is the on-ramp and factory surface for that.
+**Herdr** — agent multiplexer (tmux for coding agents): real panes that survive detach, agent state in the sidebar, CLI/socket so agents and scripts can control the workspace.
 
-## Stack
+**Pi** — minimal coding harness you reshape with extensions, skills, prompts, themes, and packages. Defaults are strong; opinionated features stay out of core so you build or install what you need.
 
-| Piece | Job |
-|-------|-----|
-| **Herdr** | Workspace runtime: panes, tabs, agent state, wait/read/run |
-| **Pi** | Agent you can extend: tools, skills, packages, sessions |
-| **ep-starter** | `/setup`, scaffolds, skills — first builds that prove the stack |
+**Together** — agents live in a durable workspace *and* at least one of them is fully extensible. Multi-agent layout and custom tools become normal operations.
+
+This package does not replace either product. It orients you and helps you start building on that combination.
 
 ## Commands
 
-| Command | Role |
-|---------|------|
-| `/setup` | Orientation: what the stack changes, where to start |
-| `/setup obsidian` | Worked example — knowledge vault as tools |
-| `/setup scaffold` | Same path for any capability |
-| `/scaffold <name>` | Generate an extension stub |
-| `/agents` | List peer agents (when running inside Herdr) |
-
-## Worked examples (not the product)
-
-Examples exist so you feel the transformation:
-
-- **Brand vault (Obsidian)** — marketers already store voice, offers, proof. Wiring it as tools shows “agent has my materials” without paste.
-- **Spy / any API** — `/scaffold spy-api` shows the same path for competitor intel or internal systems.
-- **Peer agents** — Herdr panes + wait/read show multi-agent work as normal ops.
-
-After the first example, the point is: **you can keep adding capabilities the same way.**
+| Command | Purpose |
+|---------|---------|
+| `/setup` | What Herdr and Pi each do, and what they do together |
+| `/setup obsidian` | Optional worked example: tool stubs for a local vault |
+| `/setup scaffold` | How to add a new capability the same way |
+| `/scaffold <name>` | Write a new extension stub under `~/.pi/agent/extensions/` |
+| `/agents` | List peer panes (only when running inside Herdr) |
 
 ## Install
 
 ```bash
-npm install -g @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 pi install git:github.com/conpiracy/ep-starter@main
+# Prefer: open pi inside a Herdr pane
 pi
 ```
 
@@ -47,27 +35,14 @@ pi
 /setup
 ```
 
-Prefer running Pi inside [Herdr](https://herdr.dev) so multi-agent and pane control are available.
-
-## Package layout
+## Package contents
 
 ```
-packages/ep-starter/
-├── extension.ts              /setup, /scaffold, /agents
-├── skills/
-│   ├── obsidian-vault.md     skill for the vault example
-│   └── herdr-operations.md   skill for Herdr control
-├── prompts/
-├── themes/
-├── scaffold/obsidian-tools/  reference stub
-├── GUIDE.md
-└── README.md
+extension.ts           /setup, /scaffold, /agents
+skills/                herdr-operations, obsidian-vault (example)
+prompts/               small templates
+scaffold/              reference stubs
+GUIDE.md               longer walkthrough
 ```
 
-## Requirements
-
-- [Pi](https://pi.dev)
-- [Herdr](https://herdr.dev) recommended
-- Optional for the vault example: [Obsidian Headless](https://obsidian.md/help/headless)
-
-Repo: [github.com/conpiracy/ep-starter](https://github.com/conpiracy/ep-starter)
+Full factory (docs, templates, examples): [github.com/conpiracy/ep-starter](https://github.com/conpiracy/ep-starter)

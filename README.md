@@ -1,102 +1,127 @@
 # ep-starter
 
-A starter factory for [Herdr](https://herdr.dev) + [Pi](https://pi.dev) — the stack that makes serious agent work tractable.
+Starter factory for running [Pi](https://pi.dev) inside [Herdr](https://herdr.dev).
 
-Without a real harness, “give the agent my brand vault” or “run three agents on this brief” is a pile of brittle scripts, pasted context, and lost sessions. With Herdr and Pi, those become normal operations: durable panes, agent state, tools you own, skills, packages, and a session that survives detach.
+---
 
-**ep-starter** is the on-ramp. It documents the stack, ships scaffolds and skills, and walks you through building the first capabilities *on* that foundation — so you see the transformation, not a plugin list.
+## Herdr
 
-## The offering (not the demos)
+> *One terminal for the whole herd.*  
+> *To coding agents what tmux is to terminals.*
 
-| Layer | What it is | Why it matters |
-|-------|------------|----------------|
-| **Herdr** | Agent-aware terminal workspace | Panes stay alive; multi-agent layout; CLI/socket control; state you can wait on |
-| **Pi** | Extensible coding agent | Tools, skills, packages, sessions — the agent is something you *shape* |
-| **ep-starter** | Factory + guided first builds | Docs, templates, `/setup` — turn the stack into *your* harness |
+Herdr is an **agent multiplexer**. A background server owns real terminal processes; clients attach to view them. Panes keep running when you detach, close the laptop, or SSH back in later.
 
-Obsidian vault access, spy APIs, CRMs, and the rest are **examples of what becomes non-trivial-but-doable** once the stack is in place. They are not the product. The product is: *you can reliably extend what agents can do and how they work together.*
+Unlike tmux, Herdr is built around coding agents:
 
-## What used to be hard
+- Detects agents in panes and shows state: `working`, `blocked`, `done`, `idle`
+- Workspaces / tabs / panes for projects and layouts
+- Mouse-first UI; prefix keybindings if you want them
+- CLI and local socket API so scripts and agents can split panes, run commands, wait on state, and read output
 
-Before a harness like this:
+**What you get:** many agents and shells in one place, still running when you leave, operable from outside the TUI.
 
-- Agent “access” meant pasting notes into chat until the window filled up
-- Background work meant hope the terminal stayed open
-- Multi-agent work meant alt-tab and guess who finished
-- Custom tools meant one-off scripts nobody reloaded cleanly
-- Sharing a setup meant “clone my dotfiles and good luck”
+Docs: [herdr.dev/docs](https://herdr.dev/docs/) · local copy: [`docs/herdr/`](./docs/herdr/)
 
-After Herdr + Pi:
+---
 
-- Data access is a tool the agent calls, owned by you
-- Work runs in panes that persist and report state
-- Peers can be started, waited on, and read from the CLI
-- Extensions hot-reload; packages bundle tools + skills + prompts
-- A factory (this repo) makes the next capability a known path
+## Pi
 
-That gap — paste-and-hope vs. systematic capability — is the value.
+> *There are many agent harnesses, but this one is yours.*
 
-## Proof points (worked examples)
+Pi is a **minimal terminal coding harness**. Strong defaults, small core. It does not bake in sub-agents, plan mode, or permission theater. You adapt Pi to your workflow — with TypeScript extensions, skills, prompt templates, themes, and packages — instead of forking the product.
 
-These are demos of the *path*, not a catalog of features:
+- Tools, commands, events, and TUI hooks via extensions
+- Skills and prompt templates for on-demand capability
+- Packages to bundle and share a setup (npm or git)
+- Interactive, print/JSON, RPC, and SDK modes
+- Sessions as trees (branch, rewind, share)
 
-| Example | Shows |
-|---------|--------|
-| `/setup obsidian` | Wire a real knowledge base as tools (marketers: brand voice, offers, proof) |
-| `/scaffold spy-api` | Same path for competitive intel or any HTTP API |
-| Herdr peer panes | Delegate, wait, read — multi-agent without babysitting |
-| Skills + packages | Teach and ship capabilities instead of re-prompting |
+**What you get:** an agent you can reshape without waiting on upstream feature requests.
 
-A marketer who can give an agent the brand vault *and* spin a research peer is not “using an Obsidian plugin.” They are running a harness where non-trivial agent work is the default.
+Docs: [pi.dev/docs](https://pi.dev/docs/) · local copy: [`docs/pi/`](./docs/pi/)
 
-## Install
+---
+
+## Together
+
+| | Alone | With the other |
+|--|--------|----------------|
+| **Herdr** | Great place to run many terminals/agents | Agents that can *drive* the workspace (split, run, wait, read peers) |
+| **Pi** | Great agent to customize | Runs as a first-class process among peers, with durable panes and shared layout |
+
+**Herdr** answers: where do agents live, how do I see them, how do they keep running, how do I control the workspace?
+
+**Pi** answers: what can *this* agent do, and how do I change that without forking?
+
+**Together:** a runtime where several agents (and shells) share a workspace, and at least one of them is fully extensible — so multi-agent work and custom tools are normal operations, not glue scripts.
+
+That combination is what this repo is for.
+
+---
+
+## What ep-starter is
+
+A **factory** on top of that stack:
+
+1. **Vendored docs** — Herdr + Pi references offline ([`docs/`](./docs/))
+2. **Pi package** — [`packages/ep-starter`](./packages/ep-starter): `/setup`, `/scaffold`, `/agents`
+3. **Skills** — how to author Herdr plugins and Pi extensions ([`skills/`](./skills/))
+4. **Templates + examples** — blank scaffolds and working samples
+
+It does **not** sell a catalog of product integrations.  
+It helps you **stand up the stack and build capabilities on it**.
+
+Worked examples (e.g. a knowledge-vault tool stub, a Herdr plugin) exist so the path is concrete. They are exercises, not the value proposition.
+
+---
+
+## Quick start
 
 ```bash
-# Pi
-npm install -g @earendil-works/pi-coding-agent
+# Herdr — https://herdr.dev/docs/install/
+curl -fsSL https://herdr.dev/install.sh | sh
+herdr
 
-# This factory / package
+# Pi — inside a Herdr pane
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 pi install git:github.com/conpiracy/ep-starter@main
-
-# Optional but central: Herdr workspace
-# https://herdr.dev/docs/install/
+pi
 ```
 
-```bash
-pi          # inside a Herdr pane if you have one
-/setup      # how the stack fits together + first build
+Inside Pi:
+
+```
+/setup              # stack orientation
+/scaffold <name>    # new capability stub
+/agents             # peer panes (when HERDR_ENV=1)
 ```
 
-## Repo layout
+---
+
+## Layout
 
 ```
 ep-starter/
-├── packages/ep-starter/     Pi package: /setup, /scaffold, skills
-├── docs/herdr/ + docs/pi/   Local stack documentation
-├── skills/                  How to build plugins and extensions
-├── examples/                Worked Herdr plugins + Pi extensions
-├── harness/templates/       Copy-and-start scaffolds
-└── packages/ep-starter/GUIDE.md
+├── packages/ep-starter/     Pi package (/setup, scaffolds, skills)
+├── docs/herdr/              Herdr agent-guide, SKILL, API notes
+├── docs/pi/                 Pi extensions, SDK, packages, …
+├── skills/                  create-herdr-plugin, create-pi-extension
+├── examples/                sample plugins + extensions
+├── harness/templates/       copy-and-start scaffolds
+└── scripts/refresh-docs.sh  re-fetch upstream docs
 ```
 
-## Commands (inside Pi)
+---
 
-| Command | Role |
-|---------|------|
-| `/setup` | Orientation: stack, value, first path |
-| `/setup obsidian` | Worked example: knowledge vault as tools |
-| `/setup scaffold` | How to add *any* capability the same way |
-| `/scaffold <name>` | Generate a new extension stub |
-| `/agents` | Peer agents in the current Herdr workspace |
+## Learn more
 
-## Requirements
+| Topic | Where |
+|-------|--------|
+| Herdr concepts + control | [`docs/herdr/agent-guide.md`](./docs/herdr/agent-guide.md), [`docs/herdr/SKILL.md`](./docs/herdr/SKILL.md) |
+| Pi extensions / packages | [`docs/pi/extensions.txt`](./docs/pi/extensions.txt), [`docs/pi/packages.txt`](./docs/pi/packages.txt) |
+| Walkthrough of this factory | [`packages/ep-starter/GUIDE.md`](./packages/ep-starter/GUIDE.md) |
+| Architecture notes | [`harness-factory-onboarding.md`](./harness-factory-onboarding.md) |
 
-- [Pi](https://pi.dev) — agent harness
-- [Herdr](https://herdr.dev) — strongly recommended; multi-agent + durable work
-- Optional for the Obsidian example: [Obsidian Headless](https://obsidian.md/help/headless)
+---
 
-## Docs
-
-- [GUIDE.md](./packages/ep-starter/GUIDE.md) — stack first, examples second
-- [harness-factory-onboarding.md](./harness-factory-onboarding.md) — architecture
-- [docs/](./docs/) — vendored Herdr + Pi references
+Herdr: [herdr.dev](https://herdr.dev) · Pi: [pi.dev](https://pi.dev)

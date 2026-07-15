@@ -1,16 +1,11 @@
 /**
- * ep-starter — on-ramp for the Herdr + Pi stack.
+ * ep-starter — Pi package on-ramp for Herdr + Pi.
  *
- * The value is the harness: durable multi-agent work (Herdr) and an agent you
- * can systematically extend (Pi). This package orients you and walks first
- * builds so that giving agents real capabilities stops being ad hoc.
+ * Herdr: agent multiplexer (tmux for coding agents).
+ * Pi: minimal harness you reshape with extensions, skills, packages.
+ * Together: multi-agent workspace + an agent that is fully yours to extend.
  *
- * Commands:
- *   /setup       Stack orientation + first build path
- *   /agents      Peer agents in the current Herdr workspace
- *   /scaffold    Generate a new capability extension
- *
- * Worked examples (vault, spy-api, …) prove the path; they are not the product.
+ * Commands: /setup, /scaffold, /agents (inside Herdr).
  */
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
@@ -47,6 +42,21 @@ function checkObsidianLoggedIn(): boolean {
   }
 }
 
+// Best-effort parse of `ob sync-list-remote` output into vault names.
+// Output format isn't guaranteed, so stay defensive.
+function parseVaultNames(out: string): string[] {
+  const names: string[] = [];
+  for (const raw of out.split(/\r?\n/)) {
+    let line = raw.trim();
+    if (!line) continue;
+    line = line.replace(/^[-*+]\s+/, "").replace(/^\d+\.\s+/, "");
+    if (!line) continue;
+    if (/^(name|vault|id|workspace|---+)\b/i.test(line)) continue;
+    names.push(line.replace(/^["']|["']$/g, ""));
+  }
+  return [...new Set(names)];
+}
+
 function piExtensionsDir(): string {
   return join(homedir(), ".pi", "agent", "extensions");
 }
@@ -58,7 +68,7 @@ export default function (pi: ExtensionAPI) {
 
   pi.registerCommand("setup", {
     description:
-      "Orient on the Herdr + Pi stack and run a first capability build. Usage: /setup [obsidian|scaffold]",
+      "What Herdr and Pi are, what they do together, how to start. Usage: /setup [obsidian|scaffold]",
     usage: "[obsidian|scaffold|help]",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
       const topic = args.trim().toLowerCase();
@@ -150,19 +160,14 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     const lines = [
       "ep-starter loaded",
-      "Herdr + Pi make serious agent work tractable. This package is the on-ramp.",
       "",
-      "  /setup            stack orientation + first build path",
-      "  /setup obsidian   worked example: knowledge vault as tools",
+      "  /setup            Herdr, Pi, and using them together",
+      "  /scaffold <name>  new Pi extension stub",
     ];
     if (inHerdr) {
-      lines.push("  /agents           peer agents in this workspace");
-    } else {
-      lines.push("  (run inside Herdr for multi-agent /agents)");
+      lines.push("  /agents           peer panes in this workspace");
     }
-    lines.push("  /scaffold <name>  next capability (same path)");
-    lines.push("");
-    lines.push("Guide: https://github.com/conpiracy/ep-starter");
+    lines.push("", "https://github.com/conpiracy/ep-starter");
     ctx.ui.notify(lines.join("\n"), "info");
   });
 }
@@ -173,26 +178,32 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
   const ui = ctx.ui;
 
   ui.notify(
-    "Worked example: knowledge vault as tools\n\n" +
-      "This is not the product — it is a first exercise on the Herdr + Pi stack.\n" +
-      "You will generate a Pi extension, implement tools with the agent, /reload,\n" +
-      "and keep a real capability. Marketers often use Obsidian for brand voice,\n" +
-      "offers, and proof, so the outcome is easy to feel.\n\n" +
-      "What you are learning: systematic agent capability, not \"an Obsidian plugin.\"",
+    "Optional exercise: vault tools as a Pi extension\n\n" +
+      "Practice the normal Pi path: extension → tools → /reload.\n" +
+      "Uses a local vault (Obsidian Headless optional) as the data source.\n" +
+      "Skip if you already know extensions; use /scaffold instead.",
     "info"
   );
 
-  const hasNode = await ui.confirm(
-    "Step 1: Prerequisites",
-    "Do you have Node.js 22+ installed?\nCheck with: node --version"
-  );
-  if (!hasNode) {
+  let nodeVersion: string | null = null;
+  try {
+    nodeVersion = execSync("node --version", {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }).trim();
+  } catch {
+    /* node not installed */
+  }
+  const major = nodeVersion ? parseInt(nodeVersion.replace(/^v/, ""), 10) : 0;
+  if (!Number.isFinite(major) || major < 22) {
     ui.notify(
-      "Install Node.js 22+ from https://nodejs.org, then run /setup obsidian again.",
+      `Node.js 22+ is required.\n  Detected: ${nodeVersion || "(not installed)"}\n` +
+        "Install from https://nodejs.org, then run /setup obsidian again.",
       "warn"
     );
     return;
   }
+  ui.notify(`Node.js ${nodeVersion} detected.`, "success");
 
   const installed = checkObsidianHeadless();
   if (!installed) {
@@ -261,41 +272,105 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
     ui.notify("Already logged in to Obsidian.", "success");
   }
 
-  ui.notify(
-    "Step 4: Check available vaults\n\n" +
-      "  ob sync-list-remote\n\n" +
-      "Create one if needed:\n  ob sync-create-remote --name \"My Agent Vault\"",
-    "info"
-  );
-
-  const hasVault = await ui.confirm(
-    "Step 4 (continued)",
-    "Do you have a remote vault ready to sync?"
-  );
-  if (!hasVault) {
-    ui.notify(
-      "Create and sync:\n" +
-        "  ob sync-create-remote --name \"My Vault\"\n" +
-        "  cd /path/to/vault\n" +
-        "  ob sync-setup --vault \"My Vault\"\n\n" +
-        "Then /setup obsidian again.",
-      "info"
-    );
-    return;
+  // Step 4: list remote vaults and let the user pick (or create one),
+  // then sync into a local path automatically — no manual shell commands.
+  let remoteVaults: string[] = [];
+  try {
+    const out = execSync("ob sync-list-remote", {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 15000,
+    });
+    remoteVaults = parseVaultNames(out);
+  } catch {
+    /* listing failed — treat as empty, fall through to create */
   }
 
-  const vaultPath = await ui.input(
-    "Local path to your synced vault\n(e.g. /home/you/vaults/my-vault):"
-  );
-  if (!vaultPath || !existsSync(vaultPath)) {
-    ui.notify(
-      "Path missing or empty. Set up sync first:\n" +
-        "  mkdir -p /path/to/vault && cd /path/to/vault\n" +
-        "  ob sync-setup --vault \"Your Vault\"\n  ob sync\n\n" +
-        "Then /setup obsidian again.",
-      "warn"
+  let vaultName: string | null = null;
+  if (remoteVaults.length > 0) {
+    vaultName = (await ui.select(
+      "Step 4: Pick a remote vault to sync",
+      remoteVaults.map((name) => ({ label: name, value: name }))
+    )) ?? null;
+  }
+
+  if (!vaultName) {
+    const create = await ui.confirm(
+      "Step 4: No remote vault selected",
+      "Create a new remote vault with:\n  ob sync-create-remote --name \"My Agent Vault\"\n\nCreate one now?"
     );
-    return;
+    if (!create) {
+      ui.notify(
+        "When you have a remote vault, run /setup obsidian again.",
+        "info"
+      );
+      return;
+    }
+    const name = (await ui.input("Name for the new vault:"))?.trim();
+    if (!name) {
+      ui.notify("No vault name given. Run /setup obsidian again later.", "warn");
+      return;
+    }
+    try {
+      execSync(`ob sync-create-remote --name "${name.replace(/"/g, '\\"')}"`, {
+        stdio: "pipe",
+        timeout: 30000,
+      });
+      vaultName = name;
+    } catch (e: any) {
+      ui.notify(
+        `Create failed: ${e.message}\nTry: ob sync-create-remote --name "${name}"\nThen /setup obsidian again.`,
+        "error"
+      );
+      return;
+    }
+  }
+
+  const defaultPath = join(
+    homedir(),
+    "vaults",
+    vaultName!.toLowerCase().replace(/\s+/g, "-")
+  );
+  const pathInput = (await ui.input(
+    `Local path to sync "${vaultName}" into\n(e.g. ${defaultPath}):`
+  ))?.trim();
+  const vaultPath = (pathInput || defaultPath).replace(/^~(?=$|\/|\\)/, homedir());
+
+  if (existsSync(vaultPath)) {
+    // Already present locally — reuse it.
+    ui.notify(`Using existing vault at ${vaultPath}.`, "info");
+  } else {
+    const setup = await ui.confirm(
+      "Step 4 (setup)",
+      `Set up sync for "${vaultName}" at:\n  ${vaultPath}\n\nThis will run:\n  mkdir -p ${vaultPath}\n  ob sync-setup --vault "${vaultName}"\n  ob sync\nProceed?`
+    );
+    if (!setup) {
+      ui.notify(
+        "Set up sync manually in a shell, then run /setup obsidian again.",
+        "info"
+      );
+      return;
+    }
+    try {
+      mkdirSync(vaultPath, { recursive: true });
+      execSync(`ob sync-setup --vault "${vaultName!.replace(/"/g, '\\"')}"`, {
+        cwd: vaultPath,
+        stdio: "pipe",
+        timeout: 60000,
+      });
+      execSync("ob sync", {
+        cwd: vaultPath,
+        stdio: "pipe",
+        timeout: 120000,
+      });
+      ui.notify(`Synced "${vaultName}" to ${vaultPath}.`, "success");
+    } catch (e: any) {
+      ui.notify(
+        `Sync setup failed: ${e.message}\nFix in a shell:\n  cd ${vaultPath}\n  ob sync-setup --vault "${vaultName}"\n  ob sync\nThen /setup obsidian again.`,
+        "error"
+      );
+      return;
+    }
   }
 
   const extDir = piExtensionsDir();
@@ -363,34 +438,30 @@ async function guideScaffold(ctx: ExtensionCommandContext) {
 
 async function showWelcome(ctx: ExtensionCommandContext, inHerdr: boolean) {
   const lines = [
-    "ep-starter — on-ramp for Herdr + Pi",
+    "Herdr — agent multiplexer",
+    "  Real panes that survive detach. Agent state. CLI/socket control.",
+    "  (tmux for coding agents; one terminal for the whole herd)",
     "",
-    "Value: the stack makes serious agent work tractable.",
-    "  Herdr  — durable panes, multi-agent control, wait/read/run",
-    "  Pi     — agent you shape with tools, skills, packages",
-    "  This   — orientation + first builds so the path is repeatable",
+    "Pi — minimal coding harness",
+    "  Extend with tools, skills, packages. Adapt the agent; don't fork it.",
+    "  (there are many harnesses; this one is yours)",
     "",
-    "Examples (vault, spy-api, …) prove the path. They are not the catalog.",
+    "Together",
+    "  Herdr is where agents live and stay running.",
+    "  Pi is an agent you can reshape.",
+    "  Combined: multi-agent workspace + fully extensible agent.",
     "",
-    "  /setup obsidian    worked example: knowledge vault as tools",
-    "  /setup scaffold    how to add any capability the same way",
+    "This package",
+    "  /setup scaffold     add a Pi capability",
+    "  /setup obsidian     optional vault-tools exercise",
+    "  /scaffold <name>    write an extension stub",
   ];
   if (inHerdr) {
-    lines.push("  /agents            peer agents in this workspace");
+    lines.push("  /agents             peer panes here");
   } else {
-    lines.push("  (start Pi inside Herdr for multi-agent /agents)");
+    lines.push("  (open pi inside Herdr for /agents)");
   }
-  lines.push(
-    "  /scaffold <name>   generate the next capability stub",
-    "",
-    "  Guide: https://github.com/conpiracy/ep-starter",
-    "",
-    "Suggested first loop:",
-    "  1. Understand the stack (/setup)",
-    "  2. Complete one worked example (/setup obsidian or /scaffold …)",
-    "  3. Implement, /reload, use it on a real job",
-    "  4. Add the next capability the same way",
-  );
+  lines.push("", "https://github.com/conpiracy/ep-starter");
   ctx.ui.notify(lines.join("\n"), "info");
 }
 
@@ -464,16 +535,17 @@ function generateObsidianScaffold(vaultPath: string): string {
   return `/**
  * obsidian-tools.ts — Obsidian vault access for Pi
  *
- * STUB: fill in the tool implementations below.
+ * Defaults below work out of the box (search runs via ripgrep or grep).
+ * Specialize the tool bodies to match your vault layout when ready.
  *
- * Prerequisites:
+ * Setup already done by /setup obsidian:
  *   npm install -g obsidian-headless
  *   ob login
- *   cd ${vaultPath} && ob sync-setup --vault "Your Vault"
+ *   ob sync-setup --vault "..."  (vault synced at ${vaultPath})
  *
  * Reference: https://obsidian.md/help/headless
  *
- * After implementing, /reload, then try:
+ * After /reload, try:
  *   "search my vault for meeting notes"
  *   "read the note about project planning"
  *   "list all notes in the /projects folder"
@@ -517,6 +589,48 @@ function findMarkdownFiles(dir: string, base: string = ""): string[] {
   return results;
 }
 
+// Working default search — case-insensitive fixed-string match across .md
+// notes. Prefers ripgrep (fast, skips hidden + .obsidian/), falls back to
+// grep. Swap for an FTS index when the vault grows large.
+function searchVault(
+  dir: string,
+  query: string,
+  max: number
+): Array<{ path: string; snippet: string }> {
+  const esc = (s: string) => s.replace(/'/g, "'\\''");
+  const q = esc(query);
+  let lines: string[] = [];
+  try {
+    lines = (execSync(
+      \`rg -F -i -n --no-heading --color=never -g '*.md' -- '\${q}' "\${dir}"\`,
+      { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"], timeout: 15000 }
+    ) || "").split(/\\r?\\n/).filter(Boolean);
+  } catch {
+    try {
+      lines = (execSync(
+        \`grep -rIn --include='*.md' --exclude-dir=.obsidian --color=never -F -i -- '\${q}' "\${dir}"\`,
+        { encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"], timeout: 20000 }
+      ) || "").split(/\\r?\\n/).filter(Boolean);
+    } catch {
+      lines = [];
+    }
+  }
+  const hits: Array<{ path: string; snippet: string }> = [];
+  const seen = new Set<string>();
+  for (const line of lines) {
+    const m = line.match(/^(.*?):(\\d+):(.*)$/);
+    if (!m) continue;
+    let rel = m[1];
+    if (rel.startsWith(dir)) rel = rel.slice(dir.length).replace(/^[\\/\\\\]+/, "");
+    rel = rel.replace(/^\\.\\//, "");
+    if (seen.has(rel)) continue;
+    seen.add(rel);
+    hits.push({ path: rel, snippet: m[3].trim().slice(0, 160) });
+    if (hits.length >= max) break;
+  }
+  return hits;
+}
+
 export default function (pi: ExtensionAPI) {
   if (!vaultReady()) {
     pi.on("session_start", async (_event, ctx) => {
@@ -529,15 +643,15 @@ export default function (pi: ExtensionAPI) {
     return;
   }
 
-  // TODO: implement full-text search (grep, ripgrep, or FTS index)
   pi.registerTool({
     name: "obsidian_search",
     label: "Search Obsidian Vault",
     description:
-      "Search the Obsidian vault for notes matching a query. " +
-      "Returns matching file paths with snippet previews.",
+      "Search the Obsidian vault for notes matching a query (case-insensitive, " +
+      "fixed-string). Returns matching note paths with snippet previews. " +
+      "Prefers ripgrep, falls back to grep. Tailor for an FTS index if needed.",
     parameters: Type.Object({
-      query: Type.String({ description: "Search query (grep-style patterns ok)" }),
+      query: Type.String({ description: "Search query (plain text; matched as a fixed string)" }),
       max_results: Type.Optional(
         Type.Number({ description: "Max results", default: 10 })
       ),
@@ -550,18 +664,26 @@ export default function (pi: ExtensionAPI) {
       const { query, max_results = 10, folder = "" } = params;
       const searchDir = folder ? join(VAULT_PATH, folder) : VAULT_PATH;
 
-      // TODO: e.g. grep -rl or rg -l against searchDir
+      if (!existsSync(searchDir)) {
+        return {
+          content: [{ type: "text", text: \`Search dir not found: \${searchDir}\` }],
+        };
+      }
+
+      const hits = searchVault(searchDir, query, max_results);
+      if (hits.length === 0) {
+        return {
+          content: [{ type: "text", text: \`No notes matched "\${query}".\` }],
+          details: { query, folder, max_results },
+        };
+      }
+      const out = hits.map((h) => \`- \${h.path}\\n    \${h.snippet}\`).join("\\n");
       return {
         content: [{
           type: "text",
-          text:
-            "obsidian_search is a stub.\\n\\n" +
-            \`Query: "\${query}"\\n\` +
-            \`Dir: \${searchDir}\\n\` +
-            \`Max: \${max_results}\\n\\n\` +
-            "Implement search in this file (see TODOs).",
+          text: \`Matches for "\${query}"\\n\\n\${out}\`,
         }],
-        details: { query, folder, max_results },
+        details: { query, folder, max_results, hits },
       };
     },
   });
@@ -695,10 +817,16 @@ export default function (pi: ExtensionAPI) {
           ctx.ui.notify("Usage: /obsidian search <query>", "warn");
           return;
         }
-        ctx.ui.notify(
-          \`Search for "\${query}" — implement in obsidian-tools.ts\`,
-          "info"
-        );
+        const hits = searchVault(VAULT_PATH, query, 20);
+        if (hits.length === 0) {
+          ctx.ui.notify(\`No notes matched "\${query}".\`, "info");
+        } else {
+          ctx.ui.notify(
+            \`Matches for "\${query}"\\n\` +
+              hits.map((h) => \`  - \${h.path}\\n      \${h.snippet}\`).join("\\n"),
+            "info"
+          );
+        }
       } else {
         ctx.ui.notify(
           "Usage:\\n  /obsidian status\\n  /obsidian sync\\n" +
@@ -712,14 +840,13 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     const fileCount = findMarkdownFiles(VAULT_PATH).length;
     ctx.ui.notify(
-      \`Obsidian vault: \${VAULT_PATH} (\${fileCount} notes)\\n\\n\` +
-        "Tools are stubs — implement TODOs in\\n" +
-        "~/.pi/agent/extensions/obsidian-tools.ts then /reload.\\n\\n" +
-        "Then try:\\n" +
+      \`Obsidian vault ready: \${VAULT_PATH} (\${fileCount} notes)\\n\\n\` +
+        "Tools online: search · read · list · sync.\\n\\n" +
+        "Try:\\n" +
         '  "search my vault for meeting notes"\\n' +
         '  "list notes in projects"\\n' +
         '  "sync my vault"',
-      "info"
+      "success"
     );
   });
 }

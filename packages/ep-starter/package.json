@@ -1,7 +1,7 @@
 {
   "name": "ep-starter",
   "version": "0.1.0",
-  "description": "On-ramp for the Herdr + Pi stack: durable multi-agent work and an agent you can systematically extend. Scaffolds and worked examples, not a plugin catalog.",
+  "description": "Pi package on-ramp for Herdr + Pi: agent multiplexer workspace + minimal extensible coding harness.",
   "type": "module",
   "main": "extension.ts",
   "keywords": ["pi-package", "ep-starter", "harness", "herdr", "pi", "multi-agent", "extensions"],
@@ -12,7 +12,7 @@
   },
   "pi": {
     "name": "ep-starter",
-    "description": "On-ramp for Herdr + Pi — stack orientation, capability scaffolds, worked examples",
+    "description": "Herdr + Pi orientation, extension scaffolds, optional vault exercise",
     "extensions": ["./extension.ts", "./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],
