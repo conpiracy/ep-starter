@@ -71,7 +71,7 @@ A **factory** on top of that stack:
 It does **not** sell a catalog of product integrations.  
 It helps you **stand up the stack and build capabilities on it**.
 
-Worked examples (e.g. a knowledge-vault tool stub, a Herdr plugin) exist so the path is concrete. They are exercises, not the value proposition.
+Worked examples (a knowledge-vault tool, a Herdr plugin) exist so the path is concrete. They are exercises, not the value proposition.
 
 ---
 
@@ -92,7 +92,7 @@ Inside Pi:
 
 ```
 /setup              # stack orientation
-/scaffold <name>    # new capability stub
+/scaffold <name>    # interview → agent researches+tests+writes the extension
 /agents             # peer panes (when HERDR_ENV=1)
 ```
 

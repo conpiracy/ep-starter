@@ -123,37 +123,12 @@ export default function (pi: ExtensionAPI) {
 
   pi.registerCommand("scaffold", {
     description:
-      "Generate a capability extension stub. Usage: /scaffold <name>  e.g. spy-api, crm, analytics",
+      "Wire a data source the agent can't reach yet. You give the minimum\n" +
+      "(service, outcome, credential); the agent researches the API, tests it,\n" +
+      "and writes the extension after it works. Usage: /scaffold <name>",
     usage: "<name>",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
-      const name = args.trim();
-      if (!name) {
-        ctx.ui.notify(
-          "Usage: /scaffold <name>\nExamples: /scaffold spy-api  /scaffold crm  /scaffold analytics\n(Name a capability the agent lacks; the stub is the start of the path.)",
-          "warn"
-        );
-        return;
-      }
-
-      const extDir = piExtensionsDir();
-      if (!existsSync(extDir)) {
-        mkdirSync(extDir, { recursive: true });
-      }
-
-      const target = join(extDir, `${name}.ts`);
-      if (existsSync(target)) {
-        ctx.ui.notify(
-          `Extension already exists: ${target}\nEdit it or choose a different name.`,
-          "warn"
-        );
-        return;
-      }
-
-      writeFileSync(target, generateScaffold(name), "utf-8");
-      ctx.ui.notify(
-        `Created ${target}\n\nEdit the stubs, then /reload.`,
-        "success"
-      );
+      await runScaffoldInterview(args, ctx, pi);
     },
   });
 
@@ -162,7 +137,7 @@ export default function (pi: ExtensionAPI) {
       "ep-starter loaded",
       "",
       "  /setup            Herdr, Pi, and using them together",
-      "  /scaffold <name>  new Pi extension stub",
+      "  /scaffold <name>  wire a source (agent researches + builds it)",
     ];
     if (inHerdr) {
       lines.push("  /agents           peer panes in this workspace");
@@ -397,23 +372,22 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
   writeFileSync(targetExt, generateObsidianScaffold(vaultPath), "utf-8");
 
   ui.notify(
-    `Scaffold ready — first capability on the stack\n\n` +
+    `First capability on the stack — ready after /reload\n\n` +
       `Extension: ${targetExt}\n` +
       `Vault path: ${vaultPath}\n\n` +
       `What this exercise teaches:\n` +
       `  - a Pi extension you own (not a black-box plugin)\n` +
       `  - tools the agent can call after /reload\n` +
       `  - a repeatable path for the next capability\n\n` +
-      `Stubs to implement:\n` +
-      `  obsidian_search / obsidian_read / obsidian_list / obsidian_sync\n\n` +
+      `Tools (all working out of the box):\n` +
+      `  obsidian_search — ripgrep/grep across .md notes, snippet previews\n` +
+      `  obsidian_read / obsidian_list / obsidian_sync — file + folder + sync\n\n` +
       `Next:\n` +
-      `  1. Implement with the agent (TODOs in the file)\n` +
-      `  2. /reload\n` +
-      `  3. Ask for work that needs the vault (e.g. brand-aware copy)\n\n` +
+      `  1. /reload (optional: ask the agent to specialize search for /brand, /offers, /proof)\n` +
+      `  2. Ask for work that needs the vault (e.g. brand-aware copy)\n\n` +
       `Then repeat the path for something else:\n` +
-      `  /scaffold spy-api | crm | analytics\n` +
-      `  (same mechanism; different materials)`,
-    "success"
+      `  /scaffold viralbuilder | spy-api | crm | analytics\n` ,
+      "success"
   );
 }
 
@@ -422,14 +396,15 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
 async function guideScaffold(ctx: ExtensionCommandContext) {
   ctx.ui.notify(
     "Add a capability the same way as the vault example\n\n" +
+      "You give the minimum; the agent does the rest.\n\n" +
       "1. Name something the agent cannot do yet\n" +
-      "2. /scaffold <name>  → extension stub in ~/.pi/agent/extensions/\n" +
-      "3. Implement tools with the agent (credentials in env vars)\n" +
+      "2. /scaffold <name>  → it asks: what service? what outcome? env var name?\n" +
+      "3. The agent searches for the API docs, tests live calls, and writes the\n" +
+      "   extension once it works — showing you the test before /reload.\n" +
       "4. /reload\n" +
       "5. Ask for work that needs that capability\n\n" +
-      "Examples of names (not a feature list):\n" +
-      "  spy-api, crm, analytics, content-calendar, support-inbox, db-query\n\n" +
-      "The stack is the product. Each scaffold is another exercise on it.",
+      "Examples of names: spy-api, crm, analytics, content-calendar, support-inbox, db-query\n\n" +
+      "You never edit a stub. The agent owns research, testing, and implementation.",
     "info"
   );
 }
@@ -454,7 +429,7 @@ async function showWelcome(ctx: ExtensionCommandContext, inHerdr: boolean) {
     "This package",
     "  /setup scaffold     add a Pi capability",
     "  /setup obsidian     optional vault-tools exercise",
-    "  /scaffold <name>    write an extension stub",
+    "  /scaffold <name>    interview, then agent researches+tests+builds it",
   ];
   if (inHerdr) {
     lines.push("  /agents             peer panes here");
@@ -465,70 +440,219 @@ async function showWelcome(ctx: ExtensionCommandContext, inHerdr: boolean) {
   ctx.ui.notify(lines.join("\n"), "info");
 }
 
-// -- Scaffold generators ------------------------------------
+// -- Scaffold interview + agent brief -----------------------
 
-function generateScaffold(name: string): string {
-  const className = name
-    .split(/[-_]/)
-    .map((s) => s[0].toUpperCase() + s.slice(1))
-    .join("");
-  const envKey = name.toUpperCase().replace(/-/g, "_") + "_API_KEY";
+// /scaffold collects the irreducible minimum only the user knows
+// (what the service is, the outcome they want, the credential), then hands
+// a brief to the agent so IT researches the API, tests it with live calls,
+// and writes the extension once it actually works. The user never edits a stub.
+async function runScaffoldInterview(
+  args: string,
+  ctx: ExtensionCommandContext,
+  pi: ExtensionAPI
+) {
+  const ui = ctx.ui;
 
-  return `/**
- * ${name}.ts — data-source extension for Pi
- *
- * Wire a real system (API, vault, CRM, DB) so the agent can call it as tools.
- * Marketers: spy APIs, brand vaults, content calendars.
- * Operators: CRM, tickets, analytics.
- * Builders: repos, logs, deploy status.
- *
- * 1. Put credentials in env vars (never hardcode secrets)
- * 2. Implement tools that fetch / search / write the source
- * 3. /reload and ask for work that needs this data
- *
- * Docs: docs/pi/extensions.txt
- * Guide: packages/ep-starter/GUIDE.md
- */
+  let name = args.trim();
+  if (!name) {
+    name = ((await ui.input(
+      "Name this source (e.g. viralbuilder, spy-api, hubspot-crm):"
+    )) ?? "").trim();
+    if (!name) {
+      ui.notify("No name given. Try: /scaffold viralbuilder", "warn");
+      return;
+    }
+  }
+  if (!/^[a-z0-9][a-z0-9_-]*$/i.test(name)) {
+    ui.notify(
+      `Invalid name "${name}". Use letters, digits, '-' or '_'.`,
+      "warn"
+    );
+    return;
+  }
 
-import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { Type } from "typebox";
+  const extDir = piExtensionsDir();
+  if (!existsSync(extDir)) mkdirSync(extDir, { recursive: true });
+  const targetExt = join(extDir, `${name}.ts`);
+  if (existsSync(targetExt)) {
+    const overwrite = await ui.confirm(
+      "Extension exists",
+      `${targetExt} already exists.\nRe-run the research+test+build flow and overwrite it?`
+    );
+    if (!overwrite) {
+      ui.notify("Keeping existing extension. Nothing changed.", "info");
+      return;
+    }
+  }
 
-export default function (pi: ExtensionAPI) {
-  // Replace with real data access.
-  // Marketers: search_ads, get_creative, list_offers
-  // Ops: get_deal, list_tickets, fetch_metrics
-  pi.registerTool({
-    name: "${name}_query",
-    label: "${className} Query",
-    description: "Query this data source. Replace with your real API/DB/vault call.",
-    parameters: Type.Object({
-      input: Type.String({ description: "What to fetch or search for" }),
-    }),
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
-      // TODO: call your API / DB / file system
-      // Prefer process.env.${envKey}
-      return {
-        content: [{
-          type: "text",
-          text: \`TODO: implement ${name} query for: \${params.input}\`,
-        }],
-        details: { input: params.input },
-      };
-    },
+  // 1) What the service is — the one thing the agent can't guess.
+  const service =
+    (
+      await ui.input(
+        `What service/API is "${name}"?\n` +
+          "One line is enough — the agent will search for the rest.\n" +
+          "e.g. 'ViralBuilder ad-creative analytics', 'HubSpot CRM API'"
+      )
+    )?.trim() || name;
+
+  // 2) The outcome the user wants — the work the tools should enable.
+  const outcome = (
+    await ui.input(
+      "What do you want the agent to DO with this?\n" +
+        "Describe the outcome, not the endpoints. e.g.\n" +
+        "  'search competitor ads by brand and fetch creative details'\n" +
+        "  'list open deals and pull contact info for each'"
+    )
+  )?.trim();
+  if (!outcome) {
+    ui.notify("No outcome given. Re-run /scaffold when you know what you want.", "warn");
+    return;
+  }
+
+  // 3) The credential — the one secret only the user has.
+  const defaultKey = name.toUpperCase().replace(/-/g, "_") + "_API_KEY";
+  const envKey =
+    (
+      await ui.input(`Env var holding your API key/token? (default: ${defaultKey})`)
+    )?.trim() || defaultKey;
+  const keyPresent = !!process.env[envKey];
+  if (!keyPresent) {
+    const proceed = await ui.confirm(
+      `Key not set: $${envKey}`,
+      `${envKey} is not set in this Pi session's environment, so the agent can't test live calls yet.\n\n` +
+        `Export it in the shell you launch pi from, then /scaffold again — OR continue now and the agent will ask you if it needs to test live. Continue?`
+    );
+    if (!proceed) {
+      ui.notify(`Set $${envKey} and re-run /scaffold ${name}.`, "info");
+      return;
+    }
+  }
+
+  // 4) Optional fast-lane — docs/base URL if the user happens to know it.
+  const hints = (
+    await ui.input(
+      "Docs URL or API base URL if you know it (blank = agent finds them):"
+    )
+  )?.trim() || "";
+
+  // 5) Confirm before handing off.
+  const go = await ui.confirm(
+    "Hand this to the agent?",
+    `The agent will:\n` +
+      `  1. search for ${service} API docs\n` +
+      `  2. test real calls with $${envKey}\n` +
+      `  3. write ${targetExt} once it works\n` +
+      `  4. show you the test + tool list before /reload\n\n` +
+      `It will ask you if it gets stuck. Proceed?`
+  );
+  if (!go) {
+    ui.notify("Cancelled. Nothing was written.", "info");
+    return;
+  }
+
+  const brief = buildScaffoldBrief({
+    name,
+    service,
+    outcome,
+    envKey,
+    keyPresent,
+    hints,
+    targetExt,
   });
 
-  pi.registerCommand("${name}", {
-    description: "Run ${name}. Usage: /${name} <args>",
-    handler: async (args: string, ctx: ExtensionCommandContext) => {
-      ctx.ui.notify(\`${name}: \${args || "(no args)"}\`, "info");
-    },
-  });
+  const briefPath = join(extDir, `${name}.task.md`);
+  writeFileSync(briefPath, brief, "utf-8");
 
-  pi.on("session_start", async (_event, ctx) => {
-    ctx.ui.notify(\`${name} extension loaded\`, "success");
-  });
+  ui.notify(
+    `Handing off to the agent...\n` +
+      `Brief saved: ${briefPath}\n` +
+      `Extension will land at: ${targetExt}`,
+    "info"
+  );
+
+  // Inject the brief as a user message so the agent picks it up and acts.
+  const sender = (pi as any).sendUserMessage ?? (pi as any).sendMessage;
+  if (typeof sender === "function") {
+    try {
+      await sender.call(pi, brief);
+      return;
+    } catch {
+      /* fall through to manual prompt */
+    }
+  }
+  // Fallback if the runtime can't inject a message: tell the user to nudge.
+  ui.notify(
+    `Couldn't auto-start the agent. In the prompt, say:\n` +
+      `  "Follow the brief at ${briefPath}"\n` +
+      `and the agent will take it from there.`,
+    "warn"
+  );
 }
-`;
+
+function buildScaffoldBrief(b: {
+  name: string;
+  service: string;
+  outcome: string;
+  envKey: string;
+  keyPresent: boolean;
+  hints: string;
+  targetExt: string;
+}): string {
+  return [
+    `# Task: wire the "${b.name}" data source as a Pi extension`,
+    ``,
+    `You are working from a brief collected by the ep-starter /scaffold wizard.`,
+    `The user has given the minimum only they know. Everything else you discover`,
+    `yourself by **researching the API and testing live calls**. Do not write a`,
+    `stub and stop.`,
+    ``,
+    `## What the user gave you`,
+    ``,
+    `- Service: ${b.service}`,
+    `- Outcome they want: ${b.outcome}`,
+    `- Credential env var: \`${b.envKey}\` (${b.keyPresent ? "currently set in your environment" : "NOT set — see below"})`,
+    b.hints ? `- Hints (docs/base URL): ${b.hints}` : `- Hints: none — find the docs yourself`,
+    `- Target file: ${b.targetExt}`,
+    ``,
+    `## How to do this (do all of it)`,
+    ``,
+    `1. **Research.** Search the web for the ${b.service} API documentation and`,
+    `   read it. Find the base URL, the auth scheme (header? query param? bearer?),`,
+    `   and the endpoints that map to the outcome the user wants. If the user gave`,
+    `   a docs URL, start there.`,
+    `2. **Test live.** Use the bash tool to curl the API against real endpoints`,
+    `   with \`$${b.envKey}\`. Start with the cheapest call that proves auth works`,
+    `   (an /me, /account, list, or health endpoint). Iterate until a real request`,
+    `   returns real data — capture the request and response. Never hardcode the`,
+    `   secret; reference \`$${b.envKey}\`.`,
+    `3. **If the key is missing**${b.keyPresent ? "" : " (it currently is)"}, ask the user to`,
+    `   \`export ${b.envKey}=...\` in the shell they launch pi from and re-run when`,
+    `   ready. Don't fake calls or invent responses.`,
+    `4. **Design tools** that deliver the outcome (${b.outcome}). Give each tool a`,
+    `   snake_case name prefixed with \`${b.name}_\`, a clear description for the`,
+    `   LLM, and TypeBox parameters. Keep tools work-shaped (search_X, get_X,`,
+    `   list_X) rather than one generic query.`,
+    `5. **Write the extension** to ${b.targetExt} using \`pi.registerTool\`. Model`,
+    `   it on any existing file in ~/.pi/agent/extensions/ (e.g. obsidian-tools.ts)`,
+    `   or the Pi extension skill. Credentials via \`process.env.${b.envKey}\` only`,
+    `   — never literals.`,
+    `6. **Verify before finishing.** Show the user: (a) the curl test output that`,
+    `   proved the API works, and (b) the list of tools you created with one-line`,
+    `   descriptions. Ask if it's right before they /reload. Do not /reload`,
+    `   yourself unless asked.`,
+    `7. **If you can't find docs or can't make a call succeed**, stop and report`,
+    `   what you tried — don't ship a broken or guessed extension.`,
+    ``,
+    `## Hard rules`,
+    `- No stub \`TODO: implement\` returns. Every tool must make a real call and`,
+    `  return real data by the time you're done.`,
+    `- No secrets in source.`,
+    `- File goes to \`${b.targetExt}\` exactly.`,
+    ``,
+    `When done: summarize the test results and the tools, and tell the user to`,
+    `run /reload.`,
+    ``,
+  ].join("\n");
 }
 
 function generateObsidianScaffold(vaultPath: string): string {

@@ -17,9 +17,9 @@ This package does not replace either product. It orients you and helps you start
 | Command | Purpose |
 |---------|---------|
 | `/setup` | What Herdr and Pi each do, and what they do together |
-| `/setup obsidian` | Optional worked example: tool stubs for a local vault |
+| `/setup obsidian` | Optional worked example: vault tools (working out of the box) |
 | `/setup scaffold` | How to add a new capability the same way |
-| `/scaffold <name>` | Write a new extension stub under `~/.pi/agent/extensions/` |
+| `/scaffold <name>` | Interview for the minimum → agent researches+tests+writes the extension |
 | `/agents` | List peer panes (only when running inside Herdr) |
 
 ## Install
@@ -41,7 +41,7 @@ pi
 extension.ts           /setup, /scaffold, /agents
 skills/                herdr-operations, obsidian-vault (example)
 prompts/               small templates
-scaffold/              reference stubs
+scaffold/              reference scaffold (working defaults)
 GUIDE.md               longer walkthrough
 ```
 

@@ -16,6 +16,6 @@ examples/                        working samples
 cp -r harness/templates/herdr-plugin/ my-plugin
 cd my-plugin && herdr plugin link .
 
-# Pi extension stub (from inside Pi)
-/scaffold my-tools
+# Pi capability (agent researches + tests + builds it)
+/scaffold viralbuilder   # asks: service? outcome? env var name?
 ```

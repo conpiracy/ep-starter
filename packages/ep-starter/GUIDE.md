@@ -43,7 +43,7 @@ That is the offering of using them together: **operable multi-agent work + an ex
 ## What this package does
 
 - Explains the above (`/setup`)
-- Helps generate Pi extension stubs (`/scaffold`)
+- Helps you add Pi capabilities (`/scaffold` interviews you for the minimum, then the agent researches the API, tests it live, and writes the extension once it works)
 - Optionally walks a concrete example (vault tools) so the path is not abstract
 - Exposes `/agents` when `HERDR_ENV=1`
 
@@ -64,8 +64,9 @@ pi
 
 ```
 /setup
-/scaffold my-tools    # or /setup obsidian for the vault exercise
-# implement stubs → /reload → use
+/scaffold viralbuilder   # it asks: service? outcome? env var name?
+# the agent searches the docs, tests real calls, writes the extension → /reload → use
+# or /setup obsidian for the (working-out-of-box) vault exercise
 ```
 
 For multi-agent control from Pi, stay inside Herdr and use the Herdr skill / CLI (`docs/herdr/SKILL.md`).
