@@ -78,9 +78,22 @@ Worked examples (a knowledge-vault tool, a Herdr plugin) exist so the path is co
 ## Quick start
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/conpiracy/ep-starter/main/install.sh | bash
+```
+
+Then:
+
+```bash
+herdr                         # start the multiplexer
+# inside a Herdr pane:
+pi                            # start Pi (ep-starter already installed)
+```
+
+### Manual / already have parts
+
+```bash
 # Herdr — https://herdr.dev/docs/install/
 curl -fsSL https://herdr.dev/install.sh | sh
-herdr
 
 # Pi — inside a Herdr pane
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent

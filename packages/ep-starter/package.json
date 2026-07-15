@@ -16,8 +16,7 @@
     "extensions": ["./extension.ts", "./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],
-    "themes": ["./themes"],
-    "image": "https://raw.githubusercontent.com/conpiracy/ep-starter/main/assets/harness-banner.png"
+    "themes": ["./themes"]
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.0",

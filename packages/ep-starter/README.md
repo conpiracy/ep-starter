@@ -25,9 +25,14 @@ This package does not replace either product. It orients you and helps you start
 ## Install
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/conpiracy/ep-starter/main/install.sh | bash
+```
+
+Then `herdr` and `pi` (inside a pane). Manual / partial install:
+
+```bash
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 pi install git:github.com/conpiracy/ep-starter@main
-# Prefer: open pi inside a Herdr pane
 pi
 ```
 

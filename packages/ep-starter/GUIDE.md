@@ -52,10 +52,17 @@ It is a factory on-ramp, not a replacement for Herdr or Pi docs.
 ## Suggested path
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/conpiracy/ep-starter/main/install.sh | bash
+herdr
+# inside a Herdr pane:
+pi
+```
+
+Manual / partial:
+
+```bash
 # 1. Herdr
 curl -fsSL https://herdr.dev/install.sh | sh
-herdr
-
 # 2. Pi inside a pane
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 pi install git:github.com/conpiracy/ep-starter@main
