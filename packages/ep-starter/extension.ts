@@ -1,17 +1,17 @@
 /**
- * ep-starter — The harness factory extension.
+ * ep-starter — Give your agents the data they need to do real work.
  *
  * Provides:
- *   /setup       Interactive guide to extend your harness
+ *   /setup       Map of data sources + guided connect wizards
  *   /agents      List peer agents in the current Herdr workspace
- *   /scaffold    Generate a new extension scaffold
+ *   /scaffold    Generate a new data-source extension
  *
- * This is the control panel for the ep-starter factory. From here, users
- * can add Obsidian vault access, create custom tools, wire up multi-agent
- * workflows, and publish their own pi packages.
+ * This is how marketers, operators, and builders wire brand vaults (Obsidian),
+ * spy/ad intel APIs, CRMs, analytics, and other systems into the agent as
+ * reliable tool calls — so the agent can accomplish work, not invent context.
  *
  * ═══════════════════════════════════════════════════════════════════════════
- *  "Start here, build anything." — ep-starter
+ *  "Agents don't need more chat. They need access." — ep-starter
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -58,10 +58,10 @@ function piExtensionsDir(): string {
 export default function (pi: ExtensionAPI) {
   const inHerdr = checkHerdr();
 
-  // ── /setup — Guided harness extension wizard ────────
+  // ── /setup — Connect data sources your agent needs ──
   pi.registerCommand("setup", {
     description:
-      "🧰 Guided wizard to extend your Pi harness. Add Obsidian vault access, custom tools, skills, and more.",
+      "🧰 Connect data sources so your agent can do real work — brand vaults, spy APIs, CRMs, custom tools.",
     usage: "[obsidian|scaffold|help]",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
       const topic = args.trim().toLowerCase();
@@ -117,16 +117,16 @@ export default function (pi: ExtensionAPI) {
     });
   }
 
-  // ── /scaffold — Generate extension scaffold files ───
+  // ── /scaffold — Generate a new data-source extension ─
   pi.registerCommand("scaffold", {
     description:
-      "Generate a new extension scaffold. Usage: /scaffold <name>",
+      "Generate a data-source extension. Usage: /scaffold <name>  e.g. spy-api, crm, analytics",
     usage: "<name>",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
       const name = args.trim();
       if (!name) {
         ctx.ui.notify(
-          "Usage: /scaffold <name>\nExample: /scaffold my-tools",
+          "Usage: /scaffold <name>\nExamples: /scaffold spy-api  /scaffold crm  /scaffold analytics",
           "warn"
         );
         return;
@@ -159,17 +159,18 @@ export default function (pi: ExtensionAPI) {
   // ── Startup greeting ─────────────────────────────────
   pi.on("session_start", async (_event, ctx) => {
     const lines = [
-      "🏭 ep-starter loaded!",
+      "🏭 ep-starter loaded",
+      "   Give your agents the data they need to do real work.",
       "",
-      "  /setup            → Guided wizard (extend your harness)",
-      "  /setup obsidian   → Add Obsidian vault access",
+      "  /setup            → Map of connectable data sources",
+      "  /setup obsidian   → Brand vault access (marketers' first unlock)",
     ];
     if (inHerdr) {
-      lines.push("  /agents           → See peer agents in this workspace");
+      lines.push("  /agents           → Peer agents in this workspace");
     }
-    lines.push("  /scaffold <name>  → Generate a new extension");
+    lines.push("  /scaffold <name>  → Wire a new source (spy-api, crm, ...)");
     lines.push("");
-    lines.push("📖 Read the full guide: https://github.com/lzy/ep-starter");
+    lines.push("📖 Guide: https://github.com/conpiracy/ep-starter");
 
     ctx.ui.notify(lines.join("\n"), "info");
   });
@@ -181,11 +182,12 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
   const ui = ctx.ui;
 
   ui.notify(
-    "═══ 📓 Obsidian Headless Integration ═══\n\n" +
-      "This wizard will guide you through giving Pi access to your Obsidian vault.\n" +
-      "When complete, your agent will be able to search, read, and query your notes\n" +
-      "using custom tools — all from the Pi prompt.\n\n" +
-      "We'll build the actual extension together step by step.",
+    "═══ 📓 Connect a brand / knowledge vault ═══\n\n" +
+      "Marketers keep brand voice, offers, proof, and past winners in Obsidian.\n" +
+      "Once the vault is wired in, your agent can write from *your* materials\n" +
+      "instead of inventing generic copy.\n\n" +
+      "This wizard sets up the path. You and the agent implement the tools next.\n" +
+      "After that, vault access is a tool call away.",
     "info"
   );
 
@@ -338,38 +340,35 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
 
   ui.notify(
     "═══════════════════════════════════════════════════════════════\n" +
-      "  ✅ Obsidian scaffold generated!\n\n" +
+      "  ✅ Brand vault scaffold ready\n\n" +
       `  Extension: ${targetExt}\n` +
       `  Vault:     ${vaultPath}\n` +
       "═══════════════════════════════════════════════════════════════\n\n" +
-      "What just happened:\n" +
-      "  1. A Pi extension was created with tool stubs for:\n" +
-      "     • obsidian_search  — full-text search your vault\n" +
-      "     • obsidian_read    — read a note by path\n" +
-      "     • obsidian_list    — list notes in a folder\n" +
-      "     • obsidian_sync    — trigger ob sync\n" +
-      "  2. The tools call the 'ob' CLI under the hood\n" +
-      "  3. After you /reload, your agent can access your vault\n\n" +
+      "What this unlocks for marketers:\n" +
+      "  • Search brand voice, offers, proof, past campaigns\n" +
+      "  • Read specific notes the agent needs for copy\n" +
+      "  • List folders like /offers, /proof, /campaigns\n" +
+      "  • Sync latest vault changes before writing\n\n" +
+      "Tools scaffolded (stubs — implement next):\n" +
+      "  • obsidian_search  — find notes by keyword / claim\n" +
+      "  • obsidian_read    — pull a note by path\n" +
+      "  • obsidian_list    — browse vault folders\n" +
+      "  • obsidian_sync    — trigger ob sync\n\n" +
       "═══ NEXT STEPS ═══\n\n" +
-      "  🛠️  The extension is a STUB — it needs implementation.\n" +
-      "     Open the file and fill in the tool logic.\n" +
-      "     (See the TODO comments in each function.)\n\n" +
-      "  📖  Reference:\n" +
-      "     Obsidian Headless docs → https://obsidian.md/help/headless\n" +
-      "     ob CLI commands:\n" +
-      "       ob sync           — sync vault changes\n" +
-      "       ob sync-status    — check sync state\n" +
-      "       ob publish --dry-run — preview publish\n\n" +
-      "  🔧  After implementing:\n" +
-      "     /reload         → load the extension\n" +
-      '     Ask your agent:  "search my vault for meeting notes"\n' +
-      '                      "read the note about project X"\n' +
-      '                      "sync my vault"\n\n' +
-      "  📦  To share your extension as a package:\n" +
-      "     /setup scaffold → generate more extensions\n" +
-      "     Publish to npm  → pi add @you/obsidian-tools\n\n" +
+      "  1. Implement with your agent (the stubs have TODOs):\n" +
+      '     "Read ~/.pi/agent/extensions/obsidian-tools.ts and\n' +
+      '      implement search with ripgrep for brand folders."\n\n' +
+      "  2. /reload\n\n" +
+      "  3. Ask for real work:\n" +
+      '     "Search my vault for hero claims and write 3 LinkedIn posts."\n' +
+      '     "Read brand-voice.md and draft a cold email sequence."\n' +
+      '     "List notes in /proof and pick 5 testimonials."\n\n' +
+      "  Next data source (same path):\n" +
+      "     /scaffold spy-api   → competitor intel for marketers\n" +
+      "     /scaffold crm       → customer context\n" +
+      "     /scaffold analytics → performance data\n\n" +
       "═══════════════════════════════════════════════════════════════\n" +
-      "  🏭  \"Start here, build anything.\" — ep-starter\n" +
+      "  Agents don't need more chat. They need access.\n" +
       "═══════════════════════════════════════════════════════════════",
     "success"
   );
@@ -380,15 +379,19 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
 async function guideScaffold(ctx: ExtensionCommandContext) {
   const ui = ctx.ui;
   ui.notify(
-    "═══ 🏗️ Extension Scaffold Generator ═══\n\n" +
-      "Use /scaffold <name> to generate a new extension file.\n\n" +
-      "Examples:\n" +
-      "  /scaffold my-tools       → Custom tool set\n" +
-      "  /scaffold api-gateway    → API integration tools\n" +
-      "  /scaffold db-query       → Database query tools\n\n" +
-      "Extensions are auto-discovered from:\n" +
-      "  ~/.pi/agent/extensions/*.ts\n\n" +
-      "After generating, run /reload to activate.",
+    "═══ 🏗️ Wire any data source ═══\n\n" +
+      "Same path as Obsidian — generate a scaffold, implement tools\n" +
+      "with your agent, /reload, then the source is a tool call away.\n\n" +
+      "Marketer-shaped examples:\n" +
+      "  /scaffold spy-api           → competitor ad / creative intel\n" +
+      "  /scaffold crm               → HubSpot / Salesforce context\n" +
+      "  /scaffold analytics         → ad + web metrics\n" +
+      "  /scaffold content-calendar  → Notion / Airtable boards\n\n" +
+      "Operator / builder examples:\n" +
+      "  /scaffold support-inbox     → tickets / Intercom\n" +
+      "  /scaffold db-query          → warehouse or app DB\n\n" +
+      "Files land in ~/.pi/agent/extensions/\n" +
+      "Implement stubs → /reload → ask for work that needs that data.",
     "info"
   );
 }
@@ -399,33 +402,37 @@ async function showWelcome(ctx: ExtensionCommandContext, inHerdr: boolean) {
   const ui = ctx.ui;
   const lines = [
     "═══════════════════════════════════════════════════════",
-    "  🏭  ep-starter — Harness Factory",
-    '       "Start here, build anything."',
+    "  🏭  ep-starter",
+    "      Give your agents the data they need to do real work.",
     "═══════════════════════════════════════════════════════",
     "",
-    "  /setup obsidian    → Give your agent Obsidian vault access",
-    "  /setup scaffold    → Generate custom extension scaffolds",
+    "  Agents get useful when they can reach *your* world:",
+    "    brand vaults · spy APIs · CRMs · analytics · more",
+    "",
+    "  /setup obsidian    → Brand vault (marketers' first unlock)",
+    "  /setup scaffold    → Pattern for any data source",
   ];
   if (inHerdr) {
-    lines.push("  /agents            → See peer agents in this workspace");
+    lines.push("  /agents            → Peer agents in this workspace");
   }
   lines.push(
-    "  /scaffold <name>   → Generate a new extension file",
+    "  /scaffold <name>   → Wire spy-api, crm, analytics, ...",
     "",
-    "  📖 Guide:  https://github.com/lzy/ep-starter",
-    "  📦 Pkg:    pi add ep-starter",
+    "  📖 Guide:  https://github.com/conpiracy/ep-starter",
     "",
     "───────────────────────────────────────────────────────",
-    "  Getting started:",
+    "  Path to useful agents:",
     "",
     "  1️⃣  /setup obsidian",
-    "      Walk through connecting Obsidian Headless.",
-    "      After implementation, your agent can search notes.",
+    "      Connect brand voice, offers, proof, past campaigns.",
+    "      Then: write copy that uses *your* materials.",
     "",
-    "  2️⃣  /scaffold my-tools",
-    "      Generate an extension scaffold and /reload.",
+    "  2️⃣  /scaffold spy-api",
+    "      Connect competitor intel the same way.",
+    "      Then: research + draft without paste-and-pray.",
     "",
-    "  3️⃣  Ask your agent to use the new tools.",
+    "  3️⃣  /reload and ask for real work.",
+    "      Every source becomes a tool call away.",
     "───────────────────────────────────────────────────────",
   );
   ui.notify(lines.join("\n"), "info");
@@ -441,31 +448,43 @@ function generateScaffold(name: string): string {
     .join("");
 
   return `/**
- * ${name}.ts — Auto-generated Pi extension
+ * ${name}.ts — Data-source extension for Pi
  *
- * Extend this with your own tools, event handlers, and commands.
+ * Wire a real system (API, vault, CRM, DB, etc.) so the agent can use it
+ * as tool calls. Marketers: spy APIs, brand vaults, content calendars.
+ * Operators: CRM, tickets, analytics. Builders: repos, logs, deploy status.
  *
- * API Reference: docs/pi/extensions.txt
- * Package Guide: docs/pi/packages.txt
+ * Pattern:
+ *   1. Put credentials in env vars (never hardcode secrets)
+ *   2. Implement tools that fetch / search / write the source
+ *   3. /reload and ask for work that needs this data
+ *
+ * Docs: docs/pi/extensions.txt  |  Guide: packages/ep-starter/GUIDE.md
  */
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
 export default function (pi: ExtensionAPI) {
-  // ── Tool stub ─────────────────────────────────────────
+  // ── Tool stub — replace with real data access ─────────
+  // Examples for marketers: search_ads, get_creative, list_offers
+  // Examples for ops: get_deal, list_tickets, fetch_metrics
   pi.registerTool({
-    name: "${name}_example",
-    label: "${className} Example",
-    description: "An example tool. Replace with your own logic.",
+    name: "${name}_query",
+    label: "${className} Query",
+    description: "Query this data source. Replace with your real API/DB/vault call.",
     parameters: Type.Object({
-      input: Type.String({ description: "Input for the tool" }),
+      input: Type.String({ description: "What to fetch or search for" }),
     }),
     async execute(toolCallId, params, signal, onUpdate, ctx) {
-      // TODO: implement your tool logic here
+      // TODO: call your API / DB / file system here
+      // Prefer process.env for keys: process.env.${name.toUpperCase().replace(/-/g, "_")}_API_KEY
       // onUpdate({ kind: "status", key: "progress", value: "..." });
       return {
-        content: [{ type: "text", text: \`Processed: \${params.input}\` }],
+        content: [{
+          type: "text",
+          text: \`TODO: implement ${name} query for: \${params.input}\`,
+        }],
         details: { input: params.input },
       };
     },

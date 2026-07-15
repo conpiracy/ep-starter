@@ -1,125 +1,93 @@
-# 🏗️ Harness Templates & Skills Quick Reference
+# 🏗️ Data Sources & Templates Quick Reference
 
-> Everything you need to create Herdr plugins and Pi extensions/packages.
+> **Give your agents the data they need to do real work.**
 
-## What's Available
+ep-starter is not a plugin zoo. It's a reliable path to wire any source —
+brand vaults, spy APIs, CRMs, analytics — into the agent as tool calls.
+
+## What's available
 
 ```
-skills/                              ← Skills that teach AI to build things
-├── create-herdr-plugin.md           ★ Build Herdr workflow plugins
-└── create-pi-extension.md           ★ Build Pi extensions & packages
+skills/
+├── create-herdr-plugin.md       Build Herdr workflow plugins
+└── create-pi-extension.md       Build Pi data-source extensions
 
-examples/                            ← Working, copy-pasteable examples
-├── herdr-plugins/
-│   ├── hello-world/                 Minimal Herdr plugin (actions + env)
-│   └── agent-notify/                Event hooks + state watching
-└── pi-extensions/
-    ├── herdr-tools.ts               ★ Control Herdr from Pi
-    ├── supervisor.ts                Multi-agent orchestration
-    └── simple-tool.ts               Minimal extension (tools + events)
+packages/ep-starter/
+├── extension.ts                 /setup · /scaffold · /agents
+├── skills/obsidian-vault.md     Brand vault usage skill
+├── GUIDE.md                     Full walkthrough
+└── scaffold/obsidian-tools/     Reference vault scaffold
 
-harness/templates/                   ← Scaffold templates (copy & start)
-├── herdr-plugin/                    New Herdr plugin scaffold
-│   ├── herdr-plugin.toml
-│   └── scripts/my-action.sh
-└── pi-package/                      New Pi package scaffold
-    ├── package.json
-    ├── extension.ts
-    ├── skills/my-skill.md
-    ├── prompts/review.md + test.md
-    ├── themes/harness-theme.json
-    └── extensions/ (extra extensions dir)
+examples/
+├── herdr-plugins/               Working Herdr plugins
+└── pi-extensions/               Working Pi extensions
 
-packages/@lzy/                       ← Your published packages go here
+harness/templates/
+├── herdr-plugin/                Copy-and-start Herdr plugin
+└── pi-package/                  Copy-and-start Pi package
 ```
 
-## Quick Start — Herdr Plugin
+## Path: connect a source
+
+```
+/setup                    # map of sources
+/setup obsidian           # brand vault (marketers first)
+/scaffold spy-api         # competitor intel next
+# implement stubs with your agent
+/reload
+# ask for real work that needs that data
+```
+
+## Why Obsidian first (marketers)
+
+| Vault holds | Agent can |
+|-------------|-----------|
+| Brand voice | Write on-brand copy |
+| Offers / ICPs | Target the right angle |
+| Proof / testimonials | Ground claims in real material |
+| Past winners | Reuse what already worked |
+
+## Why spy APIs next (marketers)
+
+| API holds | Agent can |
+|-----------|-----------|
+| Competitor ads | Research angles without dashboards |
+| Creatives / hooks | Draft informed alternatives |
+| + brand vault | Match intel to *your* voice |
+
+## Quick starts
+
+### Brand vault
+
+```
+/setup obsidian
+# follow wizard → implement stubs → /reload
+# "Search my vault for hero claims and write 3 LinkedIn posts."
+```
+
+### Any new source
+
+```
+/scaffold spy-api
+# edit ~/.pi/agent/extensions/spy-api.ts with your agent
+/reload
+# "Pull top Meta ads for competitor X and draft 5 hooks."
+```
+
+### Herdr plugin
 
 ```bash
-# Copy the template
-cp -r harness/templates/herdr-plugin/ my-awesome-plugin
-cd my-awesome-plugin
-
-# Edit the manifest
-vim herdr-plugin.toml   # change id, name, description
-
-# Create your action script
-cat > scripts/my-action.sh << 'SCRIPT'
-#!/usr/bin/env bash
-echo "My plugin ran! Workspace: $HERDR_WORKSPACE_ID"
-"${HERDR_BIN_PATH:-herdr}" workspace list
-SCRIPT
-chmod +x scripts/my-action.sh
-
-# Link and test
+cp -r harness/templates/herdr-plugin/ my-plugin
+cd my-plugin
+# edit herdr-plugin.toml + scripts
 herdr plugin link .
 herdr plugin action invoke your-name.plugin-name.my-action
-
-# Unlink when done
-herdr plugin unlink your-name.plugin-name
 ```
 
-## Quick Start — Pi Extension
+## Skills for building more
 
-```bash
-# Create a minimal extension
-cat > my-extension.ts << 'EOF'
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { Type } from "typebox";
-export default function (pi: ExtensionAPI) {
-  pi.registerTool({
-    name: "hello",
-    parameters: Type.Object({ name: Type.String() }),
-    async execute(_, params) {
-      return { content: [{ type: "text", text: `Hello ${params.name}!` }] };
-    },
-  });
-}
-EOF
+When you want the agent to create a new source:
 
-# Test it
-pi -e ./my-extension.ts
+> "Read skills/create-pi-extension.md and scaffold tools for our ad spy API."
 
-# Install it permanently
-cp my-extension.ts ~/.pi/agent/extensions/
-# Then /reload inside Pi
-```
-
-## Quick Start — Pi Package
-
-```bash
-# Copy the template
-cp -r harness/templates/pi-package/ packages/@lzy/my-package
-cd packages/@lzy/my-package
-
-# Edit package.json — set name, description, pi fields
-# Edit extension.ts — add your tools and commands
-# Add skills, prompts, themes as needed
-
-# Test locally
-pi install ./packages/@lzy/my-package
-
-# When ready, publish to npm
-npm publish
-
-# Users install with:
-pi add @lzy/my-package
-```
-
-## Using the Skills
-
-When you want the AI to build something for you, reference the skills:
-
-```
-I need a Herdr plugin that... 
-  → The AI should read skills/create-herdr-plugin.md
-
-I need a Pi extension that...
-  → The AI should read skills/create-pi-extension.md
-```
-
-Or directly prompt:
-
-> "Read skills/create-herdr-plugin.md and help me build a plugin that sends Slack notifications when agents finish."
-
-> "Read skills/create-pi-extension.md and create an extension that registers a tool to query my API."
+> "Read skills/create-herdr-plugin.md and build a plugin that notifies Slack when agents finish."

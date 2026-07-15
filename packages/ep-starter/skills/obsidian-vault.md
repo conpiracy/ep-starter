@@ -1,44 +1,49 @@
 ---
 name: obsidian-vault
 description: >
-  Access and search an Obsidian vault via the 'ob' CLI (Obsidian Headless).
-  Use when the user asks about their notes, wants to search knowledge base,
-  read specific notes, or sync their vault. Only use if obsidian-tools
-  extension is loaded and configured.
+  Access a brand / knowledge vault via Obsidian tools. Use when writing copy,
+  researching offers, pulling proof/testimonials, matching brand voice, or
+  when the user mentions notes, vault, brand materials, or Obsidian.
 ---
 
-# Obsidian Vault Access
+# Brand Vault Access (Obsidian)
 
-This skill works with the `obsidian-tools` Pi extension. After the extension
-is loaded (/reload), your agent can search, read, and manage notes in your
-Obsidian vault using the tools registered by the extension.
+Your job is not to invent brand voice. Use the vault.
+
+Marketers store high-value materials here:
+
+- brand voice and positioning
+- offers, ICPs, objections
+- proof, testimonials, case notes
+- past winning campaigns and swipe files
+- research and customer language
+
+## Tools
+
+- `obsidian_search(query, max_results?)` — find notes by claim, offer, keyword
+- `obsidian_read(path)` — read a specific note
+- `obsidian_list(folder?, recursive?)` — browse folders
+- `obsidian_sync()` — pull latest vault changes
 
 ## Commands
 
-The `/obsidian` command provides quick access:
-
 ```
-/obsidian status       → Check sync status
-/obsidian sync         → Trigger sync
-/obsidian list [dir]   → List notes in a folder
-/obsidian search <q>   → Search notes
+/obsidian status
+/obsidian sync
+/obsidian list [dir]
+/obsidian search <query>
 ```
 
-## Available Tools
+## How to work
 
-The extension registers four tools the LLM can call:
+1. **Search before writing** — pull brand voice, offers, and proof first.
+2. **Cite the source** — mention which notes informed the draft.
+3. **Prefer vault language** — customer phrases beat invented marketing-speak.
+4. **Sync when asked** — or when content looks stale.
 
-- `obsidian_search(query, max_results?)` — full-text search
-- `obsidian_read(path)` — read a note by relative path
-- `obsidian_list(folder?, recursive?)` — list notes in a folder
-- `obsidian_sync()` — trigger ob sync
+## Example jobs
 
-## Usage Examples
-
-Ask your agent naturally:
-
-> "Search my vault for meeting notes from last week."
-> "Read the note about project architecture."
-> "List all notes in the projects folder."
-> "Sync my vault to get the latest changes."
-> "What notes do I have about machine learning?"
+> "Search my vault for hero claims and write 3 LinkedIn posts."
+> "Read brand-voice.md and draft a cold email sequence."
+> "List notes in /proof and pick 5 testimonials for a landing page."
+> "Find past winning hooks and adapt them for a new offer."

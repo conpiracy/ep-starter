@@ -1,23 +1,23 @@
 {
   "name": "ep-starter",
   "version": "0.1.0",
-  "description": "🏭 ep-starter — Harness factory for extending Pi with custom tools, skills, and multi-agent orchestration. Start here, build anything.",
+  "description": "Give your agents the data they need to do real work — brand vaults, spy APIs, CRMs, and more. Guided setup turns any source into a tool call.",
   "type": "module",
   "main": "extension.ts",
-  "keywords": ["pi-package", "ep-starter", "harness", "obsidian", "herdr"],
-  "homepage": "https://github.com/lzy/ep-starter",
+  "keywords": ["pi-package", "ep-starter", "harness", "obsidian", "spy-api", "marketing", "data-access", "herdr"],
+  "homepage": "https://github.com/conpiracy/ep-starter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lzy/ep-starter.git"
+    "url": "https://github.com/conpiracy/ep-starter.git"
   },
   "pi": {
     "name": "ep-starter",
-    "description": "🏭 Harness factory: guided setup, custom extensions, Obsidian integration scaffold, multi-agent orchestration",
+    "description": "Give agents reliable access to the data they need — Obsidian brand vaults, spy APIs, CRMs, and custom sources",
     "extensions": ["./extension.ts", "./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],
     "themes": ["./themes"],
-    "image": "https://raw.githubusercontent.com/lzy/ep-starter/main/assets/harness-banner.png"
+    "image": "https://raw.githubusercontent.com/conpiracy/ep-starter/main/assets/harness-banner.png"
   },
   "dependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.0",

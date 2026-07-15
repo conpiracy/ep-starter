@@ -1,243 +1,294 @@
 # 📖 ep-starter Guide
 
-> **"Start here, build anything."**
+> **Give your agents the data they need to do real work.**
 
-This guide walks you through the full ep-starter workflow: install, run the
-setup wizard, connect your Obsidian vault, and implement the tools so your
-agent can access your notes.
+This guide is for people who want agents that can *ship work* — not just chat.
+If you're a marketer, operator, researcher, or builder, the path is the same:
+connect the data sources your work depends on, then let the agent use them.
 
 ---
 
-## 🚀 Quick Install
+## The idea in one picture
+
+```
+  YOUR WORLD                         AGENT WORLD
+  ─────────                          ───────────
+
+  Obsidian brand vault  ──tools──►  write on-brand copy
+  Spy / ad intel APIs   ──tools──►  research competitors
+  CRM / tickets         ──tools──►  draft updates, triage
+  Analytics             ──tools──►  report + recommend
+  Content calendars     ──tools──►  plan + produce
+
+  ep-starter makes each of those arrows reliable.
+```
+
+Without access, agents invent. With access, agents *use your materials*.
+
+---
+
+## Install
 
 ```bash
-# Install Pi (if you haven't already)
 npm install -g @earendil-works/pi-coding-agent
-
-# Install ep-starter
-pi add ep-starter
-
-# Run Pi
+pi install git:github.com/conpiracy/ep-starter@main
 pi
 ```
 
-Once inside Pi, run:
+Inside Pi:
 
 ```
 /setup
 ```
 
-This shows the welcome screen with all available commands.
+You'll see the map of what you can connect.
 
 ---
 
-## 📓 Adding Obsidian Access
+## Showcase 1: Obsidian for marketers
+
+### Why this is the first unlock
+
+Marketers already keep the high-value context in Obsidian:
+
+- brand voice and positioning
+- offers, ICPs, objections
+- proof, testimonials, case notes
+- past winners and swipe files
+- research and customer language
+
+Once the vault is a tool, prompts like this stop being fantasy:
+
+> "Search my vault for winning hooks from Q1 and write 5 new LinkedIn openers
+> in our brand voice."
 
 ### What you'll build
 
 ```
-                          ┌──────────────────┐
-                          │   Pi Agent       │
-                          │  (your AI)       │
-                          └──────┬───────────┘
-                                 │ calls tools
-                                 ▼
-                     ┌───────────────────────┐
-                     │  obsidian-tools.ts     │  ← You implement this
-                     │  (Pi Extension)        │
-                     └───────┬───────────────┘
-                             │ calls ob CLI
-                             ▼
-                     ┌───────────────────────┐
-                     │  Obsidian Headless     │
-                     │  (ob sync, ob publish) │
-                     └───────┬───────────────┘
-                             │ reads/writes
-                             ▼
-                     ┌───────────────────────┐
-                     │  Your Obsidian Vault   │
-                     │  (knowledge base)      │
-                     └───────────────────────┘
+  You ask for copy
+        │
+        ▼
+  Pi agent
+        │  obsidian_search / obsidian_read
+        ▼
+  obsidian-tools.ts  (Pi extension you implement)
+        │  local files + optional `ob` CLI
+        ▼
+  Your Obsidian vault
 ```
 
-### Step-by-step
+### Walkthrough
 
-#### 1. Install Obsidian Headless
+#### 1. Prerequisites
+
+- Node.js 22+
+- An Obsidian account with Sync (for headless vault sync) if you want remote sync
+
+#### 2. Install Obsidian Headless (optional but recommended)
 
 ```bash
 npm install -g obsidian-headless
-```
-
-Requires Node.js 22+. Check with `node --version`.
-
-#### 2. Log in
-
-```bash
 ob login
 ```
 
-You need an Obsidian account with an active Sync or Publish subscription.
+Headless lets agents and servers sync vaults without the desktop app.
+See: https://obsidian.md/help/headless
 
-#### 3. Create a remote vault (if you don't have one)
-
-```bash
-ob sync-create-remote --name "My Agent Vault"
-```
-
-#### 4. Set up sync
+#### 3. Sync a vault locally
 
 ```bash
-mkdir -p ~/vaults/agent-vault
-cd ~/vaults/agent-vault
-ob sync-setup --vault "My Agent Vault"
+ob sync-list-remote
+mkdir -p ~/vaults/brand
+cd ~/vaults/brand
+ob sync-setup --vault "Your Vault Name"
 ob sync
 ```
 
-#### 5. Run the setup wizard
-
-Inside Pi:
+#### 4. Run the wizard
 
 ```
 /setup obsidian
 ```
 
-The wizard will:
-- Check prerequisites (Node.js, ob CLI, login)
-- Prompt for your vault path
-- Generate `~/.pi/agent/extensions/obsidian-tools.ts`
-- Explain next steps
+It will:
 
-#### 6. Implement the tools (build with your AI)
+1. Check Node / `ob` / login
+2. Ask for your local vault path
+3. Generate `~/.pi/agent/extensions/obsidian-tools.ts`
+4. Show how to implement + reload
 
-Open the generated file:
+#### 5. Build the tools with your agent
 
-```bash
-$EDITOR ~/.pi/agent/extensions/obsidian-tools.ts
+The scaffold is intentionally a **stub**. You implement it with the agent so
+the tools match *your* vault layout and workflow.
+
+Example prompt:
+
+> "Read ~/.pi/agent/extensions/obsidian-tools.ts and implement
+> `obsidian_search` with ripgrep. Prefer folders like /brand, /offers, /proof."
+
+| Tool | Job |
+|------|-----|
+| `obsidian_search` | Find notes by claim, offer, campaign, keyword |
+| `obsidian_read` | Pull a specific brand / research note |
+| `obsidian_list` | Browse folders (offers, proof, campaigns) |
+| `obsidian_sync` | Pull latest vault changes |
+
+#### 6. Reload and use
+
 ```
-
-Each tool has `// TODO` comments. Ask your AI pair to implement them:
-
-> "Read ~/.pi/agent/extensions/obsidian-tools.ts and implement the
-> obsidian_search tool using ripgrep for fast full-text search."
-
-The four tools:
-
-| Tool | Purpose | Implementation |
-|------|---------|----------------|
-| `obsidian_search` | Full-text search | `grep -rl` or `rg -l` (ripgrep) |
-| `obsidian_read` | Read a note | `readFileSync` + wikilink rendering |
-| `obsidian_list` | List notes | `readdirSync` recursive walk |
-| `obsidian_sync` | Trigger sync | `ob sync` CLI call |
-
-#### 7. Reload and use
-
-```bash
-# Inside Pi:
 /reload
 ```
 
-Now you can ask:
+Then:
 
-> "Search my vault for meeting notes from last week."
-> "Read the note about project architecture."
-> "List all notes in the projects folder."
-> "What do I have about machine learning?"
-> "Sync my vault to get the latest changes."
+> "Search my vault for hero claims and write 3 cold email openers."
+> "Read brand-voice.md and rewrite this landing page section."
+> "List notes in /proof and pick 5 testimonials for a case study."
 
-Each of these becomes **a tool call away**. 🎉
+**That's the point:** brand data is now a tool call away.
 
 ---
 
-## 🔧 Extending Further
+## Showcase 2: Spy APIs for competitive work
 
-### Add more tools
+Same factory path. Different data. Bigger unlock for marketers.
 
-```
-/scaffold my-tools
-```
+### Why it matters
 
-This generates `~/.pi/agent/extensions/my-tools.ts` with a stub. Edit and
-/reload.
+Competitive research is tedious. Paste screenshots, hop dashboards, lose
+context. Once a spy API is a tool, the agent can:
 
-### Create a Pi package
+1. pull competitor creatives / hooks
+2. cross-check your vault for brand fit
+3. draft angles that are informed, not invented
 
-Once you have a useful set of tools, bundle them into a package:
-
-```
-packages/@lzy/my-harness/
-├── package.json       # pi field with metadata
-├── extension.ts       # Main extension
-├── skills/            # Bundled skills
-├── prompts/           # Prompt templates
-└── themes/            # Theme definitions
-```
-
-Publish to npm and share with `pi add @lzy/my-harness`.
-
-### Multi-agent orchestration
-
-If you're running inside Herdr:
+### Scaffold it
 
 ```
-/agents                    → See peer agents
-"delegate a code review to codex"  → Uses herdr_delegate tool
+/scaffold spy-api
 ```
+
+This creates `~/.pi/agent/extensions/spy-api.ts`.
+
+Then implement with your agent:
+
+> "Implement tools for our ad spy API: search ads by brand, fetch creative
+> details, and summarize hooks. Put the API key in env SPY_API_KEY."
+
+Typical tools:
+
+| Tool | Job |
+|------|-----|
+| `spy_search_ads` | Find competitor ads by brand / keyword |
+| `spy_get_creative` | Fetch a specific ad / landing page |
+| `spy_summarize_angles` | Extract hooks, offers, CTAs |
+
+### Combined workflow
+
+```
+agent:
+  1. spy_search_ads("competitor X")
+  2. obsidian_search("brand voice")
+  3. draft 5 hooks that fit both
+```
+
+That's marketers using agents to **accomplish work**, not just generate text.
 
 ---
 
-## 🐛 Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| `ob: command not found` | `npm install -g obsidian-headless`, check PATH |
-| `ob login` fails | Ensure you have an active Sync/Publish subscription |
-| Vault not found | Check the path in `~/.pi/agent/extensions/obsidian-tools.ts` |
-| Sync conflicts | Don't use desktop Sync + Headless Sync on same device |
-| Extension not loading | Run `/reload` or check `~/.pi/agent/extensions/` for errors |
-| Tool not working | Check stderr in the output — implement the TODO sections |
-
----
-
-## 📦 Architecture Overview
+## The general pattern (any data source)
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                     HERDR (optional)                      │
-│  ┌── Tab ───────────────────────────────────────────┐   │
-│  │                                                    │   │
-│  │  ┌──────────────────────┐  ┌──────────────────┐   │   │
-│  │  │  Pi + ep-starter     │  │  Codex (peer)    │   │   │
-│  │  │                      │  │                   │   │   │
-│  │  │  /setup wizard       │  │  Delegated tasks  │   │   │
-│  │  │  obsidian-tools.ts ──┼──┼─► ob CLI          │   │   │
-│  │  │  herdr-tools.ts      │  │                   │   │   │
-│  │  └──────────────────────┘  └──────────────────┘   │   │
-│  └────────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────┘
-
-                    ┌──────────────────┐
-                    │  Your Vault      │
-                    │  (.md files)     │
-                    └──────────────────┘
+/setup or /scaffold <name>
+        │
+        ▼
+generate extension with clear tool stubs
+        │
+        ▼
+implement with your agent against real credentials
+        │
+        ▼
+/reload
+        │
+        ▼
+ask for work that needs that data
 ```
 
----
+Examples:
 
-## 🏭 The Factory Pattern
+```
+/scaffold crm              → HubSpot / Salesforce context
+/scaffold analytics        → ad + web metrics
+/scaffold content-calendar → Notion / Airtable boards
+/scaffold support-inbox    → Intercom / Zendesk reads
+```
 
-ep-starter is a **harness factory** — it doesn't try to ship every integration
-pre-built. Instead it gives you:
-
-1. **The wizard** (`/setup`) — guides you through adding capabilities
-2. **The scaffolds** — generates stub files you fill in with your AI
-3. **The patterns** — extensions, skills, prompts, packages, multi-agent
-4. **The docs** — everything you need is in the docs/ directory
-
-This means you build exactly what you need, nothing you don't, and you
-understand every piece because you built it.
+Every source follows the same reliable path. No mystery marketplace plugins —
+you own the integration.
 
 ---
 
-> "There are many agent harnesses, but this one is yours." — Pi
-> "One terminal. The whole herd." — Herdr
-> "Start here, build anything." — ep-starter
+## Multi-agent (optional, Herdr)
+
+If you run inside [Herdr](https://herdr.dev), data access pairs with parallel work:
+
+```
+/agents
+"delegate competitor research to codex while I draft with vault context"
+```
+
+One agent researches via spy tools. Another writes with vault tools.
+You stay in one terminal.
+
+---
+
+## Package contents
+
+```
+packages/ep-starter/
+├── extension.ts              /setup, /scaffold, /agents
+├── skills/
+│   ├── obsidian-vault.md
+│   └── herdr-operations.md
+├── prompts/
+│   ├── review.md
+│   └── note.md               save findings back into the vault
+├── themes/
+├── scaffold/obsidian-tools/
+├── GUIDE.md
+└── README.md
+```
+
+The wider factory (docs, examples, templates) lives at the repo root:
+https://github.com/conpiracy/ep-starter
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Agent writes generic copy | Vault not connected or search not implemented |
+| `ob: command not found` | `npm install -g obsidian-headless` |
+| Spy tools fail auth | Put keys in env vars; never hardcode in the extension |
+| Extension not loading | `/reload`; check `~/.pi/agent/extensions/` |
+| Want a new source | `/scaffold <name>` and implement with the agent |
+
+---
+
+## Design principles
+
+1. **Access over chat** — the bottleneck is data, not prompts.
+2. **Scaffold, don't fake** — generate real stubs; implement against real systems.
+3. **Own the integration** — no black-box plugins you can't fix.
+4. **Work-shaped tools** — search vault, pull ads, list offers — not abstract "AI helpers."
+5. **Compose sources** — vault + spy + CRM is how real jobs get done.
+
+---
+
+> **Agents don't need more chat. They need access.**
+>
+> Wire the data. Ship the work.
+>
+> *ep-starter*

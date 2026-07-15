@@ -1,112 +1,129 @@
 # 🏭 ep-starter
 
-> **Start here, build anything.**
+> **Give your agents the data they need to do real work.**
 
-ep-starter is a **harness factory** for [Pi](https://pi.dev) — a Pi package
-that helps you discover, scaffold, and implement extensions to make your
-coding agent truly yours.
+ep-starter is a [Pi](https://pi.dev) package that makes it easy and reliable to
+wire any data source into your agent — brand vaults, spy APIs, CRMs, analytics,
+content systems — so the agent can actually *accomplish* work, not just chat.
 
-It provides a guided setup wizard (`/setup`) that walks you through adding
-capabilities like Obsidian vault access, custom tools, and multi-agent
-orchestration — generating scaffold files you implement together with your AI.
+## The problem
 
-## ✨ Features
+Agents without your data write generic output.
 
-| Command | What it does |
-|---------|-------------|
-| `/setup` | Welcome screen and command overview |
-| `/setup obsidian` | 📓 **Guided wizard** — connect your Obsidian vault |
-| `/setup scaffold` | 🏗️ Learn about generating extensions |
-| `/scaffold <name>` | Generate a new extension scaffold file |
-| `/agents` | List peer agents (in Herdr) |
+- A marketer asks for copy → agent invents brand voice
+- A marketer asks for competitive angles → agent guesses from training data
+- An operator asks for a status update → agent has no CRM or ticket context
 
-## 🚀 Quick Start
+The unlock is **reliable access**: once Obsidian, a spy API, or a CRM is a tool
+call, the agent can do the job with *your* materials.
+
+## What this package does
+
+| Command | What it unlocks |
+|---------|-----------------|
+| `/setup` | Map of data sources you can connect |
+| `/setup obsidian` | Brand / knowledge vault access (guided scaffold) |
+| `/setup scaffold` | Pattern for any API or SaaS |
+| `/scaffold <name>` | Generate a new data-source extension |
+| `/agents` | Peer agents in Herdr for multi-agent work |
+
+## Why Obsidian first
+
+Marketers already store the good stuff in Obsidian:
+
+- brand voice and positioning
+- offers, proof, testimonials
+- past winning campaigns and swipe files
+- research notes and customer language
+
+`/setup obsidian` walks you through connecting that vault. After you implement
+the stubs with your agent, copywriting stops being generic AI and starts using
+*your* library.
+
+## Why spy APIs next
+
+Same pattern, different data:
+
+| Source | Agent can |
+|--------|-----------|
+| Ad spy APIs | Pull competitor creatives, angles, hooks |
+| Brand vault | Match those angles to your voice and offers |
+| Together | Research → draft → iterate without paste-and-pray |
+
+```
+/scaffold spy-api
+# implement tools with your agent
+/reload
+# "pull top Meta ads for competitor X and draft 5 hooks in our brand voice"
+```
+
+## Install
 
 ```bash
-# Install
-pip install ep-starter  # or: pi add ep-starter
-
-# Run Pi
+npm install -g @earendil-works/pi-coding-agent
+pi install git:github.com/conpiracy/ep-starter@main
 pi
+```
 
-# Inside Pi, run the wizard:
+Then:
+
+```
+/setup
 /setup obsidian
 ```
 
-The wizard will:
-1. Check prerequisites (Node.js, ob CLI)
-2. Install Obsidian Headless if needed
-3. Help you log in and configure your vault
-4. Generate an extension scaffold at `~/.pi/agent/extensions/obsidian-tools.ts`
-5. Tell you how to implement and reload
+## After setup: tool-call away
 
-## 📓 Obsidian Integration
-
-> **Status: Scaffold 🔨** — The extension skeleton is generated for you.
-> You implement the tool logic together with your AI.
-
-After running `/setup obsidian` and implementing the stubs:
-
-```bash
-/reload   # Inside Pi
-```
-
-Then ask your agent:
-
-> *"Search my vault for meeting notes from last week."*
-> *"Read the note about project architecture."*
-> *"List all notes in the projects folder."*
-> *"Sync my vault to get the latest changes."*
-
-Each becomes **a tool call away**.
-
-## 📦 What's Inside
+Once a source is wired:
 
 ```
-ep-starter/
-├── extension.ts              ← Main extension (setup wizard + tools)
-├── extensions/               ← Extra extensions
+"Search my vault for hero claims and write 3 LinkedIn posts."
+"Read the brand voice note and draft a cold email sequence."
+"List notes in /proof and pull 5 testimonials for a landing page."
+"Sync the vault so I have the latest campaign notes."
+```
+
+That's the product: **data in → work out**.
+
+## Package layout
+
+```
+packages/ep-starter/
+├── extension.ts              ← /setup wizard + scaffold generator
 ├── skills/
-│   ├── obsidian-vault.md     ← Skill: accessing your vault
-│   └── herdr-operations.md   ← Skill: controlling Herdr
+│   ├── obsidian-vault.md     ← when/how to use vault tools
+│   └── herdr-operations.md   ← multi-agent operations
 ├── prompts/
-│   ├── review.md             ← /review prompt template
-│   └── note.md               ← /note prompt template
+│   ├── review.md
+│   └── note.md               ← save findings back to the vault
 ├── themes/
-│   └── ep-starter-dark.json  ← Dark theme
-├── scaffold/
-│   └── obsidian-tools/       ← Standalone scaffold copy
-├── GUIDE.md                  ← Full walkthrough
-└── README.md                 ← This file
+├── scaffold/obsidian-tools/  ← reference scaffold
+├── GUIDE.md                  ← full walkthrough
+└── README.md
 ```
 
-## 🧰 Extending
+## The factory idea
 
-```bash
-/scaffold my-tools        # Generate a new extension
-/reload                   # Reload extensions
-```
+We don't ship every integration pre-built and half-maintained.
 
-Then build tools with your AI:
+We ship a **reliable path**:
 
-> "Implement a web-search tool using the Brave Search API."
+1. Guided setup for a data source
+2. Scaffold with clear tool stubs
+3. You + agent implement against real credentials
+4. `/reload` → source is a tool call away
 
-## 🔧 Requirements
+Same path for Obsidian, spy APIs, CRMs, analytics, whatever the work needs.
 
-- [Pi](https://pi.dev) — `npm install -g @earendil-works/pi-coding-agent`
-- For Obsidian: Node.js 22+, [obsidian-headless](https://obsidian.md/help/headless)
-- For multi-agent: [Herdr](https://herdr.dev)
+## Requirements
 
-## 🏭 The Factory Pattern
+- [Pi](https://pi.dev)
+- Optional: [Obsidian Headless](https://obsidian.md/help/headless)
+- Optional: [Herdr](https://herdr.dev) for multi-agent work
 
-ep-starter is a **harness factory** — it guides you through adding capabilities
-rather than shipping every integration pre-built. You build exactly what you
-need, nothing you don't, and you understand every piece because you built it.
-
-The full factory (docs, templates, examples, skills) lives alongside this
-package in the [ep-starter repository](https://github.com/lzy/ep-starter).
+Full repo + docs: [github.com/conpiracy/ep-starter](https://github.com/conpiracy/ep-starter)
 
 ---
 
-> *"There are many agent harnesses, but this one is yours."* — Pi
-> *"Start here, build anything."* — ep-starter
+> **Agents don't need more chat. They need access.**
+> *ep-starter — give your agents the data they need.*
