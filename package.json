@@ -1,0 +1,25 @@
+{
+  "name": "ep-starter",
+  "version": "0.1.0",
+  "description": "Pi package on-ramp for Herdr + Pi: agent multiplexer workspace + minimal extensible coding harness.",
+  "type": "module",
+  "main": "./packages/ep-starter/extension.ts",
+  "keywords": ["pi-package", "ep-starter", "harness", "herdr", "pi", "multi-agent", "extensions"],
+  "homepage": "https://github.com/conpiracy/ep-starter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conpiracy/ep-starter.git"
+  },
+  "pi": {
+    "name": "ep-starter",
+    "description": "Herdr + Pi orientation, extension scaffolds, optional vault exercise",
+    "extensions": ["./packages/ep-starter/extension.ts", "./packages/ep-starter/extensions"],
+    "skills": ["./skills", "./packages/ep-starter/skills"],
+    "prompts": ["./packages/ep-starter/prompts"],
+    "themes": ["./packages/ep-starter/themes"]
+  },
+  "dependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.0",
+    "typebox": "^0.32.0"
+  }
+}
