@@ -1,10 +1,8 @@
 /**
  * obsidian-tools.ts — Obsidian vault access for Pi
  *
- * ─── THIS IS A STUB ───
- *
- * Provides tools for your agent to search, read, and manage your Obsidian
- * vault via the 'ob' CLI (Obsidian Headless).
+ * STUB: provide tools so the agent can search, read, and manage a vault
+ * via local files and the optional `ob` CLI (Obsidian Headless).
  *
  * Prerequisites:
  *   npm install -g obsidian-headless
@@ -12,10 +10,6 @@
  *   cd /path/to/vault && ob sync-setup --vault "Your Vault"
  *
  * Reference: https://obsidian.md/help/headless
- *
- * ═══════════════════════════════════════════════════════════
- *  🏭  Part of ep-starter — Start here, build anything.
- * ═══════════════════════════════════════════════════════════
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -24,7 +18,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-// ── CONFIGURE THIS ───────────────────────────────────────
+// Configure this
 const VAULT_PATH = "/path/to/your/vault";
 
 function ob(...args: string[]): string {
@@ -53,17 +47,16 @@ function findMarkdownFiles(dir: string, base: string = ""): string[] {
 export default function (pi: ExtensionAPI) {
   if (!existsSync(VAULT_PATH)) {
     pi.on("session_start", async (_event, ctx) => {
-      ctx.ui.notify(`⚠️  Vault not found at ${VAULT_PATH}`, "warn");
+      ctx.ui.notify(`Vault not found at ${VAULT_PATH}`, "warn");
     });
     return;
   }
 
-  // ── Tool: obsidian_search ─────────────────────────────
-  // TODO: Implement full-text search (grep, ripgrep, or FTS index)
+  // TODO: full-text search (grep, ripgrep, or FTS index)
   pi.registerTool({
     name: "obsidian_search",
     label: "Search Obsidian Vault",
-    description: "Search your Obsidian vault for notes matching a query.",
+    description: "Search the Obsidian vault for notes matching a query.",
     parameters: Type.Object({
       query: Type.String(),
       max_results: Type.Optional(Type.Number({ default: 10 })),
@@ -72,20 +65,18 @@ export default function (pi: ExtensionAPI) {
     async execute(_toolCallId, params) {
       const { query, max_results = 10 } = params;
       return {
-        content: [{ type: "text", text: `TODO: search vault for "${query}"` }],
+        content: [{ type: "text", text: `TODO: search vault for "${query}" (max ${max_results})` }],
         details: { query, max_results },
       };
     },
   });
 
-  // ── Tool: obsidian_read ───────────────────────────────
-  // TODO: Implement reading a note by path
   pi.registerTool({
     name: "obsidian_read",
     label: "Read Obsidian Note",
-    description: "Read a note by path.",
+    description: "Read a note by relative path.",
     parameters: Type.Object({
-      path: Type.String({ description: "Relative path (e.g., 'projects/idea.md')" }),
+      path: Type.String({ description: "Relative path (e.g. 'projects/idea.md')" }),
     }),
     required: ["path"],
     async execute(_toolCallId, params) {
@@ -98,7 +89,6 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  // ── Tool: obsidian_list ───────────────────────────────
   pi.registerTool({
     name: "obsidian_list",
     label: "List Obsidian Notes",
@@ -111,14 +101,13 @@ export default function (pi: ExtensionAPI) {
       const dir = params.folder ? join(VAULT_PATH, params.folder) : VAULT_PATH;
       const files = findMarkdownFiles(dir);
       return {
-        content: [{ type: "text", text: files.slice(0, 50).map(f => `  📄 ${f}`).join("\n") }],
+        content: [{ type: "text", text: files.slice(0, 50).map((f) => `  - ${f}`).join("\n") }],
         details: { count: files.length },
       };
     },
   });
 
-  // ── Tool: obsidian_sync ───────────────────────────────
-  // TODO: Test and handle confirmation prompts
+  // TODO: handle confirmation prompts from `ob sync`
   pi.registerTool({
     name: "obsidian_sync",
     label: "Sync Obsidian Vault",
@@ -127,19 +116,17 @@ export default function (pi: ExtensionAPI) {
     async execute() {
       try {
         const output = ob("sync");
-        return { content: [{ type: "text", text: `✅ Sync done\n${output.slice(0, 1000)}` }] };
+        return { content: [{ type: "text", text: `Sync done\n${output.slice(0, 1000)}` }] };
       } catch (e: any) {
-        return { content: [{ type: "text", text: `❌ ${e.message}` }] };
+        return { content: [{ type: "text", text: `Sync failed: ${e.message}` }] };
       }
     },
   });
 
-  // ── Startup ───────────────────────────────────────────
   pi.on("session_start", async (_event, ctx) => {
     const count = findMarkdownFiles(VAULT_PATH).length;
     ctx.ui.notify(
-      `📓 Obsidian vault: ${count} notes\n` +
-      "⚠️ Tools are stubs — implement them in this file, then /reload.",
+      `Obsidian vault: ${count} notes\nTools are stubs — implement them, then /reload.`,
       "info"
     );
   });

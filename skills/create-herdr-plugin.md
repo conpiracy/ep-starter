@@ -1,9 +1,9 @@
 ---
 name: create-herdr-plugin
 description: >
-  Create, develop, test, and publish Herdr plugins. Use when the user wants to
-  build a Herdr workflow plugin — anything from a simple script launcher to a
-  multi-action toolbox with panes, keybindings, and event hooks.
+ Create, develop, test, and publish Herdr plugins. Use when the user wants to
+ build a Herdr workflow plugin — anything from a simple script launcher to a
+ multi-action toolbox with panes, keybindings, and event hooks.
 ---
 
 # Creating Herdr Plugins
@@ -15,29 +15,19 @@ manifest and one or more commands (bash, node, python, rust, anything).
 ## The Plugin Model
 
 ```
-┌──────────────────────────────────────────────────┐
-│               HERDR PLUGIN                        │
-│                                                    │
-│  my-plugin/                                        │
-│  ├── herdr-plugin.toml        ← Manifest (required)│
-│  ├── index.js                 ← Entrypoint         │
-│  ├── scripts/                 ← Helper scripts     │
-│  └── assets/                  ← Static files       │
-│                                                    │
-│  Plugin capabilities:                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
-│  │ Actions  │  │  Panes   │  │  Event Hooks     │ │
-│  │ (menu-   │  │ (overlay,│  │ (react to        │ │
-│  │  invoked)│  │  popup,  │  │  worktree.created│ │
-│  │          │  │  split)  │  │  etc.)           │ │
-│  └──────────┘  └──────────┘  └──────────────────┘ │
-│  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
-│  │Keybindings│  │   Link   │  │   Storage        │ │
-│  │(bind to  │  │  Handlers│  │   (config/state   │ │
-│  │ actions) │  │  (URL    │  │    directories)   │ │
-│  │          │  │   routes)│  │                   │ │
-│  └──────────┘  └──────────┘  └──────────────────┘ │
-└──────────────────────────────────────────────────┘
+my-plugin/
+├── herdr-plugin.toml     # manifest (required)
+├── index.js              # entrypoint
+├── scripts/
+└── assets/
+
+Capabilities (declared in the manifest):
+  actions        menu-invoked commands
+  panes          overlay / popup / split terminals
+  events         hooks (e.g. worktree.created)
+  keybindings    bind keys to actions (in user config)
+  link handlers  route URL clicks to actions
+  storage        config + state dirs (plugin-owned files)
 ```
 
 ## How Herdr Runs a Plugin
@@ -68,12 +58,12 @@ manifest and one or more commands (bash, node, python, rust, anything).
 ## Step 1 — Understand the Manifest
 
 ```toml
-id = "example.workspace-tools"       # Required: dot-separated, e.g. author.name
-name = "Workspace Tools"             # Required: human-readable
-version = "0.1.0"                    # Required: semver
-min_herdr_version = "0.7.0"         # Required: oldest compatible version
-description = "Small workspace helpers"  # Optional
-platforms = ["linux", "macos", "windows"]  # Optional, defaults to all
+id = "example.workspace-tools" # Required: dot-separated, e.g. author.name
+name = "Workspace Tools" # Required: human-readable
+version = "0.1.0" # Required: semver
+min_herdr_version = "0.7.0" # Required: oldest compatible version
+description = "Small workspace helpers" # Optional
+platforms = ["linux", "macos", "windows"] # Optional, defaults to all
 
 # Build commands (run on GitHub install only)
 [[build]]
@@ -85,22 +75,22 @@ platforms = ["linux", "macos"]
 
 # Actions — menu-invokable commands
 [[actions]]
-id = "list-workspaces"              # Local id (unique inside plugin)
-title = "List workspaces"           # Display name in menus
-contexts = ["workspace"]            # Where the action is available
-command = ["node", "index.js"]      # argv command to run
+id = "list-workspaces" # Local id (unique inside plugin)
+title = "List workspaces" # Display name in menus
+contexts = ["workspace"] # Where the action is available
+command = ["node", "index.js"] # argv command to run
 
 # Event hooks — react to Herdr events
 [[events]]
-on = "worktree.created"             # Event name
+on = "worktree.created" # Event name
 command = ["herdr", "workspace", "list"]
 
 # Panes — open a terminal in Herdr
 [[panes]]
-id = "board"                         # Local id
-title = "Project board"              # Display name
-placement = "overlay"                # overlay, popup, split, tab, zoomed
-command = ["herdr-board"]            # Command to run in the pane
+id = "board" # Local id
+title = "Project board" # Display name
+placement = "overlay" # overlay, popup, split, tab, zoomed
+command = ["herdr-board"] # Command to run in the pane
 
 # Link handlers — route URL clicks to plugin actions
 [[link_handlers]]
@@ -142,7 +132,7 @@ echo "Workspace: $HERDR_WORKSPACE_ID"
 echo ""
 echo "All context:"
 echo "$HERDR_PLUGIN_CONTEXT_JSON" | python3 -m json.tool 2>/dev/null || \
-  echo "$HERDR_PLUGIN_CONTEXT_JSON"
+ echo "$HERDR_PLUGIN_CONTEXT_JSON"
 EOF
 chmod +x greet.sh
 ```
@@ -181,13 +171,13 @@ const { execSync } = require("node:child_process");
 const herdr = process.env.HERDR_BIN_PATH ?? "herdr";
 
 const panes = JSON.parse(
-  execSync(`${herdr} pane list --workspace ${process.env.HERDR_WORKSPACE_ID}`, {
-    encoding: "utf-8",
-  })
+ execSync(`${herdr} pane list --workspace ${process.env.HERDR_WORKSPACE_ID}`, {
+ encoding: "utf-8",
+ })
 );
 
 for (const pane of panes) {
-  console.log(`${pane.pane_id}\t${pane.agent ?? "bash"}\t${pane.agent_status}`);
+ console.log(`${pane.pane_id}\t${pane.agent ?? "bash"}\t${pane.agent_status}`);
 }
 ```
 
@@ -200,12 +190,12 @@ herdr = os.environ.get("HERDR_BIN_PATH", "herdr")
 ws = os.environ.get("HERDR_WORKSPACE_ID", "")
 
 result = subprocess.run(
-    [herdr, "pane", "list", "--workspace", ws],
-    capture_output=True, text=True, check=True
+ [herdr, "pane", "list", "--workspace", ws],
+ capture_output=True, text=True, check=True
 )
 panes = json.loads(result.stdout)
 for p in panes:
-    print(f"{p['pane_id']}\t{p.get('agent', 'bash')}\t{p.get('agent_status')}")
+ print(f"{p['pane_id']}\t{p.get('agent', 'bash')}\t{p.get('agent_status')}")
 ```
 
 ## Step 5 — Plugin with Panes (Overlay/Popup)
@@ -261,8 +251,8 @@ command = ["bash", "on-agent-change.sh"]
 # on-worktree-created.sh — apply a standard layout to new worktrees
 LAYOUT_ACTION="$HERDR_PLUGIN_ROOT/scripts/apply-layout.sh"
 if [ -f "$LAYOUT_ACTION" ]; then
-  "$HERDR_BIN_PATH" pane split --current --direction right
-  "$HERDR_BIN_PATH" pane run "$HERDR_PANE_ID" "cd $HERDR_PLUGIN_CONTEXT && ls"
+ "$HERDR_BIN_PATH" pane split --current --direction right
+ "$HERDR_BIN_PATH" pane run "$HERDR_PANE_ID" "cd $HERDR_PLUGIN_CONTEXT && ls"
 fi
 ```
 
@@ -298,9 +288,9 @@ Users trigger link handlers with **Ctrl+click** on a matching URL in any pane.
 1. Push to a public GitHub repo
 2. Tag with `herdr-plugin` topic on GitHub (auto-indexed in marketplace)
 3. Users install with:
-   ```bash
-   herdr plugin install owner/repo[/subdir]
-   ```
+ ```bash
+ herdr plugin install owner/repo[/subdir]
+ ```
 
 Example cookbook repo: `ogulcancelik/herdr-plugin-examples`
 

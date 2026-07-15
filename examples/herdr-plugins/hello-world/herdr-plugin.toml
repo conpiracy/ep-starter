@@ -2,7 +2,7 @@ id = "example.hello-world"
 name = "Hello World"
 version = "0.1.0"
 min_herdr_version = "0.7.0"
-description = "A minimal Herdr plugin — demonstrates actions, env vars, and calling back into Herdr"
+description = "Minimal Herdr plugin — actions, env vars, and calling back into Herdr"
 platforms = ["linux", "macos", "windows"]
 
 [[build]]
@@ -10,12 +10,12 @@ command = ["chmod", "+x", "greet.sh"]
 
 [[actions]]
 id = "greet"
-title = "👋 Say Hello"
+title = "Say Hello"
 contexts = ["workspace", "tab"]
 command = ["bash", "greet.sh"]
 
 [[actions]]
 id = "pane-status"
-title = "📊 Pane Status"
+title = "Pane Status"
 contexts = ["workspace"]
 command = ["bash", "pane-status.sh"]

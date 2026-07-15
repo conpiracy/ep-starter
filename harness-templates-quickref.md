@@ -1,11 +1,8 @@
-# 🏗️ Data Sources & Templates Quick Reference
+# Templates and skills quick reference
 
-> **Give your agents the data they need to do real work.**
+Connect data sources so agents can work from real materials — brand vaults, spy APIs, CRMs, analytics.
 
-ep-starter is not a plugin zoo. It's a reliable path to wire any source —
-brand vaults, spy APIs, CRMs, analytics — into the agent as tool calls.
-
-## What's available
+## Layout
 
 ```
 skills/
@@ -14,28 +11,28 @@ skills/
 
 packages/ep-starter/
 ├── extension.ts                 /setup · /scaffold · /agents
-├── skills/obsidian-vault.md     Brand vault usage skill
-├── GUIDE.md                     Full walkthrough
-└── scaffold/obsidian-tools/     Reference vault scaffold
+├── skills/obsidian-vault.md
+├── GUIDE.md
+└── scaffold/obsidian-tools/
 
 examples/
-├── herdr-plugins/               Working Herdr plugins
-└── pi-extensions/               Working Pi extensions
+├── herdr-plugins/
+└── pi-extensions/
 
 harness/templates/
-├── herdr-plugin/                Copy-and-start Herdr plugin
-└── pi-package/                  Copy-and-start Pi package
+├── herdr-plugin/
+└── pi-package/
 ```
 
-## Path: connect a source
+## Connect a source
 
 ```
-/setup                    # map of sources
-/setup obsidian           # brand vault (marketers first)
-/scaffold spy-api         # competitor intel next
+/setup
+/setup obsidian           # brand vault
+/scaffold spy-api         # competitor intel
 # implement stubs with your agent
 /reload
-# ask for real work that needs that data
+# ask for work that needs that data
 ```
 
 ## Why Obsidian first (marketers)
@@ -53,7 +50,7 @@ harness/templates/
 |-----------|-----------|
 | Competitor ads | Research angles without dashboards |
 | Creatives / hooks | Draft informed alternatives |
-| + brand vault | Match intel to *your* voice |
+| + brand vault | Match intel to your voice |
 
 ## Quick starts
 
@@ -85,8 +82,6 @@ herdr plugin action invoke your-name.plugin-name.my-action
 ```
 
 ## Skills for building more
-
-When you want the agent to create a new source:
 
 > "Read skills/create-pi-extension.md and scaffold tools for our ad spy API."
 

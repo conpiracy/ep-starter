@@ -1,7 +1,7 @@
 {
   "name": "ep-starter",
   "version": "0.1.0",
-  "description": "Give your agents the data they need to do real work — brand vaults, spy APIs, CRMs, and more. Guided setup turns any source into a tool call.",
+  "description": "Connect data sources so a Pi agent can work from real materials — brand vaults, spy APIs, CRMs, analytics, and custom tools.",
   "type": "module",
   "main": "extension.ts",
   "keywords": ["pi-package", "ep-starter", "harness", "obsidian", "spy-api", "marketing", "data-access", "herdr"],
@@ -12,7 +12,7 @@
   },
   "pi": {
     "name": "ep-starter",
-    "description": "Give agents reliable access to the data they need — Obsidian brand vaults, spy APIs, CRMs, and custom sources",
+    "description": "Connect brand vaults, spy APIs, CRMs, and custom sources so the agent can work from your materials",
     "extensions": ["./extension.ts", "./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],

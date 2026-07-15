@@ -1,150 +1,106 @@
-# 🏭 ep-starter
+# ep-starter
 
-> **Give your agents the data they need to do real work.**
+Give agents reliable access to the data they need for actual work.
 
-Most agents are stuck in a chat box. They can write, but they can't *reach* the
-things that make work useful — your brand vault, competitor intel, CRM notes,
-analytics, content calendars, research docs.
-
-**ep-starter** is the factory for wiring those sources into your agent harness
-reliably. One guided setup at a time, every data source becomes a tool call.
+Most agents can write. Few can reach the materials that make the writing useful — brand vaults, competitor intel, CRM notes, analytics, content calendars. ep-starter is a guided path for wiring those sources into a [Pi](https://pi.dev) harness so each one becomes a tool the agent can call.
 
 ```
-  "Write three LinkedIn posts in our brand voice."
-       │
-       ▼
-  agent reads brand notes from Obsidian ──► tool call
-  agent pulls competitor ads from spy API ─► tool call
-  agent drafts copy against both           ──► real work
+"Write three LinkedIn posts in our brand voice."
+    → agent reads brand notes from Obsidian
+    → agent pulls competitor ads from a spy API
+    → agent drafts against both
 ```
 
-## Why this exists
+## Who this is for
 
-Agents get useful when they have **context from your world**:
+| Role | Data | What the agent does with it |
+|------|------|-----------------------------|
+| Marketers | Brand vaults (Obsidian), swipe files, past campaigns | On-brand copy |
+| Marketers | Spy / ad intel APIs | Competitor research and angles |
+| Operators | CRMs, tickets, sheets | Status updates, triage, summaries |
+| Researchers | Notes, papers, saved sources | Briefs and outlines |
+| Builders | Repos, logs, deploy status | Code work with full context |
 
-| Who | Data they need | What the agent can do |
-|-----|----------------|------------------------|
-| **Marketers** | Brand vaults (Obsidian), swipe files, past campaigns | Write on-brand copy |
-| **Marketers** | Spy / ad intel APIs | Research competitors, find angles |
-| **Operators** | CRMs, Notion, sheets, tickets | Draft updates, triage, summarize |
-| **Researchers** | Notes, papers, saved sources | Synthesize briefs and outlines |
-| **Builders** | Repos, logs, deploy status | Ship code with full context |
+Obsidian is the first walkthrough because marketers already keep brand voice, offers, proof, and past winners there. Once the vault is connected, copy stops sounding generic.
 
-Obsidian is the first showcase because marketers already live there — brand
-voice, offers, proof, past winners. Wire the vault in once, and copywriting
-stops being "generic AI" and starts being *your* agent with *your* materials.
+Spy APIs follow the same path for competitive work: once the API is a tool, the agent can research and draft without pasted screenshots.
 
-Spy APIs are the same idea for competitive work: once the API is a tool, the
-agent can research, compare, and draft without you pasting screenshots.
-
-## The pattern
+## How it works
 
 ```
-  /setup <source>
-       │
-       ▼
-  guided wizard checks prerequisites
-  generates a tool scaffold
-  you + agent implement the stubs
-       │
-       ▼
-  /reload
-       │
-       ▼
-  "search my brand vault for hero claims"
-  "pull Meta ads for competitor X"
-  "draft 5 hooks from both"
-       │
-       ▼
-  real work, tool-call away
+/setup <source>
+  → checks prerequisites
+  → generates a tool scaffold
+  → you and the agent implement the stubs
+  → /reload
+  → ask for work that needs that data
 ```
 
-You don't get a bloated plugin marketplace of half-working integrations.
-You get a **reliable path** to wire any source your agent needs — and you
-understand every piece because you built it with the agent.
+No marketplace of half-maintained plugins. A path you own for every source.
 
-## Quick start
+## Install
 
 ```bash
-# Install Pi
 npm install -g @earendil-works/pi-coding-agent
-
-# Install ep-starter
 pi install git:github.com/conpiracy/ep-starter@main
-
-# Run
 pi
 ```
 
 Inside Pi:
 
 ```
-/setup              # see what you can connect
-/setup obsidian     # first source: brand / knowledge vault
-/scaffold spy-api   # next source: competitor intel, etc.
+/setup              # map of connectable sources
+/setup obsidian     # brand / knowledge vault
+/scaffold spy-api   # competitor intel, or any other source
 ```
 
 ## Repo layout
 
 ```
 ep-starter/
-├── packages/ep-starter/     ← Pi package (/setup wizard, scaffolds, skills)
-├── docs/                    ← Vendored Herdr + Pi docs (always local)
-├── skills/                  ← Skills for building plugins & extensions
-├── examples/                ← Working Herdr plugins + Pi extensions
-├── harness/templates/       ← Copy-and-start scaffolds
-├── packages/ep-starter/GUIDE.md
-└── README.md                ← You are here
+├── packages/ep-starter/     Pi package (/setup, scaffolds, skills)
+├── docs/                    Local Herdr + Pi docs
+├── skills/                  Skills for building plugins and extensions
+├── examples/                Working Herdr plugins and Pi extensions
+├── harness/templates/       Copy-and-start scaffolds
+└── packages/ep-starter/GUIDE.md
 ```
 
-## What /setup does
+## Commands
 
-| Command | Unlocks |
+| Command | Purpose |
 |---------|---------|
 | `/setup` | Overview of connectable data sources |
-| `/setup obsidian` | Brand vault / knowledge base access (scaffold) |
+| `/setup obsidian` | Brand vault / knowledge base scaffold |
 | `/setup scaffold` | Pattern for any API, DB, or SaaS |
 | `/scaffold <name>` | Generate a new data-source extension |
 | `/agents` | Peer agents in Herdr (multi-agent work) |
 
-## First showcase: Obsidian for marketers
+## First source: Obsidian
 
-Marketers keep brand voice, offers, proof, and past campaigns in Obsidian.
 After `/setup obsidian` and implementing the stubs with your agent:
 
 > "Search my vault for winning hooks from last quarter."
 > "Read the brand voice note and write 3 cold email openers."
 > "List notes in /offers and draft a landing page section."
 
-That's not a demo. That's an agent that can *do the job* because it has the data.
-
 ## Next sources (same path)
 
 ```
-/scaffold spy-api          → Meta/TikTok ad spy tools
-/scaffold crm              → HubSpot / Salesforce reads
-/scaffold analytics        → GA / ad platform metrics
-/scaffold content-calendar → Notion / Airtable boards
+/scaffold spy-api          Meta/TikTok ad intel
+/scaffold crm              HubSpot / Salesforce
+/scaffold analytics        GA / ad platform metrics
+/scaffold content-calendar Notion / Airtable boards
 ```
-
-Each one follows the same factory path: scaffold → implement with agent →
-`/reload` → tool call away.
 
 ## Requirements
 
-- [Pi](https://pi.dev) — coding agent harness
-- Optional: [Obsidian Headless](https://obsidian.md/help/headless) for vault sync
-- Optional: [Herdr](https://herdr.dev) for multi-agent orchestration
+- [Pi](https://pi.dev)
+- Optional: [Obsidian Headless](https://obsidian.md/help/headless)
+- Optional: [Herdr](https://herdr.dev)
 
 ## Docs
 
-- **[GUIDE.md](./packages/ep-starter/GUIDE.md)** — full walkthrough
-- **[docs/](./docs/)** — Herdr + Pi reference, offline
-- **[skills/](./skills/)** — how to build more sources yourself
-
----
-
-> **Agents don't need more chat. They need access.**
-> Wire the data. Ship the work.
->
-> *ep-starter — give your agents the data they need.*
+- [GUIDE.md](./packages/ep-starter/GUIDE.md) — full walkthrough
+- [docs/](./docs/) — Herdr + Pi reference (offline)
+- [skills/](./skills/) — how to build more sources

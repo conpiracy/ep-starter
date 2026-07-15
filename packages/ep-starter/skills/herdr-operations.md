@@ -1,9 +1,9 @@
 ---
 name: herdr-operations
 description: >
-  Control Herdr from inside Pi — split panes, delegate tasks to peer agents,
-  read outputs, and orchestrate multi-agent workflows. Use when the task
-  involves other agents, background work, or parallel execution.
+ Control Herdr from inside Pi — split panes, delegate tasks to peer agents,
+ read outputs, and orchestrate multi-agent workflows. Use when the task
+ involves other agents, background work, or parallel execution.
 ---
 
 # Herdr Operations
@@ -26,7 +26,7 @@ echo "$HERDR_WORKSPACE_ID $HERDR_TAB_ID $HERDR_PANE_ID"
 ## Commands
 
 ```
-/agents     → List peer agents in this workspace
+/agents → List peer agents in this workspace
 ```
 
 ## Patterns

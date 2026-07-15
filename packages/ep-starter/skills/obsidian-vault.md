@@ -8,7 +8,7 @@ description: >
 
 # Brand Vault Access (Obsidian)
 
-Your job is not to invent brand voice. Use the vault.
+Do not invent brand voice. Use the vault.
 
 Marketers store high-value materials here:
 
@@ -36,10 +36,10 @@ Marketers store high-value materials here:
 
 ## How to work
 
-1. **Search before writing** — pull brand voice, offers, and proof first.
-2. **Cite the source** — mention which notes informed the draft.
-3. **Prefer vault language** — customer phrases beat invented marketing-speak.
-4. **Sync when asked** — or when content looks stale.
+1. Search before writing — pull brand voice, offers, and proof first.
+2. Cite the source — mention which notes informed the draft.
+3. Prefer vault language — customer phrases beat invented marketing-speak.
+4. Sync when asked, or when content looks stale.
 
 ## Example jobs
 

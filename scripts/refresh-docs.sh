@@ -1,26 +1,25 @@
 #!/usr/bin/env bash
-# refresh-docs.sh — Re-download all documentation from online sources
-# Run from /home/corp/lzy or pass the repo root as $1
+# Re-download Herdr + Pi documentation from online sources.
+# Run from repo root, or pass root as $1.
 set -euo pipefail
 
 ROOT="${1:-$(dirname "$0")/..}"
 cd "$ROOT"
 
-echo "🔄 Refreshing Herdr documentation..."
+echo "Refreshing Herdr documentation..."
 
 curl -fsSL "https://herdr.dev/agent-guide.md" \
-  -o docs/herdr/agent-guide.md --no-clobber 2>/dev/null || true
+  -o docs/herdr/agent-guide.md 2>/dev/null || true
 curl -fsSL "https://raw.githubusercontent.com/ogulcancelik/herdr/master/SKILL.md" \
-  -o docs/herdr/SKILL.md --no-clobber 2>/dev/null || true
+  -o docs/herdr/SKILL.md 2>/dev/null || true
 
-# HTML-based docs — strip tags to get readable text
 fetch_html() {
   local url="$1" out="$2"
-  echo "  → $out"
+  echo "  -> $out"
   curl -fsSL "$url" 2>/dev/null \
     | sed 's/<[^>]*>//g' \
     | sed '/^$/N;/^\n$/D' \
-    > "$out" 2>/dev/null || echo "  ⚠ failed: $url"
+    > "$out" 2>/dev/null || echo "  failed: $url"
 }
 
 fetch_html "https://herdr.dev/docs/install/" docs/herdr/install.txt
@@ -34,7 +33,7 @@ fetch_html "https://herdr.dev/docs/session-state/" docs/herdr/session-state.txt
 fetch_html "https://herdr.dev/docs/cli-reference/" docs/herdr/cli-reference.txt
 fetch_html "https://herdr.dev/docs/how-to-work/" docs/herdr/how-to-work.txt
 
-echo "🔄 Refreshing Pi documentation..."
+echo "Refreshing Pi documentation..."
 
 fetch_html "https://pi.dev/docs/latest/quickstart" docs/pi/quickstart.txt
 fetch_html "https://pi.dev/docs/latest/usage" docs/pi/usage.txt
@@ -54,11 +53,9 @@ fetch_html "https://pi.dev/docs/latest/prompt-templates" docs/pi/prompt-template
 fetch_html "https://pi.dev/docs/latest/tui" docs/pi/tui.txt
 fetch_html "https://pi.dev/docs/latest" docs/pi/overview.txt
 
-# Pi README from GitHub
 curl -fsSL "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/README.md" \
-  -o docs/pi/README.md --no-clobber 2>/dev/null || true
+  -o docs/pi/README.md 2>/dev/null || true
 
-echo "✅ Documentation refresh complete."
-echo ""
-echo "📁 docs/herdr/  — $(ls -1 docs/herdr/ | wc -l) files"
-echo "📁 docs/pi/     — $(ls -1 docs/pi/ | wc -l) files"
+echo "Documentation refresh complete."
+echo "  docs/herdr/  — $(ls -1 docs/herdr/ | wc -l) files"
+echo "  docs/pi/     — $(ls -1 docs/pi/ | wc -l) files"

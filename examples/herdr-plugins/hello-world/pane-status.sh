@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# pane-status.sh — Show all panes and their agent states in the current workspace
+# pane-status.sh — show panes and agent states in the current workspace
 set -euo pipefail
 
 HERDR="${HERDR_BIN_PATH:-herdr}"
 WS="${HERDR_WORKSPACE_ID}"
 
-echo "📊 Pane Status for workspace ${WS:-"(current)"}"
+echo "Pane status for workspace ${WS:-"(current)"}"
 echo ""
 
 if [ -z "$WS" ]; then

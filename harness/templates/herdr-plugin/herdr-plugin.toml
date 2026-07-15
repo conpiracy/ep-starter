@@ -1,24 +1,21 @@
-# ──────────────────────────────────────────────────────────
 # Herdr Plugin Manifest
-# ──────────────────────────────────────────────────────────
-# Create a new Herdr plugin by copying this template:
+#
+# Copy this template:
 #   cp -r harness/templates/herdr-plugin/ my-plugin/
 #   cd my-plugin
-#   # Edit herdr-plugin.toml and create your scripts
+#   # edit herdr-plugin.toml and scripts
 #   herdr plugin link .
 #
 # Docs: https://herdr.dev/docs/plugins/
-# ──────────────────────────────────────────────────────────
 
-id = "your-name.plugin-name"       # Required: dot-separated, globally unique
-name = "Plugin Name"                # Required: human-readable
-version = "0.1.0"                   # Required: semver
-min_herdr_version = "0.7.0"        # Required: oldest compatible Herdr version
-description = "What this plugin does"  # Recommended
-platforms = ["linux", "macos", "windows"]  # Optional
+id = "your-name.plugin-name"
+name = "Plugin Name"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "What this plugin does"
+platforms = ["linux", "macos", "windows"]
 
-# ── Build Commands ───────────────────────────────────────
-# Run during `herdr plugin install` from GitHub (not on `plugin link`)
+# Build commands (GitHub install only; not on plugin link)
 # [[build]]
 # command = ["npm", "ci"]
 #
@@ -26,10 +23,9 @@ platforms = ["linux", "macos", "windows"]  # Optional
 # command = ["npm", "run", "build"]
 # platforms = ["linux", "macos"]
 
-# ── Actions (menu-invokable) ─────────────────────────────
 [[actions]]
 id = "my-action"
-title = "My Action 👋"
+title = "My Action"
 contexts = ["workspace", "tab"]
 command = ["bash", "scripts/my-action.sh"]
 
@@ -39,7 +35,6 @@ command = ["bash", "scripts/my-action.sh"]
 # contexts = ["global"]
 # command = ["node", "index.js"]
 
-# ── Panes (terminal overlays/popups) ─────────────────────
 # [[panes]]
 # id = "dashboard"
 # title = "Dashboard"
@@ -54,7 +49,6 @@ command = ["bash", "scripts/my-action.sh"]
 # height = 20
 # command = ["bash", "scripts/picker.sh"]
 
-# ── Event Hooks (react to Herdr events) ──────────────────
 # [[events]]
 # on = "worktree.created"
 # command = ["bash", "scripts/on-worktree.sh"]
@@ -63,7 +57,6 @@ command = ["bash", "scripts/my-action.sh"]
 # on = "agent.status_changed"
 # command = ["bash", "scripts/on-agent-change.sh"]
 
-# ── Link Handlers (route URL clicks) ─────────────────────
 # [[link_handlers]]
 # id = "github-issue"
 # title = "Open GitHub Issue"

@@ -2,27 +2,24 @@ id = "example.agent-notify"
 name = "Agent Notifier"
 version = "0.1.0"
 min_herdr_version = "0.7.0"
-description = "Sends desktop notifications when agents change state. Demonstrates event hooks, panes, and actions."
+description = "Desktop notifications when agents change state. Event hooks, panes, and actions."
 platforms = ["linux", "macos"]
 
 [[build]]
-command = ["chmod", "+x", "scripts/on-agent-change.sh"]
-command = ["chmod", "+x", "scripts/notify.sh"]
+command = ["chmod", "+x", "scripts/on-agent-change.sh", "scripts/watch-agent.sh"]
 
-# ── Event Hooks ──────────────────────────────────────────
 [[events]]
 on = "agent.status_changed"
 command = ["bash", "scripts/on-agent-change.sh"]
 
-# ── Actions ──────────────────────────────────────────────
 [[actions]]
 id = "watch-agent"
-title = "👀 Watch Current Agent"
+title = "Watch Current Agent"
 contexts = ["workspace"]
 command = ["bash", "scripts/watch-agent.sh"]
 
 [[actions]]
 id = "list-watchers"
-title = "📋 List Active Watchers"
+title = "List Active Watchers"
 contexts = ["workspace"]
 command = ["bash", "-c", "ls -la \"$HERDR_PLUGIN_STATE_DIR\" 2>/dev/null || echo 'No watchers'"]
