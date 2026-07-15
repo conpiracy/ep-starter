@@ -1,11 +1,12 @@
 # 🏭 Harness Factory — Onboarding & Architecture Guide
 
-> **One terminal. The whole herd. Your harness, your way.**
+> **Give your agents the data they need to do real work.**
 >
-> This directory (`/home/corp/lzy`) is the **factory floor** for building, documenting, and composing
-> **Herdr + Pi agent harnesses**. Everything you need to understand the stack, build custom packages,
-> create extensions, write skills, and wire it all together lives here — or is cached here from
-> the canonical docs online.
+> This directory is the **factory floor** for wiring brand vaults, spy APIs, CRMs, and any other
+> source into **Herdr + Pi** agent harnesses. Marketers use it so agents can write from real brand
+> materials and research competitors; operators use it for CRM/ticket context; builders use it for
+> logs and deploy status. Everything you need to understand the stack, build packages, create
+> extensions, and connect data lives here — or is cached from the canonical docs online.
 
 ---
 
