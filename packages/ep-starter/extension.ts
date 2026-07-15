@@ -1,14 +1,16 @@
 /**
- * ep-starter — connect data sources so a Pi agent can work from real materials.
+ * ep-starter — on-ramp for the Herdr + Pi stack.
+ *
+ * The value is the harness: durable multi-agent work (Herdr) and an agent you
+ * can systematically extend (Pi). This package orients you and walks first
+ * builds so that giving agents real capabilities stops being ad hoc.
  *
  * Commands:
- *   /setup       Map of data sources + guided connect wizards
+ *   /setup       Stack orientation + first build path
  *   /agents      Peer agents in the current Herdr workspace
- *   /scaffold    Generate a new data-source extension
+ *   /scaffold    Generate a new capability extension
  *
- * Marketers wire brand vaults (Obsidian) and spy/ad APIs.
- * Operators wire CRMs, tickets, analytics.
- * Builders wire repos, logs, deploy status.
+ * Worked examples (vault, spy-api, …) prove the path; they are not the product.
  */
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
@@ -56,7 +58,7 @@ export default function (pi: ExtensionAPI) {
 
   pi.registerCommand("setup", {
     description:
-      "Connect data sources so the agent can work from your materials (brand vaults, spy APIs, CRMs, custom tools).",
+      "Orient on the Herdr + Pi stack and run a first capability build. Usage: /setup [obsidian|scaffold]",
     usage: "[obsidian|scaffold|help]",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
       const topic = args.trim().toLowerCase();
@@ -111,13 +113,13 @@ export default function (pi: ExtensionAPI) {
 
   pi.registerCommand("scaffold", {
     description:
-      "Generate a data-source extension. Usage: /scaffold <name>  e.g. spy-api, crm, analytics",
+      "Generate a capability extension stub. Usage: /scaffold <name>  e.g. spy-api, crm, analytics",
     usage: "<name>",
     handler: async (args: string, ctx: ExtensionCommandContext) => {
       const name = args.trim();
       if (!name) {
         ctx.ui.notify(
-          "Usage: /scaffold <name>\nExamples: /scaffold spy-api  /scaffold crm  /scaffold analytics",
+          "Usage: /scaffold <name>\nExamples: /scaffold spy-api  /scaffold crm  /scaffold analytics\n(Name a capability the agent lacks; the stub is the start of the path.)",
           "warn"
         );
         return;
@@ -148,15 +150,17 @@ export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     const lines = [
       "ep-starter loaded",
-      "Connect data sources so the agent can work from your materials.",
+      "Herdr + Pi make serious agent work tractable. This package is the on-ramp.",
       "",
-      "  /setup            map of connectable sources",
-      "  /setup obsidian   brand vault (first walkthrough for marketers)",
+      "  /setup            stack orientation + first build path",
+      "  /setup obsidian   worked example: knowledge vault as tools",
     ];
     if (inHerdr) {
       lines.push("  /agents           peer agents in this workspace");
+    } else {
+      lines.push("  (run inside Herdr for multi-agent /agents)");
     }
-    lines.push("  /scaffold <name>  new source (spy-api, crm, ...)");
+    lines.push("  /scaffold <name>  next capability (same path)");
     lines.push("");
     lines.push("Guide: https://github.com/conpiracy/ep-starter");
     ctx.ui.notify(lines.join("\n"), "info");
@@ -169,11 +173,12 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
   const ui = ctx.ui;
 
   ui.notify(
-    "Connect a brand / knowledge vault\n\n" +
-      "Marketers keep brand voice, offers, proof, and past winners in Obsidian.\n" +
-      "Once the vault is wired in, the agent can write from those materials\n" +
-      "instead of inventing generic copy.\n\n" +
-      "This wizard generates a tool scaffold. You and the agent implement it next.",
+    "Worked example: knowledge vault as tools\n\n" +
+      "This is not the product — it is a first exercise on the Herdr + Pi stack.\n" +
+      "You will generate a Pi extension, implement tools with the agent, /reload,\n" +
+      "and keep a real capability. Marketers often use Obsidian for brand voice,\n" +
+      "offers, and proof, so the outcome is easy to feel.\n\n" +
+      "What you are learning: systematic agent capability, not \"an Obsidian plugin.\"",
     "info"
   );
 
@@ -317,32 +322,22 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
   writeFileSync(targetExt, generateObsidianScaffold(vaultPath), "utf-8");
 
   ui.notify(
-    `Brand vault scaffold ready\n\n` +
+    `Scaffold ready — first capability on the stack\n\n` +
       `Extension: ${targetExt}\n` +
-      `Vault:     ${vaultPath}\n\n` +
-      `What marketers get once implemented:\n` +
-      `  - search brand voice, offers, proof, past campaigns\n` +
-      `  - read specific notes for copy\n` +
-      `  - list folders like /offers, /proof, /campaigns\n` +
-      `  - sync latest vault changes before writing\n\n` +
-      `Tool stubs (implement next):\n` +
-      `  obsidian_search  find notes by keyword / claim\n` +
-      `  obsidian_read    pull a note by path\n` +
-      `  obsidian_list    browse vault folders\n` +
-      `  obsidian_sync    trigger ob sync\n\n` +
-      `Next steps:\n` +
-      `  1. Implement with your agent (stubs have TODOs):\n` +
-      `     "Read ~/.pi/agent/extensions/obsidian-tools.ts and\n` +
-      `      implement search with ripgrep for brand folders."\n` +
+      `Vault path: ${vaultPath}\n\n` +
+      `What this exercise teaches:\n` +
+      `  - a Pi extension you own (not a black-box plugin)\n` +
+      `  - tools the agent can call after /reload\n` +
+      `  - a repeatable path for the next capability\n\n` +
+      `Stubs to implement:\n` +
+      `  obsidian_search / obsidian_read / obsidian_list / obsidian_sync\n\n` +
+      `Next:\n` +
+      `  1. Implement with the agent (TODOs in the file)\n` +
       `  2. /reload\n` +
-      `  3. Ask for work that needs the vault:\n` +
-      `     "Search my vault for hero claims and write 3 LinkedIn posts."\n` +
-      `     "Read brand-voice.md and draft a cold email sequence."\n` +
-      `     "List notes in /proof and pick 5 testimonials."\n\n` +
-      `Other sources (same path):\n` +
-      `  /scaffold spy-api    competitor intel\n` +
-      `  /scaffold crm        customer context\n` +
-      `  /scaffold analytics  performance data`,
+      `  3. Ask for work that needs the vault (e.g. brand-aware copy)\n\n` +
+      `Then repeat the path for something else:\n` +
+      `  /scaffold spy-api | crm | analytics\n` +
+      `  (same mechanism; different materials)`,
     "success"
   );
 }
@@ -351,18 +346,15 @@ async function guideObsidianSetup(ctx: ExtensionCommandContext) {
 
 async function guideScaffold(ctx: ExtensionCommandContext) {
   ctx.ui.notify(
-    "Wire any data source\n\n" +
-      "Same path as Obsidian: generate a scaffold, implement tools with\n" +
-      "your agent, /reload, then ask for work that needs that data.\n\n" +
-      "Marketer examples:\n" +
-      "  /scaffold spy-api           competitor ad / creative intel\n" +
-      "  /scaffold crm               HubSpot / Salesforce context\n" +
-      "  /scaffold analytics         ad + web metrics\n" +
-      "  /scaffold content-calendar  Notion / Airtable boards\n\n" +
-      "Operator / builder examples:\n" +
-      "  /scaffold support-inbox     tickets / Intercom\n" +
-      "  /scaffold db-query          warehouse or app DB\n\n" +
-      "Files land in ~/.pi/agent/extensions/",
+    "Add a capability the same way as the vault example\n\n" +
+      "1. Name something the agent cannot do yet\n" +
+      "2. /scaffold <name>  → extension stub in ~/.pi/agent/extensions/\n" +
+      "3. Implement tools with the agent (credentials in env vars)\n" +
+      "4. /reload\n" +
+      "5. Ask for work that needs that capability\n\n" +
+      "Examples of names (not a feature list):\n" +
+      "  spy-api, crm, analytics, content-calendar, support-inbox, db-query\n\n" +
+      "The stack is the product. Each scaffold is another exercise on it.",
     "info"
   );
 }
@@ -371,33 +363,33 @@ async function guideScaffold(ctx: ExtensionCommandContext) {
 
 async function showWelcome(ctx: ExtensionCommandContext, inHerdr: boolean) {
   const lines = [
-    "ep-starter",
-    "Connect data sources so the agent can work from your materials.",
+    "ep-starter — on-ramp for Herdr + Pi",
     "",
-    "  brand vaults · spy APIs · CRMs · analytics · more",
+    "Value: the stack makes serious agent work tractable.",
+    "  Herdr  — durable panes, multi-agent control, wait/read/run",
+    "  Pi     — agent you shape with tools, skills, packages",
+    "  This   — orientation + first builds so the path is repeatable",
     "",
-    "  /setup obsidian    brand vault (first walkthrough for marketers)",
-    "  /setup scaffold    pattern for any data source",
+    "Examples (vault, spy-api, …) prove the path. They are not the catalog.",
+    "",
+    "  /setup obsidian    worked example: knowledge vault as tools",
+    "  /setup scaffold    how to add any capability the same way",
   ];
   if (inHerdr) {
     lines.push("  /agents            peer agents in this workspace");
+  } else {
+    lines.push("  (start Pi inside Herdr for multi-agent /agents)");
   }
   lines.push(
-    "  /scaffold <name>   spy-api, crm, analytics, ...",
+    "  /scaffold <name>   generate the next capability stub",
     "",
     "  Guide: https://github.com/conpiracy/ep-starter",
     "",
-    "Typical path:",
-    "",
-    "  1. /setup obsidian",
-    "     Connect brand voice, offers, proof, past campaigns.",
-    "     Then write copy that uses those materials.",
-    "",
-    "  2. /scaffold spy-api",
-    "     Connect competitor intel the same way.",
-    "     Then research and draft without manual paste.",
-    "",
-    "  3. /reload and ask for work that needs the sources.",
+    "Suggested first loop:",
+    "  1. Understand the stack (/setup)",
+    "  2. Complete one worked example (/setup obsidian or /scaffold …)",
+    "  3. Implement, /reload, use it on a real job",
+    "  4. Add the next capability the same way",
   );
   ctx.ui.notify(lines.join("\n"), "info");
 }

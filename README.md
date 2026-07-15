@@ -1,106 +1,102 @@
 # ep-starter
 
-Give agents reliable access to the data they need for actual work.
+A starter factory for [Herdr](https://herdr.dev) + [Pi](https://pi.dev) — the stack that makes serious agent work tractable.
 
-Most agents can write. Few can reach the materials that make the writing useful — brand vaults, competitor intel, CRM notes, analytics, content calendars. ep-starter is a guided path for wiring those sources into a [Pi](https://pi.dev) harness so each one becomes a tool the agent can call.
+Without a real harness, “give the agent my brand vault” or “run three agents on this brief” is a pile of brittle scripts, pasted context, and lost sessions. With Herdr and Pi, those become normal operations: durable panes, agent state, tools you own, skills, packages, and a session that survives detach.
 
-```
-"Write three LinkedIn posts in our brand voice."
-    → agent reads brand notes from Obsidian
-    → agent pulls competitor ads from a spy API
-    → agent drafts against both
-```
+**ep-starter** is the on-ramp. It documents the stack, ships scaffolds and skills, and walks you through building the first capabilities *on* that foundation — so you see the transformation, not a plugin list.
 
-## Who this is for
+## The offering (not the demos)
 
-| Role | Data | What the agent does with it |
-|------|------|-----------------------------|
-| Marketers | Brand vaults (Obsidian), swipe files, past campaigns | On-brand copy |
-| Marketers | Spy / ad intel APIs | Competitor research and angles |
-| Operators | CRMs, tickets, sheets | Status updates, triage, summaries |
-| Researchers | Notes, papers, saved sources | Briefs and outlines |
-| Builders | Repos, logs, deploy status | Code work with full context |
+| Layer | What it is | Why it matters |
+|-------|------------|----------------|
+| **Herdr** | Agent-aware terminal workspace | Panes stay alive; multi-agent layout; CLI/socket control; state you can wait on |
+| **Pi** | Extensible coding agent | Tools, skills, packages, sessions — the agent is something you *shape* |
+| **ep-starter** | Factory + guided first builds | Docs, templates, `/setup` — turn the stack into *your* harness |
 
-Obsidian is the first walkthrough because marketers already keep brand voice, offers, proof, and past winners there. Once the vault is connected, copy stops sounding generic.
+Obsidian vault access, spy APIs, CRMs, and the rest are **examples of what becomes non-trivial-but-doable** once the stack is in place. They are not the product. The product is: *you can reliably extend what agents can do and how they work together.*
 
-Spy APIs follow the same path for competitive work: once the API is a tool, the agent can research and draft without pasted screenshots.
+## What used to be hard
 
-## How it works
+Before a harness like this:
 
-```
-/setup <source>
-  → checks prerequisites
-  → generates a tool scaffold
-  → you and the agent implement the stubs
-  → /reload
-  → ask for work that needs that data
-```
+- Agent “access” meant pasting notes into chat until the window filled up
+- Background work meant hope the terminal stayed open
+- Multi-agent work meant alt-tab and guess who finished
+- Custom tools meant one-off scripts nobody reloaded cleanly
+- Sharing a setup meant “clone my dotfiles and good luck”
 
-No marketplace of half-maintained plugins. A path you own for every source.
+After Herdr + Pi:
+
+- Data access is a tool the agent calls, owned by you
+- Work runs in panes that persist and report state
+- Peers can be started, waited on, and read from the CLI
+- Extensions hot-reload; packages bundle tools + skills + prompts
+- A factory (this repo) makes the next capability a known path
+
+That gap — paste-and-hope vs. systematic capability — is the value.
+
+## Proof points (worked examples)
+
+These are demos of the *path*, not a catalog of features:
+
+| Example | Shows |
+|---------|--------|
+| `/setup obsidian` | Wire a real knowledge base as tools (marketers: brand voice, offers, proof) |
+| `/scaffold spy-api` | Same path for competitive intel or any HTTP API |
+| Herdr peer panes | Delegate, wait, read — multi-agent without babysitting |
+| Skills + packages | Teach and ship capabilities instead of re-prompting |
+
+A marketer who can give an agent the brand vault *and* spin a research peer is not “using an Obsidian plugin.” They are running a harness where non-trivial agent work is the default.
 
 ## Install
 
 ```bash
+# Pi
 npm install -g @earendil-works/pi-coding-agent
+
+# This factory / package
 pi install git:github.com/conpiracy/ep-starter@main
-pi
+
+# Optional but central: Herdr workspace
+# https://herdr.dev/docs/install/
 ```
 
-Inside Pi:
-
-```
-/setup              # map of connectable sources
-/setup obsidian     # brand / knowledge vault
-/scaffold spy-api   # competitor intel, or any other source
+```bash
+pi          # inside a Herdr pane if you have one
+/setup      # how the stack fits together + first build
 ```
 
 ## Repo layout
 
 ```
 ep-starter/
-├── packages/ep-starter/     Pi package (/setup, scaffolds, skills)
-├── docs/                    Local Herdr + Pi docs
-├── skills/                  Skills for building plugins and extensions
-├── examples/                Working Herdr plugins and Pi extensions
+├── packages/ep-starter/     Pi package: /setup, /scaffold, skills
+├── docs/herdr/ + docs/pi/   Local stack documentation
+├── skills/                  How to build plugins and extensions
+├── examples/                Worked Herdr plugins + Pi extensions
 ├── harness/templates/       Copy-and-start scaffolds
 └── packages/ep-starter/GUIDE.md
 ```
 
-## Commands
+## Commands (inside Pi)
 
-| Command | Purpose |
-|---------|---------|
-| `/setup` | Overview of connectable data sources |
-| `/setup obsidian` | Brand vault / knowledge base scaffold |
-| `/setup scaffold` | Pattern for any API, DB, or SaaS |
-| `/scaffold <name>` | Generate a new data-source extension |
-| `/agents` | Peer agents in Herdr (multi-agent work) |
-
-## First source: Obsidian
-
-After `/setup obsidian` and implementing the stubs with your agent:
-
-> "Search my vault for winning hooks from last quarter."
-> "Read the brand voice note and write 3 cold email openers."
-> "List notes in /offers and draft a landing page section."
-
-## Next sources (same path)
-
-```
-/scaffold spy-api          Meta/TikTok ad intel
-/scaffold crm              HubSpot / Salesforce
-/scaffold analytics        GA / ad platform metrics
-/scaffold content-calendar Notion / Airtable boards
-```
+| Command | Role |
+|---------|------|
+| `/setup` | Orientation: stack, value, first path |
+| `/setup obsidian` | Worked example: knowledge vault as tools |
+| `/setup scaffold` | How to add *any* capability the same way |
+| `/scaffold <name>` | Generate a new extension stub |
+| `/agents` | Peer agents in the current Herdr workspace |
 
 ## Requirements
 
-- [Pi](https://pi.dev)
-- Optional: [Obsidian Headless](https://obsidian.md/help/headless)
-- Optional: [Herdr](https://herdr.dev)
+- [Pi](https://pi.dev) — agent harness
+- [Herdr](https://herdr.dev) — strongly recommended; multi-agent + durable work
+- Optional for the Obsidian example: [Obsidian Headless](https://obsidian.md/help/headless)
 
 ## Docs
 
-- [GUIDE.md](./packages/ep-starter/GUIDE.md) — full walkthrough
-- [docs/](./docs/) — Herdr + Pi reference (offline)
-- [skills/](./skills/) — how to build more sources
+- [GUIDE.md](./packages/ep-starter/GUIDE.md) — stack first, examples second
+- [harness-factory-onboarding.md](./harness-factory-onboarding.md) — architecture
+- [docs/](./docs/) — vendored Herdr + Pi references

@@ -1,54 +1,39 @@
 # ep-starter
 
-Pi package that wires data sources into your agent — brand vaults, spy APIs, CRMs, analytics, content systems — so the agent can work from real materials instead of inventing context.
+Pi package that orients you on the **Herdr + Pi** stack and walks you through building real capabilities on it.
 
-## The problem
+The value is not “Obsidian support” or “a list of integrations.”  
+The value is that **Herdr and Pi make serious agent work tractable** — durable multi-agent sessions, tools you own, skills and packages, control via CLI — so giving an agent systematic access to work data and peer agents stops being a research project.
 
-Without your data, agents produce generic output:
+ep-starter is the on-ramp and factory surface for that.
 
-- Marketer asks for copy → agent invents brand voice
-- Marketer asks for competitive angles → agent guesses from training data
-- Operator asks for a status update → agent has no CRM or ticket context
+## Stack
 
-Once Obsidian, a spy API, or a CRM is a tool, the agent can do the job with *your* materials.
+| Piece | Job |
+|-------|-----|
+| **Herdr** | Workspace runtime: panes, tabs, agent state, wait/read/run |
+| **Pi** | Agent you can extend: tools, skills, packages, sessions |
+| **ep-starter** | `/setup`, scaffolds, skills — first builds that prove the stack |
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
-| `/setup` | Map of data sources you can connect |
-| `/setup obsidian` | Brand / knowledge vault (guided scaffold) |
-| `/setup scaffold` | Pattern for any API or SaaS |
-| `/scaffold <name>` | Generate a new data-source extension |
-| `/agents` | Peer agents in Herdr |
+| Command | Role |
+|---------|------|
+| `/setup` | Orientation: what the stack changes, where to start |
+| `/setup obsidian` | Worked example — knowledge vault as tools |
+| `/setup scaffold` | Same path for any capability |
+| `/scaffold <name>` | Generate an extension stub |
+| `/agents` | List peer agents (when running inside Herdr) |
 
-## Why Obsidian first
+## Worked examples (not the product)
 
-Marketers already store high-value context in Obsidian:
+Examples exist so you feel the transformation:
 
-- brand voice and positioning
-- offers, proof, testimonials
-- past winning campaigns and swipe files
-- research notes and customer language
+- **Brand vault (Obsidian)** — marketers already store voice, offers, proof. Wiring it as tools shows “agent has my materials” without paste.
+- **Spy / any API** — `/scaffold spy-api` shows the same path for competitor intel or internal systems.
+- **Peer agents** — Herdr panes + wait/read show multi-agent work as normal ops.
 
-`/setup obsidian` walks through connecting that vault. After you implement the stubs with your agent, copywriting uses your library.
-
-## Why spy APIs next
-
-Same path, different data:
-
-| Source | Agent can |
-|--------|-----------|
-| Ad spy APIs | Pull competitor creatives, angles, hooks |
-| Brand vault | Match those angles to your voice and offers |
-| Together | Research → draft → iterate without manual paste |
-
-```
-/scaffold spy-api
-# implement tools with your agent
-/reload
-# "pull top Meta ads for competitor X and draft 5 hooks in our brand voice"
-```
+After the first example, the point is: **you can keep adding capabilities the same way.**
 
 ## Install
 
@@ -58,56 +43,31 @@ pi install git:github.com/conpiracy/ep-starter@main
 pi
 ```
 
-Then:
-
 ```
 /setup
-/setup obsidian
 ```
 
-## After a source is wired
-
-```
-"Search my vault for hero claims and write 3 LinkedIn posts."
-"Read the brand voice note and draft a cold email sequence."
-"List notes in /proof and pull 5 testimonials for a landing page."
-"Sync the vault so I have the latest campaign notes."
-```
+Prefer running Pi inside [Herdr](https://herdr.dev) so multi-agent and pane control are available.
 
 ## Package layout
 
 ```
 packages/ep-starter/
-├── extension.ts              /setup wizard + scaffold generator
+├── extension.ts              /setup, /scaffold, /agents
 ├── skills/
-│   ├── obsidian-vault.md
-│   └── herdr-operations.md
+│   ├── obsidian-vault.md     skill for the vault example
+│   └── herdr-operations.md   skill for Herdr control
 ├── prompts/
-│   ├── review.md
-│   └── note.md
 ├── themes/
-├── scaffold/obsidian-tools/
+├── scaffold/obsidian-tools/  reference stub
 ├── GUIDE.md
 └── README.md
 ```
 
-## Factory idea
-
-We don't ship every integration pre-built and half-maintained.
-
-We ship a path:
-
-1. Guided setup for a data source
-2. Scaffold with clear tool stubs
-3. You + agent implement against real credentials
-4. `/reload` → source is available as a tool
-
-Same path for Obsidian, spy APIs, CRMs, analytics, whatever the work needs.
-
 ## Requirements
 
 - [Pi](https://pi.dev)
-- Optional: [Obsidian Headless](https://obsidian.md/help/headless)
-- Optional: [Herdr](https://herdr.dev)
+- [Herdr](https://herdr.dev) recommended
+- Optional for the vault example: [Obsidian Headless](https://obsidian.md/help/headless)
 
-Full repo: [github.com/conpiracy/ep-starter](https://github.com/conpiracy/ep-starter)
+Repo: [github.com/conpiracy/ep-starter](https://github.com/conpiracy/ep-starter)

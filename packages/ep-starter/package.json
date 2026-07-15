@@ -1,10 +1,10 @@
 {
   "name": "ep-starter",
   "version": "0.1.0",
-  "description": "Connect data sources so a Pi agent can work from real materials — brand vaults, spy APIs, CRMs, analytics, and custom tools.",
+  "description": "On-ramp for the Herdr + Pi stack: durable multi-agent work and an agent you can systematically extend. Scaffolds and worked examples, not a plugin catalog.",
   "type": "module",
   "main": "extension.ts",
-  "keywords": ["pi-package", "ep-starter", "harness", "obsidian", "spy-api", "marketing", "data-access", "herdr"],
+  "keywords": ["pi-package", "ep-starter", "harness", "herdr", "pi", "multi-agent", "extensions"],
   "homepage": "https://github.com/conpiracy/ep-starter",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
   },
   "pi": {
     "name": "ep-starter",
-    "description": "Connect brand vaults, spy APIs, CRMs, and custom sources so the agent can work from your materials",
+    "description": "On-ramp for Herdr + Pi — stack orientation, capability scaffolds, worked examples",
     "extensions": ["./extension.ts", "./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],

@@ -1,8 +1,8 @@
 # Harness Factory — Onboarding and Architecture
 
-Connect data sources so agents can work from real materials — brand vaults, spy APIs, CRMs, analytics — inside Herdr + Pi.
+**Value:** Herdr + Pi make serious agent work tractable — durable multi-agent sessions, an agent you can systematically extend, tools and skills you own.
 
-This directory is the factory floor: vendored docs, scaffolds, skills, examples, and the `ep-starter` Pi package.
+**This repo:** factory floor for that stack — vendored docs, scaffolds, skills, examples, and the `ep-starter` on-ramp. Obsidian, spy APIs, and other integrations are *worked examples* of the path, not the product.
 
 ---
 
@@ -38,9 +38,9 @@ Factory (/home/corp/lzy or this repo)
 
 - **Herdr** — workspace runtime: panes stay alive, agents are detected, CLI/socket control.
 - **Pi** — agent harness inside a pane: tools, skills, packages, sessions.
-- **ep-starter** — guided path to wire data sources (Obsidian, spy APIs, CRMs, …) as tools.
+- **ep-starter** — orientation + first builds so the stack becomes *your* harness.
 
-Together they support multi-agent work that can reach *your* materials.
+Together they turn “paste context and hope” into operable multi-agent work with owned capabilities.
 
 ---
 

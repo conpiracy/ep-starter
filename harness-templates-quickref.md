@@ -1,88 +1,78 @@
 # Templates and skills quick reference
 
-Connect data sources so agents can work from real materials — brand vaults, spy APIs, CRMs, analytics.
+**Product:** Herdr + Pi as a harness (durable multi-agent work + extensible agent).  
+**This factory:** docs, scaffolds, skills, worked examples so the first capabilities are deliberate.
+
+Integrations (vault, APIs, CRMs) are exercises on the path — not a feature catalog.
 
 ## Layout
 
 ```
 skills/
 ├── create-herdr-plugin.md       Build Herdr workflow plugins
-└── create-pi-extension.md       Build Pi data-source extensions
+└── create-pi-extension.md       Build Pi extensions / packages
 
 packages/ep-starter/
 ├── extension.ts                 /setup · /scaffold · /agents
-├── skills/obsidian-vault.md
-├── GUIDE.md
-└── scaffold/obsidian-tools/
+├── GUIDE.md                     Stack first, examples second
+└── scaffold/                    Reference stubs
 
-examples/
-├── herdr-plugins/
-└── pi-extensions/
-
-harness/templates/
-├── herdr-plugin/
-└── pi-package/
+examples/                        Worked plugins and extensions
+harness/templates/               Blank scaffolds
+docs/herdr + docs/pi             Local stack docs
 ```
 
-## Connect a source
+## Path
 
 ```
-/setup
-/setup obsidian           # brand vault
-/scaffold spy-api         # competitor intel
-# implement stubs with your agent
-/reload
-# ask for work that needs that data
+/setup                    # what the stack changes
+/setup obsidian           # worked example (knowledge vault as tools)
+/scaffold <name>          # next capability, same shape
+# implement with the agent → /reload → use on a real job
 ```
 
-## Why Obsidian first (marketers)
+## Why the examples exist
 
-| Vault holds | Agent can |
-|-------------|-----------|
-| Brand voice | Write on-brand copy |
-| Offers / ICPs | Target the right angle |
-| Proof / testimonials | Ground claims in real material |
-| Past winners | Reuse what already worked |
-
-## Why spy APIs next (marketers)
-
-| API holds | Agent can |
-|-----------|-----------|
-| Competitor ads | Research angles without dashboards |
-| Creatives / hooks | Draft informed alternatives |
-| + brand vault | Match intel to your voice |
+| Exercise | What it proves about the stack |
+|----------|--------------------------------|
+| Vault tools | Agent can own access to real materials (no paste loop) |
+| Spy / API scaffold | Same path for any system with credentials |
+| Herdr peer panes | Multi-agent is operable (start / wait / read) |
 
 ## Quick starts
 
-### Brand vault
+### On-ramp
+
+```
+pi install git:github.com/conpiracy/ep-starter@main
+pi
+/setup
+```
+
+Prefer Pi inside Herdr for `/agents` and pane control.
+
+### Worked example
 
 ```
 /setup obsidian
-# follow wizard → implement stubs → /reload
-# "Search my vault for hero claims and write 3 LinkedIn posts."
+# implement stubs → /reload → brand-aware job
 ```
 
-### Any new source
+### Next capability
 
 ```
-/scaffold spy-api
-# edit ~/.pi/agent/extensions/spy-api.ts with your agent
-/reload
-# "Pull top Meta ads for competitor X and draft 5 hooks."
+/scaffold spy-api   # or crm, analytics, …
 ```
 
 ### Herdr plugin
 
 ```bash
 cp -r harness/templates/herdr-plugin/ my-plugin
-cd my-plugin
-# edit herdr-plugin.toml + scripts
-herdr plugin link .
-herdr plugin action invoke your-name.plugin-name.my-action
+cd my-plugin && herdr plugin link .
 ```
 
-## Skills for building more
+## Authoring skills
 
-> "Read skills/create-pi-extension.md and scaffold tools for our ad spy API."
+> "Read skills/create-pi-extension.md and scaffold tools for X."
 
-> "Read skills/create-herdr-plugin.md and build a plugin that notifies Slack when agents finish."
+> "Read skills/create-herdr-plugin.md and build a plugin that …"

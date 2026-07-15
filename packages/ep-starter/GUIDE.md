@@ -1,34 +1,71 @@
 # ep-starter Guide
 
-How to connect data sources so a Pi agent can do work that depends on your materials — brand vaults, spy APIs, CRMs, analytics, and more.
+## What this is
+
+ep-starter assumes a simple claim:
+
+**Herdr + Pi change what is practical for agents.**  
+Not “more chat.” A runtime and an extensible agent so that multi-agent work, durable sessions, and *owned* tools become normal.
+
+This guide starts with that stack. Integrations (vault, APIs, CRMs) come later as proof that the stack works.
 
 ---
 
-## Idea
+## The transformation
+
+### Without the stack
+
+| Need | Typical reality |
+|------|-----------------|
+| Agent should use my notes | Paste until context dies |
+| Agent should call an API | One-off script, forgotten next week |
+| Two agents on one job | Two windows, no shared control |
+| Background long job | Hope the laptop stays open |
+| Share the setup | Dotfiles and folklore |
+
+### With Herdr + Pi
+
+| Need | How it works |
+|------|----------------|
+| Agent uses my notes | Extension tools read a vault or store you control |
+| Agent calls an API | `registerTool` + env credentials; `/reload` |
+| Two agents on one job | Herdr panes; wait on status; read transcripts |
+| Background long job | Pane outlives the client; reattach later |
+| Share the setup | Pi package + skills + this factory |
+
+The product is that **second table**. Everything else is how you exercise it.
+
+---
+
+## Stack roles
 
 ```
-YOUR WORLD                         AGENT
-
-Obsidian brand vault  ──tools──►  on-brand copy
-Spy / ad intel APIs   ──tools──►  competitor research
-CRM / tickets         ──tools──►  updates, triage
-Analytics             ──tools──►  reports + recommendations
-Content calendars     ──tools──►  plan + produce
+Herdr                          Pi
+─────                          ──
+workspaces / tabs / panes      tools / skills / packages
+agent detection + state        sessions / branching
+CLI + socket control           extensions hot-reload
+persist when you detach        you shape the agent
 ```
 
-Without access, agents invent. With access, they use your materials.
+ep-starter sits on top: docs, `/setup`, scaffolds, and skills so the first capability you build is deliberate and repeatable.
 
 ---
 
 ## Install
 
 ```bash
+# Agent
 npm install -g @earendil-works/pi-coding-agent
-pi install git:github.com/conpiracy/ep-starter@main
-pi
-```
 
-Inside Pi:
+# Factory package
+pi install git:github.com/conpiracy/ep-starter@main
+
+# Workspace runtime (recommended)
+# https://herdr.dev/docs/install/
+herdr
+# then start pi inside a pane
+```
 
 ```
 /setup
@@ -36,207 +73,104 @@ Inside Pi:
 
 ---
 
-## Source 1: Obsidian for marketers
+## First path: feel the stack
 
-### Why first
-
-Marketers keep high-value context in Obsidian:
-
-- brand voice and positioning
-- offers, ICPs, objections
-- proof, testimonials, case notes
-- past winners and swipe files
-- research and customer language
-
-Once the vault is a tool:
-
-> "Search my vault for winning hooks from Q1 and write 5 new LinkedIn openers
-> in our brand voice."
-
-### Architecture
+### 1. Orientation
 
 ```
-You ask for copy
-  → Pi agent
-  → obsidian_search / obsidian_read  (extension you implement)
-  → local vault files (+ optional `ob` CLI for sync)
+/setup
 ```
 
-### Walkthrough
+Explains the stack and the first build path — not a catalog of plugins.
 
-**1. Prerequisites**
+### 2. Worked example (optional but concrete)
 
-- Node.js 22+
-- Obsidian account with Sync if you want remote vault sync
-
-**2. Install Obsidian Headless (optional, recommended)**
-
-```bash
-npm install -g obsidian-headless
-ob login
-```
-
-Docs: https://obsidian.md/help/headless
-
-**3. Sync a vault locally**
-
-```bash
-ob sync-list-remote
-mkdir -p ~/vaults/brand
-cd ~/vaults/brand
-ob sync-setup --vault "Your Vault Name"
-ob sync
-```
-
-**4. Run the wizard**
+Marketers often keep brand materials in Obsidian. Wiring that vault as tools is a good **first exercise** because the outcome is obvious: copy that uses *your* library.
 
 ```
 /setup obsidian
 ```
 
-It checks Node / `ob` / login, asks for the vault path, generates
-`~/.pi/agent/extensions/obsidian-tools.ts`, and lists next steps.
+That path:
 
-**5. Implement the tools with your agent**
+1. Checks prerequisites
+2. Generates a tool stub under `~/.pi/agent/extensions/`
+3. You implement with the agent
+4. `/reload`
+5. Ask for work that needs the vault
 
-The scaffold is a stub on purpose. Implement it so tools match *your* vault layout.
+**What you are learning is not “Obsidian.”**  
+You are learning: *I can give this agent a real capability and keep it.*
 
-> "Read ~/.pi/agent/extensions/obsidian-tools.ts and implement
-> `obsidian_search` with ripgrep. Prefer folders like /brand, /offers, /proof."
-
-| Tool | Job |
-|------|-----|
-| `obsidian_search` | Find notes by claim, offer, campaign, keyword |
-| `obsidian_read` | Pull a specific brand / research note |
-| `obsidian_list` | Browse folders (offers, proof, campaigns) |
-| `obsidian_sync` | Pull latest vault changes |
-
-**6. Reload and use**
-
-```
-/reload
-```
-
-Examples:
-
-> "Search my vault for hero claims and write 3 cold email openers."
-> "Read brand-voice.md and rewrite this landing page section."
-> "List notes in /proof and pick 5 testimonials for a case study."
-
----
-
-## Source 2: Spy APIs for competitive work
-
-Same path. Different data.
-
-### Why it matters
-
-Competitive research is usually manual: dashboards, screenshots, lost context.
-Once a spy API is a tool, the agent can:
-
-1. pull competitor creatives / hooks
-2. cross-check your vault for brand fit
-3. draft angles that are informed, not invented
-
-### Scaffold
+### 3. Second capability (any source)
 
 ```
 /scaffold spy-api
+# or: crm, analytics, support-inbox, …
 ```
 
-Creates `~/.pi/agent/extensions/spy-api.ts`. Then implement with your agent:
+Same path: stub → implement → reload → use.  
+Competitive intel for marketers is a common second exercise; any HTTP/API/DB works.
 
-> "Implement tools for our ad spy API: search ads by brand, fetch creative
-> details, and summarize hooks. Put the API key in env SPY_API_KEY."
-
-| Tool | Job |
-|------|-----|
-| `spy_search_ads` | Find competitor ads by brand / keyword |
-| `spy_get_creative` | Fetch a specific ad / landing page |
-| `spy_summarize_angles` | Extract hooks, offers, CTAs |
-
-### Combined workflow
-
-```
-1. spy_search_ads("competitor X")
-2. obsidian_search("brand voice")
-3. draft 5 hooks that fit both
-```
-
----
-
-## General pattern (any data source)
-
-```
-/setup or /scaffold <name>
-  → generate extension with tool stubs
-  → implement against real credentials
-  → /reload
-  → ask for work that needs that data
-```
-
-Examples:
-
-```
-/scaffold crm              HubSpot / Salesforce
-/scaffold analytics        ad + web metrics
-/scaffold content-calendar Notion / Airtable
-/scaffold support-inbox    Intercom / Zendesk
-```
-
----
-
-## Multi-agent (optional, Herdr)
-
-If you run inside [Herdr](https://herdr.dev):
+### 4. Multi-agent (Herdr)
 
 ```
 /agents
-"delegate competitor research to codex while I draft with vault context"
+# or ask: start a peer, wait until done, read the result
 ```
 
-One agent researches via spy tools. Another writes with vault tools.
+This is the other half of the transformation: not only *what* the agent can access, but *how* work is laid out and coordinated.
 
 ---
 
-## Package contents
+## Mental model: mechanism vs value
+
+| Mechanism (how) | Value (why) |
+|-----------------|-------------|
+| Pi extension + tools | Agent can act on systems you control |
+| Skills + prompts | Capability is documented and reusable |
+| Herdr panes + wait/read | Multi-agent and long jobs are operable |
+| Packages | You can ship a harness, not a chat transcript |
+| `/setup` + scaffolds | First build is guided; next builds are the same shape |
+
+Obsidian, spy APIs, CRMs are **instances of the left column** chosen because the **right column** is clear for marketers and operators.
+
+---
+
+## Factory contents
 
 ```
-packages/ep-starter/
-├── extension.ts              /setup, /scaffold, /agents
-├── skills/
-│   ├── obsidian-vault.md
-│   └── herdr-operations.md
-├── prompts/
-│   ├── review.md
-│   └── note.md
-├── themes/
-├── scaffold/obsidian-tools/
-├── GUIDE.md
-└── README.md
+repo root
+├── packages/ep-starter/     this package
+├── docs/herdr, docs/pi      stack references (local)
+├── skills/                  author plugins + extensions
+├── examples/                worked plugins/extensions
+└── harness/templates/       blank scaffolds
 ```
 
-Wider factory (docs, examples, templates):
-https://github.com/conpiracy/ep-starter
+Authoring skills:
+
+- `skills/create-pi-extension.md`
+- `skills/create-herdr-plugin.md`
 
 ---
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| Agent writes generic copy | Vault not connected or search not implemented |
-| `ob: command not found` | `npm install -g obsidian-headless` |
-| Spy tools fail auth | Keys in env vars; never hardcode in the extension |
-| Extension not loading | `/reload`; check `~/.pi/agent/extensions/` |
-| Want a new source | `/scaffold <name>` and implement with the agent |
+| Problem | Likely cause |
+|---------|----------------|
+| “This is just an Obsidian demo” | Read the stack section — examples are exercises |
+| Tools missing after edit | `/reload` |
+| No peer agents | Not inside Herdr (`HERDR_ENV` unset) |
+| Vault example fails | Headless/login/path; optional for the stack itself |
+| Don’t know what to build next | Name a job the agent can’t do yet → `/scaffold` that access |
 
 ---
 
-## Design principles
+## Principles
 
-1. **Access over chat** — the bottleneck is data, not prompts.
-2. **Scaffold, don't fake** — generate real stubs; implement against real systems.
-3. **Own the integration** — no black-box plugins you can't fix.
-4. **Work-shaped tools** — search vault, pull ads, list offers.
-5. **Compose sources** — vault + spy + CRM is how real jobs get done.
+1. **Lead with the harness** — Herdr + Pi are the product surface.
+2. **Examples prove the path** — not a marketplace of half-kept integrations.
+3. **Own the capability** — stubs you implement beat black-box plugins.
+4. **Compose** — data tools + peer agents is how real work looks.
+5. **Repeat the path** — every new ability should feel like the first one.
